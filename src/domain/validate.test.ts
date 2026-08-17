@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FIXTURE_4_4, FIXTURE_6_8 } from "./fixtures";
+import { FIXTURE_2_4, FIXTURE_4_4, FIXTURE_6_8 } from "./fixtures";
 import { validatePattern } from "./validate";
 import type { Pattern } from "./types";
 
@@ -7,8 +7,15 @@ const clone = (p: Pattern): Pattern => structuredClone(p);
 
 describe("validatePattern", () => {
   it("妥当なパターンはエラーを返さない", () => {
+    expect(validatePattern(FIXTURE_2_4)).toEqual([]);
     expect(validatePattern(FIXTURE_4_4)).toEqual([]);
     expect(validatePattern(FIXTURE_6_8)).toEqual([]);
+  });
+
+  it("2/4 の bpmUnit は 96", () => {
+    const p = clone(FIXTURE_2_4);
+    p.bpmUnit = 144;
+    expect(validatePattern(p).join()).toContain("bpmUnit must be 96");
   });
 
   it("小節の tick 合計が合わないと拒否する", () => {
@@ -28,7 +35,7 @@ describe("validatePattern", () => {
     expect(validatePattern(p).join()).toContain("tick sum");
   });
 
-  it("4/4 と 6/8 以外の拍子を拒否する", () => {
+  it("2/4・4/4・6/8 以外の拍子を拒否する", () => {
     const p = clone(FIXTURE_4_4);
     p.meter = { beats: 3, beatUnit: 4, beatGroups: [1, 1, 1] };
     expect(validatePattern(p).join()).toContain("is not allowed");

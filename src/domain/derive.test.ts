@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { toPlaybackEvents } from "./derive";
-import { FIXTURE_4_4, FIXTURE_6_8 } from "./fixtures";
+import { FIXTURE_2_4, FIXTURE_4_4, FIXTURE_6_8 } from "./fixtures";
 import type { Pattern } from "./types";
 
 describe("toPlaybackEvents", () => {
@@ -23,6 +23,14 @@ describe("toPlaybackEvents", () => {
       { noteId: "d2", tick: 480, pitch: "high" },
       { noteId: "d3", tick: 528, pitch: "high" },
     ]);
+  });
+
+  it("2/4 × 4小節は 4/4 × 2小節とまったく同じ絶対 tick になる", () => {
+    // 同じリズムを小節線の切り方だけ変えて書いたもの。
+    // 拍子が変わっても打点の絶対位置は変わらない。
+    expect(toPlaybackEvents(FIXTURE_2_4).map((e) => e.tick)).toEqual(
+      toPlaybackEvents(FIXTURE_4_4).map((e) => e.tick),
+    );
   });
 
   it("休符はイベントにならない", () => {

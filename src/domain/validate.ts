@@ -3,7 +3,15 @@ import type { Bar, Pattern } from "./types";
 
 const BEAMABLE = new Set<string>(["8", "16", "32"]);
 
+/**
+ * v1 で許容する拍子と、その BPM 基準音価。
+ *
+ * 2/4 … サンバ系（サンバヘギ／サンバアフロ）の正式な記譜。BPM は4分音符で数える
+ * 4/4 … 2小節を1周期として書く場合に使う
+ * 6/8 … カンドンブレ系。BPM は慣習的に付点4分（1拍 = 144 tick）で数える
+ */
 const ALLOWED_METERS = [
+  { beats: 2, beatUnit: 4, bpmUnit: 96 },
   { beats: 4, beatUnit: 4, bpmUnit: 96 },
   { beats: 6, beatUnit: 8, bpmUnit: 144 },
 ] as const;
@@ -20,7 +28,7 @@ export function validatePattern(p: Pattern): string[] {
   );
   if (!rule) {
     errors.push(
-      `meter ${p.meter.beats}/${p.meter.beatUnit} is not allowed (v1 supports 4/4 and 6/8)`,
+      `meter ${p.meter.beats}/${p.meter.beatUnit} is not allowed (v1 supports 2/4, 4/4 and 6/8)`,
     );
   } else if (p.bpmUnit !== rule.bpmUnit) {
     errors.push(
