@@ -157,6 +157,14 @@ export class Scheduler {
     if (!this.running || this.events.length === 0) return;
     const now = this.clock.now();
 
+    // 保留中の切替は pump の先頭で判定する。
+    // 「まだ予約していない次の打点」が切替点以降なら、その時点で基準を打ち直せる。
+    // スケジュール用ループの中で判定すると、次の打点が先読み窓に入るまで
+    // 切替が発動せず、その頃には拍境界を過ぎてしまう。
+    if (this.pending && this.absTickOf(this.nextIndex) >= this.pending.atTick) {
+      this.applyPending(now);
+    }
+
     // 遅れたイベントは予約せずに読み飛ばし、次の未来イベントに追いつく。
     // 過去の start(when) は実機で即座に鳴り、打点が連射されるため。
     while (this.timeOf(this.nextIndex) < now) {
@@ -166,10 +174,6 @@ export class Scheduler {
 
     const limit = now + LOOKAHEAD_SEC;
     while (this.timeOf(this.nextIndex) < limit) {
-      if (this.pending && this.absTickOf(this.nextIndex) >= this.pending.atTick) {
-        this.applyPending(now);
-        continue; // 新しい基準で同じ位置を再評価する
-      }
       this.scheduleAt(this.nextIndex);
       this.nextIndex++;
     }

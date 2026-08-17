@@ -21,7 +21,8 @@ export const runUntil = (clock: FakeClock, scheduler: Scheduler, until: number) 
   const start = clock.now();
   const steps = Math.floor((until - start) / 0.025 + 1e-9);
   for (let i = 0; i <= steps; i++) {
-    clock.advanceTo(Number((start + i * 0.025).toFixed(6)));
+    // 開始時刻自体に誤差が乗っていることがあるので、逆行しないように丸め込む
+    clock.advanceTo(Math.max(clock.now(), Number((start + i * 0.025).toFixed(6))));
     scheduler.pump();
   }
   if (clock.now() < until) {
