@@ -85,23 +85,34 @@ h1 {
   height: auto;
 }
 
-/* 五線・音符・休符はすべて濃い墨色で描く */
+/* 音部記号・拍子記号・符頭・休符は text 要素、符尾と連桁は path で描かれる。
+   どちらも濃い墨色に揃える。 */
+.score svg text,
 .score svg path,
 .score svg rect {
   fill: var(--ink);
+  stroke: none;
+}
+
+.score svg .vf-stem path,
+.score svg .vf-beam path {
   stroke: var(--ink);
 }
 
-/* 五線の横線だけは少し淡くして、音符を前に出す */
+/* 五線の横線だけ淡くして、音符を前に出す */
 .score svg .vf-stave path {
-  stroke: #b9ae9f;
-  fill: #b9ae9f;
+  stroke: #bdb2a3;
+  fill: none;
 }
 
 /* 再生中の音符。鳴った瞬間だけ色が変わる（座標は動かさない） */
+.score svg g.on text,
 .score svg g.on path,
 .score svg g.on rect {
   fill: var(--accent);
+}
+
+.score svg g.on path {
   stroke: var(--accent);
 }
 

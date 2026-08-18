@@ -55,12 +55,30 @@ describe("renderPattern", () => {
     expect(svg.style.width).toBe("100%");
   });
 
-  it("4小節は2小節ずつ2段に折り返す（スマホで潰れないように）", () => {
+  it("pt 単位の font-size を残さない（残すと音符だけ巨大化する）", () => {
     renderPattern(container, SAMBA_REGGAE);
-    const viewBox = container.querySelector("svg")!.getAttribute("viewBox")!;
-    const height = Number(viewBox.split(" ")[3]);
-    // 2段ぶんの高さがあること
-    expect(height).toBeGreaterThan(150);
+    const html = container.querySelector("svg")!.outerHTML;
+    // SVG の pt は viewBox の拡縮に追従しないため、
+    // 1つでも残っていると五線と音符の比率が壊れる
+    expect(html).not.toMatch(/font-size="[\d.]+pt"/);
+  });
+
+  it("グリフの大きさが五線の高さと釣り合う", () => {
+    renderPattern(container, SAMBA_REGGAE);
+    const html = container.querySelector("svg")!.outerHTML;
+    const sizes = [...html.matchAll(/font-size="([\d.]+)"/g)].map((m) => Number(m[1]));
+    // VexFlow の設計上、グリフは五線の高さ（線間10 × 4 = 40）と同じ大きさになる
+    expect(Math.max(...sizes)).toBeCloseTo(40, 5);
+  });
+
+  it("譜面が論理幅の内側に収まる（はみ出さない）", () => {
+    renderPattern(container, SAMBA_REGGAE);
+    const svg = container.querySelector("svg")!;
+    const logicalWidth = Number(svg.getAttribute("viewBox")!.split(" ")[2]);
+    const staveEnds = [...svg.outerHTML.matchAll(/d="M[\d.]+ [\d.]+L([\d.]+) /g)].map((m) =>
+      Number(m[1]),
+    );
+    expect(Math.max(...staveEnds)).toBeLessThanOrEqual(logicalWidth);
   });
 
   it("再描画しても同じ音符に同じ要素が対応づく（ハイライトが壊れない）", () => {
