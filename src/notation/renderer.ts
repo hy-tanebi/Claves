@@ -1,77 +1,24 @@
-import {
-  Beam,
-  Formatter,
-  Renderer,
-  Stave,
-  StaveNote,
-  Voice,
-  type RenderContext,
-} from "vexflow";
+import { Barline, Beam, Formatter, Renderer, Stave, type RenderContext } from "vexflow";
 import { computeBeams } from "../domain/beams";
-import type { Bar, NotationItem, Pattern, Pitch } from "../domain/types";
-
-/**
- * 打楽器譜の音高位置。
- * アゴゴ／カウベルの高音・低音を五線上の2つの位置に描き分ける。
- */
-const STAFF_POSITION: Record<Pitch, string> = {
-  high: "c/5",
-  low: "f/4",
-};
-
-/** 休符は五線の中央に置く */
-const REST_POSITION = "b/4";
-
-/**
- * 論理座標の幅。実際の表示幅には viewBox で合わせる。
- * **この値が小さいほど画面上では大きく表示される。**
- * 320px 前後のスマホで音符がはっきり読める大きさに合わせてある。
- */
-const LOGICAL_WIDTH = 300;
-const LOGICAL_HEIGHT = 110;
-const STAVE_TOP = 22;
-const SIDE_PADDING = 6;
-/** 最初の小節は音部記号と拍子記号のぶん広くする */
-const FIRST_BAR_EXTRA = 42;
-/** 1pt = 4/3 ユーザー単位 */
-const PT_TO_UNIT = 4 / 3;
+import type { Bar, Pattern } from "../domain/types";
+import {
+  buildVoice,
+  LAYOUT,
+  measureTimeSignatureWidth,
+  planSystems,
+  PT_TO_UNIT,
+  type SystemPlan,
+} from "./layout";
 
 export type RenderedNotation = {
   /** noteId → 描画された SVG 要素。ハイライトはこれに直接触る */
   noteElements: Map<string, SVGElement>;
+  /** 段数（テストと調整の確認用） */
+  systemCount: number;
+  /** 論理サイズ */
+  logicalWidth: number;
+  logicalHeight: number;
 };
-
-/**
- * NotationItem を VexFlow の音価文字列にする。
- *
- * 形式は「音価 + 付点(d) + 種別(r)」。
- * **付点は必ずこの文字列に含める。** Dot モディファイアを後付けするだけでは
- * VexFlow が音価を付点なしとして数え、小節の長さが合わずに
- * IncompleteVoice で落ちる。
- */
-function durationOf(item: NotationItem): string {
-  const dot = item.dots === 1 ? "d" : "";
-  const rest = item.kind === "rest" ? "r" : "";
-  return `${item.duration}${dot}${rest}`;
-}
-
-function buildNote(item: NotationItem): StaveNote {
-  const key = item.kind === "rest" ? REST_POSITION : STAFF_POSITION[item.pitch];
-  return new StaveNote({
-    keys: [key],
-    duration: durationOf(item),
-    // 打楽器譜なので符尾の向きは上に揃える（読みやすさ優先）
-    stemDirection: 1,
-  });
-}
-
-/** domain 側で決めた連桁グループを VexFlow の Beam にする */
-function buildBeams(bar: Bar, pattern: Pattern, notes: StaveNote[]): Beam[] {
-  return computeBeams(bar, pattern.meter)
-    .map(([from, to]) => notes.slice(from, to + 1))
-    .filter((group) => group.length >= 2)
-    .map((group) => new Beam(group));
-}
 
 /**
  * VexFlow が付ける pt 単位の font-size を、ユーザー単位の数値に置き換える。
@@ -82,8 +29,7 @@ function buildBeams(bar: Bar, pattern: Pattern, notes: StaveNote[]): Beam[] {
  * 五線と一緒に拡縮される。
  */
 function normalizeFontUnits(svg: SVGElement): void {
-  const targets = [svg, ...Array.from(svg.querySelectorAll("*"))];
-  for (const el of targets) {
+  for (const el of [svg, ...Array.from(svg.querySelectorAll("*"))]) {
     const size = el.getAttribute("font-size");
     if (!size) continue;
     const pt = /^([\d.]+)pt$/.exec(size);
@@ -91,63 +37,85 @@ function normalizeFontUnits(svg: SVGElement): void {
   }
 }
 
+/** domain 側で決めた連桁グループを VexFlow の Beam にする */
+function buildBeams(
+  bar: Bar,
+  pattern: Pattern,
+  notes: ReturnType<typeof buildVoice>["notes"],
+): Beam[] {
+  return computeBeams(bar, pattern.meter)
+    .map(([from, to]) => notes.slice(from, to + 1))
+    .filter((group) => group.length >= 2)
+    .map((group) => new Beam(group));
+}
+
 /**
  * パターンを五線譜として描く。
  *
- * 全小節を1段に並べる（見本の the Clave と同じ形）。
- * 論理幅で組んでから viewBox で表示幅に合わせるため、
- * 画面幅が変わっても横スクロールは発生しない。
+ * 見本の the Clave にならい、音部記号は出さず、複縦線で囲む。
+ * 幅は全パターン共通の固定値（LAYOUT.systemWidth）で、
+ * 収まらないパターンは段を増やす。これによりリズムを切り替えても
+ * 譜面の大きさが揃う。
  */
 export function renderPattern(container: HTMLDivElement, pattern: Pattern): RenderedNotation {
   container.replaceChildren();
 
+  const timeSigWidth = measureTimeSignatureWidth(pattern);
+  const systems = planSystems(pattern, timeSigWidth);
+  const logicalHeight = systems.length * LAYOUT.systemHeight;
+
   const renderer = new Renderer(container, Renderer.Backends.SVG);
-  renderer.resize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
+  renderer.resize(LAYOUT.systemWidth, logicalHeight);
   const ctx: RenderContext = renderer.getContext();
 
   const noteElements = new Map<string, SVGElement>();
   const beamsToDraw: Beam[] = [];
+  const lastBarIndex = pattern.bars.length - 1;
 
-  const barCount = pattern.bars.length;
-  const usable = LOGICAL_WIDTH - SIDE_PADDING * 2 - FIRST_BAR_EXTRA;
-  const barWidth = usable / barCount;
+  systems.forEach((system: SystemPlan, si) => {
+    const y = LAYOUT.staveTop + si * LAYOUT.systemHeight;
+    let x = LAYOUT.sidePadding;
 
-  let x = SIDE_PADDING;
+    system.barIndices.forEach((barIndex, i) => {
+      const bar = pattern.bars[barIndex]!;
+      const isFirstOfSystem = i === 0;
+      const isFirstOfPattern = barIndex === 0;
+      const isLastOfPattern = barIndex === lastBarIndex;
 
-  pattern.bars.forEach((bar, bi) => {
-    const isFirst = bi === 0;
-    const width = isFirst ? barWidth + FIRST_BAR_EXTRA : barWidth;
-    const stave = new Stave(x, STAVE_TOP, width);
+      // 拍子記号は最初の段の先頭にだけ出す（通常の記譜の作法）
+      const extra = si === 0 && isFirstOfSystem ? timeSigWidth : 0;
+      const width = system.widths[i]! + extra;
 
-    if (isFirst) {
-      stave.addClef("percussion");
-      stave.addTimeSignature(`${pattern.meter.beats}/${pattern.meter.beatUnit}`);
-    }
-    stave.setContext(ctx).draw();
+      const stave = new Stave(x, y, width);
+      if (si === 0 && isFirstOfSystem) {
+        stave.addTimeSignature(`${pattern.meter.beats}/${pattern.meter.beatUnit}`);
+      }
+      // 見本にならい、パターンの始まりと終わりを複縦線で囲む
+      stave.setBegBarType(isFirstOfPattern ? Barline.type.DOUBLE : Barline.type.SINGLE);
+      stave.setEndBarType(isLastOfPattern ? Barline.type.DOUBLE : Barline.type.SINGLE);
+      stave.setContext(ctx).draw();
 
-    const notes = bar.items.map(buildNote);
-    beamsToDraw.push(...buildBeams(bar, pattern, notes));
+      const { voice, notes } = buildVoice(bar, pattern);
+      beamsToDraw.push(...buildBeams(bar, pattern, notes));
 
-    const voice = new Voice({
-      numBeats: pattern.meter.beats,
-      beatValue: pattern.meter.beatUnit,
+      // 音符を並べる幅は stave が持つ音符領域から取る。
+      // 自前で引き算すると、拍子記号や小節線の幅とずれる。
+      // 末尾に余白を残すのは、休符などグリフの送り幅が見た目より広く、
+      // 詰めると小節線に貼り付いて見えるため。
+      const noteArea = stave.getNoteEndX() - stave.getNoteStartX();
+      new Formatter()
+        .joinVoices([voice])
+        .format([voice], Math.max(20, noteArea - LAYOUT.barTailPadding));
+      voice.draw(ctx, stave);
+
+      bar.items.forEach((item, k) => {
+        if (item.kind !== "note") return;
+        const el = notes[k]!.getSVGElement();
+        if (el) noteElements.set(item.id, el);
+      });
+
+      x += width;
     });
-    voice.setStrict(true);
-    voice.addTickables(notes);
-
-    // 音部記号と拍子記号が占める幅を除いた残りに音符を並べる
-    const noteArea = stave.getNoteEndX() - stave.getNoteStartX();
-    new Formatter().joinVoices([voice]).format([voice], Math.max(24, noteArea - 8));
-    voice.draw(ctx, stave);
-
-    // 描画後に SVG 要素を回収して noteId と結びつける
-    bar.items.forEach((item, i) => {
-      if (item.kind !== "note") return;
-      const el = notes[i]!.getSVGElement();
-      if (el) noteElements.set(item.id, el);
-    });
-
-    x += width;
   });
 
   for (const beam of beamsToDraw) beam.setContext(ctx).draw();
@@ -155,7 +123,7 @@ export function renderPattern(container: HTMLDivElement, pattern: Pattern): Rend
   const svg = container.querySelector("svg");
   if (svg) {
     normalizeFontUnits(svg);
-    svg.setAttribute("viewBox", `0 0 ${LOGICAL_WIDTH} ${LOGICAL_HEIGHT}`);
+    svg.setAttribute("viewBox", `0 0 ${LAYOUT.systemWidth} ${logicalHeight}`);
     svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
     svg.removeAttribute("width");
     svg.removeAttribute("height");
@@ -163,5 +131,10 @@ export function renderPattern(container: HTMLDivElement, pattern: Pattern): Rend
     svg.style.height = "auto";
   }
 
-  return { noteElements };
+  return {
+    noteElements,
+    systemCount: systems.length,
+    logicalWidth: LAYOUT.systemWidth,
+    logicalHeight,
+  };
 }

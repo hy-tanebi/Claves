@@ -7,10 +7,12 @@
     "dev": "vite --host",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:notation": "node scripts/check-notation.mjs"
   },
   "devDependencies": {
     "jsdom": "^30.0.1",
+    "playwright": "1.56.0",
     "typescript": "^5.9.0",
     "vite": "^7.0.0",
     "vitest": "^3.2.0"

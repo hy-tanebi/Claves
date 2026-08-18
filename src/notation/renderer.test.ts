@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { SAMBA_REGGAE } from "../domain/patterns/samba-reggae";
 import { toPlaybackEvents } from "../domain/derive";
 import { renderPattern } from "./renderer";
+import { LAYOUT, measureBars, measureTimeSignatureWidth, planSystems } from "./layout";
 
 let container: HTMLDivElement;
 
@@ -35,16 +36,14 @@ describe("renderPattern", () => {
     expect(paths.length).toBeGreaterThan(SAMBA_REGGAE.bars.length * 5);
   });
 
-  it("拍子記号が描かれる", () => {
+  it("拍子記号がちょうど1つ描かれる（最初の段の先頭だけ）", () => {
     renderPattern(container, SAMBA_REGGAE);
-    const text = container.querySelector("svg")!.textContent ?? "";
-    // VexFlow 5 は拍子記号をグリフ（path）で描くことがあるため、
-    // クラス名で存在を確認する
-    const hasTimeSig =
-      container.querySelector("svg .vf-timesignature") !== null ||
-      /2|4/.test(text) ||
-      container.querySelectorAll("svg g").length > 0;
-    expect(hasTimeSig).toBe(true);
+    expect(container.querySelectorAll("svg .vf-timesignature")).toHaveLength(1);
+  });
+
+  it("音部記号は描かない（見本の the Clave にならう）", () => {
+    renderPattern(container, SAMBA_REGGAE);
+    expect(container.querySelectorAll("svg .vf-clef")).toHaveLength(0);
   });
 
   it("画面幅に追従する viewBox が付く（横スクロールしない）", () => {
@@ -69,6 +68,31 @@ describe("renderPattern", () => {
     const sizes = [...html.matchAll(/font-size="([\d.]+)"/g)].map((m) => Number(m[1]));
     // VexFlow の設計上、グリフは五線の高さ（線間10 × 4 = 40）と同じ大きさになる
     expect(Math.max(...sizes)).toBeCloseTo(40, 5);
+  });
+
+  it("各段に VexFlow の最小要求以上の幅を与えている", () => {
+    // 幅が足りないと VexFlow は音符を詰めて重ねる。これが崩れの直接原因だった
+    const timeSigWidth = measureTimeSignatureWidth(SAMBA_REGGAE);
+    const bars = measureBars(SAMBA_REGGAE);
+    const systems = planSystems(SAMBA_REGGAE, timeSigWidth);
+
+    systems.forEach((system, si) => {
+      const required = system.barIndices.reduce((sum, i) => sum + bars[i]!.hard, 0);
+      const available =
+        LAYOUT.systemWidth - LAYOUT.sidePadding * 2 - (si === 0 ? timeSigWidth : 0);
+      expect(available).toBeGreaterThanOrEqual(required);
+    });
+  });
+
+  it("小節の幅を均等割りせず、必要量の比で配分する", () => {
+    // 均等割りだと音符の多い小節が詰まり、少ない小節が間延びする
+    const systems = planSystems(SAMBA_REGGAE, measureTimeSignatureWidth(SAMBA_REGGAE));
+    const widths = systems.flatMap((s) => s.widths);
+    expect(new Set(widths.map((w) => Math.round(w))).size).toBeGreaterThan(1);
+  });
+
+  it("Samba Reggae は1段に収まる", () => {
+    expect(renderPattern(container, SAMBA_REGGAE).systemCount).toBe(1);
   });
 
   it("譜面が論理幅の内側に収まる（はみ出さない）", () => {

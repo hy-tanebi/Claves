@@ -20,18 +20,18 @@
 
       <p id="status" class="status">停止中</p>
 
-      <section class="controls">
+      <section class="tempo">
         <div class="bpm">
           <output id="bpmValue">120</output>
           <span class="bpmUnit">BPM</span>
         </div>
         <input id="bpm" type="range" min="40" max="240" step="1" value="120" aria-label="テンポ" />
-
-        <label class="field">
-          <span>音量</span>
-          <input id="volume" type="range" min="0" max="100" step="1" value="80" />
-        </label>
       </section>
+
+      <label class="field">
+        <span>音量</span>
+        <input id="volume" type="range" min="0" max="100" step="1" value="80" />
+      </label>
 
       <button id="play" class="play">再生</button>
     </main>
