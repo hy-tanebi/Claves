@@ -1,12 +1,12 @@
 :root {
-  --bg: #12100e;
-  --panel: #1d1a17;
-  --line: #322c26;
-  --text: #f2ede6;
-  --dim: #9a8f83;
-  --accent: #e8683c;
-  --accent-dim: #5a3226;
-  --low: #4a9d8e;
+  --bg: #14110f;
+  --panel: #fbf7f0;
+  --line: #2b2521;
+  --text: #f4efe8;
+  --dim: #a1968a;
+  --ink: #1a1512;
+  --accent: #ef6b39;
+  --accent-soft: #6b3220;
 }
 
 * {
@@ -22,62 +22,61 @@ body {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family:
-    ui-rounded, -apple-system, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  font-family: ui-rounded, -apple-system, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
 
 #app {
-  max-width: 30rem;
+  max-width: 26rem;
   margin: 0 auto;
   min-height: 100%;
-  padding: max(1.25rem, env(safe-area-inset-top)) 1.25rem
-    max(1.25rem, env(safe-area-inset-bottom));
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
-.kicker {
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  color: var(--accent);
-  text-transform: uppercase;
+/* ---- 見出し ---- */
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
 h1 {
-  font-size: 1.6rem;
+  font-size: 1.35rem;
   font-weight: 650;
   letter-spacing: 0.01em;
-  margin-top: 0.35rem;
 }
 
 .meta {
   color: var(--dim);
-  font-size: 0.85rem;
-  margin-top: 0.25rem;
+  font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
+
+/* ---- 譜面 ----
+   五線譜は紙の色（明るい面）に黒で描く。暗い背景に細い線を引くと
+   輪郭が沈んで読めないため、譜面だけ明度を反転させる。 */
 
 .stage {
   background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 1rem;
-  padding: 1.5rem 1rem;
+  border-radius: 0.9rem;
+  padding: 0.5rem 0.35rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  min-height: 9rem;
   justify-content: center;
+  /* 余った縦方向はここが吸収する。譜面がいちばん大きく見える */
+  flex: 1;
+  min-height: 11rem;
 }
 
-/* 譜面（VexFlow が描く SVG） */
 .score {
   width: 100%;
-  /* 五線と符尾は明るく。VexFlow の既定は黒なのでまとめて上書きする */
-  color: var(--text);
 }
 
 .score svg {
@@ -86,23 +85,55 @@ h1 {
   height: auto;
 }
 
+/* 五線・音符・休符はすべて濃い墨色で描く */
 .score svg path,
 .score svg rect {
-  fill: var(--text);
-  stroke: var(--text);
+  fill: var(--ink);
+  stroke: var(--ink);
 }
 
-/* 再生中の音符。音が鳴った瞬間だけ色が変わる（座標は動かさない） */
+/* 五線の横線だけは少し淡くして、音符を前に出す */
+.score svg .vf-stave path {
+  stroke: #b9ae9f;
+  fill: #b9ae9f;
+}
+
+/* 再生中の音符。鳴った瞬間だけ色が変わる（座標は動かさない） */
 .score svg g.on path,
 .score svg g.on rect {
   fill: var(--accent);
   stroke: var(--accent);
 }
 
+/* ---- 操作 ---- */
+
 .status {
   color: var(--dim);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  text-align: center;
   font-variant-numeric: tabular-nums;
+  min-height: 1.2em;
+}
+
+.bpm {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+#bpmValue {
+  font-size: 3.6rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.bpmUnit {
+  color: var(--dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
 }
 
 .controls {
@@ -114,66 +145,65 @@ h1 {
 .field {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  font-size: 0.9rem;
+  gap: 0.9rem;
+  font-size: 0.85rem;
   color: var(--dim);
 }
 
-select,
+.field span {
+  min-width: 2.6rem;
+}
+
 input[type="range"] {
-  font: inherit;
-  accent-color: var(--accent);
-}
-
-select {
   flex: 1;
-  background: var(--panel);
-  color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: 0.6rem;
-  padding: 0.6rem 0.7rem;
-}
-
-.field input[type="range"] {
-  flex: 1;
-}
-
-.bpm {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.4rem;
-  margin-top: 0.25rem;
-}
-
-#bpmValue {
-  font-size: 3.4rem;
-  font-weight: 700;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
-.bpmUnit {
-  color: var(--dim);
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
-}
-
-#bpm {
   width: 100%;
+  appearance: none;
+  height: 2.25rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* 指で掴みやすいつまみと、はっきり見えるレール */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 0.35rem;
+  border-radius: 999px;
+  background: #38302a;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-top: -0.625rem;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg);
+  box-shadow: 0 1px 6px rgb(0 0 0 / 0.5);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 0.35rem;
+  border-radius: 999px;
+  background: #38302a;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg);
 }
 
 .play {
   font: inherit;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 650;
   color: var(--text);
-  background: var(--accent-dim);
+  background: var(--accent-soft);
   border: 1px solid var(--accent);
-  border-radius: 0.9rem;
-  padding: 1.1rem;
-  margin-top: auto;
+  border-radius: 0.85rem;
+  padding: 1.05rem;
   cursor: pointer;
 }
 
@@ -182,6 +212,6 @@ select {
   color: #1a0d08;
 }
 
-.play:disabled {
-  opacity: 0.5;
+.play:active {
+  transform: translateY(1px);
 }

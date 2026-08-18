@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#12100e" />
+    <meta name="theme-color" content="#14110f" />
     <title>Samba Reggae — リズムパターン・メトロノーム</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
@@ -16,15 +16,16 @@
 
       <section class="stage" aria-label="譜面">
         <div id="score" class="score"></div>
-        <p id="status" class="status">停止中</p>
       </section>
+
+      <p id="status" class="status">停止中</p>
 
       <section class="controls">
         <div class="bpm">
           <output id="bpmValue">120</output>
           <span class="bpmUnit">BPM</span>
         </div>
-        <input id="bpm" type="range" min="40" max="240" step="1" value="120" />
+        <input id="bpm" type="range" min="40" max="240" step="1" value="120" aria-label="テンポ" />
 
         <label class="field">
           <span>音量</span>

@@ -48,11 +48,19 @@ describe("renderPattern", () => {
   });
 
   it("画面幅に追従する viewBox が付く（横スクロールしない）", () => {
-    renderPattern(container, SAMBA_REGGAE, 720);
+    renderPattern(container, SAMBA_REGGAE);
     const svg = container.querySelector("svg")!;
-    expect(svg.getAttribute("viewBox")).toBe("0 0 720 130");
+    expect(svg.getAttribute("viewBox")).toMatch(/^0 0 \d+ \d+$/);
     expect(svg.getAttribute("width")).toBeNull();
     expect(svg.style.width).toBe("100%");
+  });
+
+  it("4小節は2小節ずつ2段に折り返す（スマホで潰れないように）", () => {
+    renderPattern(container, SAMBA_REGGAE);
+    const viewBox = container.querySelector("svg")!.getAttribute("viewBox")!;
+    const height = Number(viewBox.split(" ")[3]);
+    // 2段ぶんの高さがあること
+    expect(height).toBeGreaterThan(150);
   });
 
   it("再描画しても同じ音符に同じ要素が対応づく（ハイライトが壊れない）", () => {
