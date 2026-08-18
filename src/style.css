@@ -73,39 +73,30 @@ h1 {
   justify-content: center;
 }
 
-/* 譜面が入るまでの仮表示：打点をドットで並べる */
-.dots {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  justify-content: center;
+/* 譜面（VexFlow が描く SVG） */
+.score {
+  width: 100%;
+  /* 五線と符尾は明るく。VexFlow の既定は黒なのでまとめて上書きする */
+  color: var(--text);
 }
 
-.dot {
-  width: 1.4rem;
-  height: 1.4rem;
-  border-radius: 50%;
-  border: 2px solid var(--line);
-  background: transparent;
-  transition:
-    transform 90ms ease-out,
-    background-color 90ms ease-out,
-    border-color 90ms ease-out;
+.score svg {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
-.dot[data-pitch="low"] {
-  border-color: #2f5f57;
+.score svg path,
+.score svg rect {
+  fill: var(--text);
+  stroke: var(--text);
 }
 
-.dot.on {
-  background: var(--accent);
-  border-color: var(--accent);
-  transform: scale(1.35);
-}
-
-.dot.on[data-pitch="low"] {
-  background: var(--low);
-  border-color: var(--low);
+/* 再生中の音符。音が鳴った瞬間だけ色が変わる（座標は動かさない） */
+.score svg g.on path,
+.score svg g.on rect {
+  fill: var(--accent);
+  stroke: var(--accent);
 }
 
 .status {
