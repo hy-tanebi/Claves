@@ -9,10 +9,12 @@ import type { Pattern } from "../types";
  * 記譜はサンバ系の正式である **2/2（アラブレーヴェ）× 2小節**。
  * 絶対 tick は 0 / 144 / 288 / 480 / 576、1周期 768 tick。
  *
- *   小節1: ♩. + ♩. + ♩          = 144 + 144 + 96 = 384
- *   小節2: 𝄽 + ♩ + ♩ + 𝄽       = 96 + 96 + 96 + 96 = 384
+ *   小節1: ♩. + ♪ + 𝄽 + ♩     = 144 + 48 + 96 + 96 = 384
+ *   小節2: 𝄽  + ♩ + ♩  + 𝄽     = 96 + 96 + 96 + 96   = 384
  *
- * 3+3+2 / 2+2 という、ソンクラーベの教科書どおりの割り方になる。
+ * 打点は8分音符換算で 0 / 3 / 6（1小節目）、2 / 4（2小節目）。
+ * 2つ目の打点は8分音符で書き、次の打点までを4分休符で埋める。
+ * 打楽器の一撃を長く伸ばして書かないため、この形になる。
  */
 export const SAMBA_REGGAE: Pattern = {
   id: "samba-reggae",
@@ -24,7 +26,8 @@ export const SAMBA_REGGAE: Pattern = {
     {
       items: [
         { kind: "note", id: "sr1", duration: "q", dots: 1, pitch: "high" },
-        { kind: "note", id: "sr2", duration: "q", dots: 1, pitch: "high" },
+        { kind: "note", id: "sr2", duration: "8", pitch: "high" },
+        { kind: "rest", duration: "q" },
         { kind: "note", id: "sr3", duration: "q", pitch: "high" },
       ],
     },
@@ -47,6 +50,6 @@ export const SAMBA_REGGAE: Pattern = {
     confirmedOn: "2026-08-19",
     arrangementNotes:
       "骨格はソンクラーベ 3-2 と同一であることを本人が確認。3-2 のみ収録し反転は持たない。" +
-      "記譜は 2/2（アラブレーヴェ）で、3+3+2 / 2+2 の割り方。",
+      "記譜は 2/2（アラブレーヴェ）。2つ目の打点は8分音符＋4分休符で書く。",
   },
 };

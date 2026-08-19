@@ -95,6 +95,13 @@ describe("renderPattern", () => {
     expect(renderPattern(container, SAMBA_REGGAE).systemCount).toBe(1);
   });
 
+  it("音符と休符の並びが見本どおり（♩. ♪ 𝄽 ♩ / 𝄽 ♩ ♩ 𝄽）", () => {
+    const shape = (bar: (typeof SAMBA_REGGAE)["bars"][number]) =>
+      bar.items.map((i) => `${i.kind === "rest" ? "r" : "n"}${i.duration}${i.dots ? "." : ""}`);
+    expect(shape(SAMBA_REGGAE.bars[0]!)).toEqual(["nq.", "n8", "rq", "nq"]);
+    expect(shape(SAMBA_REGGAE.bars[1]!)).toEqual(["rq", "nq", "nq", "rq"]);
+  });
+
   it("2/2 × 2小節で記譜されている", () => {
     expect(SAMBA_REGGAE.meter).toMatchObject({ beats: 2, beatUnit: 2 });
     expect(SAMBA_REGGAE.bars).toHaveLength(2);
