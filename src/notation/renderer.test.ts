@@ -95,6 +95,16 @@ describe("renderPattern", () => {
     expect(renderPattern(container, SAMBA_REGGAE).systemCount).toBe(1);
   });
 
+  it("2/2 × 2小節で記譜されている", () => {
+    expect(SAMBA_REGGAE.meter).toMatchObject({ beats: 2, beatUnit: 2 });
+    expect(SAMBA_REGGAE.bars).toHaveLength(2);
+  });
+
+  it("打点はソンクラーベ 3-2（8分換算で 0/3/6/10/12）", () => {
+    const eighths = toPlaybackEvents(SAMBA_REGGAE).map((e) => e.tick / 48);
+    expect(eighths).toEqual([0, 3, 6, 10, 12]);
+  });
+
   it("譜面が論理幅の内側に収まる（はみ出さない）", () => {
     renderPattern(container, SAMBA_REGGAE);
     const svg = container.querySelector("svg")!;

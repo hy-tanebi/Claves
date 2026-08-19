@@ -1,4 +1,4 @@
-import { Formatter, Stave, StaveNote, Voice } from "vexflow";
+import { Dot, Formatter, Stave, StaveNote, Voice } from "vexflow";
 import type { Bar, NotationItem, Pattern, Pitch } from "../domain/types";
 
 /**
@@ -58,12 +58,17 @@ export function durationOf(item: NotationItem): string {
 
 export function buildNote(item: NotationItem): StaveNote {
   const key = item.kind === "rest" ? REST_POSITION : STAFF_POSITION[item.pitch];
-  return new StaveNote({
+  const note = new StaveNote({
     keys: [key],
     duration: durationOf(item),
     // 打楽器譜なので符尾の向きは上に揃える（読みやすさ優先）
     stemDirection: 1,
   });
+  // 付点は音価文字列（"qd"）とグリフの両方が要る。
+  // 文字列だけだと長さは合うが点が描かれず、
+  // グリフだけだと点は出るが長さが合わずに小節が壊れる。
+  if (item.dots === 1) Dot.buildAndAttach([note], { all: true });
+  return note;
 }
 
 export function buildVoice(bar: Bar, pattern: Pattern): { voice: Voice; notes: StaveNote[] } {

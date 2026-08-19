@@ -54,7 +54,7 @@ export type SourceMeta = {
 
 export type Meter = {
   beats: number;
-  beatUnit: 4 | 8;
+  beatUnit: 2 | 4 | 8;
   /** 拍のグループ分け。6/8 の「3+3」なら [3, 3]。合計は beats と一致する */
   beatGroups: number[];
 };
