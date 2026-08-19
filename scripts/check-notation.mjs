@@ -59,6 +59,21 @@ for (const width of WIDTHS) {
       if (sorted[i].left < sorted[i - 1].right - 1) overlap++;
     }
 
+    // 符尾が符頭に接続しているか。
+    // VexFlow は描画時に文字幅を測って符尾の位置を決めるため、
+    // 音楽フォントの読み込み前に描くと代替フォントの幅で計算し、
+    // 符尾が符頭から離れる。見た目で最も気づきやすい壊れ方なのに
+    // 座標だけ見ていると見逃すので、必ず機械で判定する。
+    let detachedStems = 0;
+    for (const note of svg.querySelectorAll(".vf-stavenote")) {
+      const head = note.querySelector(".vf-notehead text");
+      const stem = note.querySelector(".vf-stem path");
+      if (!head || !stem) continue;
+      const h = head.getBoundingClientRect();
+      const s = stem.getBoundingClientRect();
+      if (Math.abs(s.left - h.right) > 3) detachedStems++;
+    }
+
     const doc = document.documentElement;
     return {
       staffHeight: +(lines[4] - lines[0]).toFixed(1),
@@ -66,6 +81,7 @@ for (const width of WIDTHS) {
       bars: staves.length,
       notesOutsideBar: outside,
       overlappingNotes: overlap,
+      detachedStems,
       horizontalScroll: doc.scrollWidth > doc.clientWidth,
       verticalScroll: doc.scrollHeight > window.innerHeight,
     };
@@ -75,6 +91,8 @@ for (const width of WIDTHS) {
 
   const problems = [];
   if (result.error) problems.push(result.error);
+  if (result.detachedStems > 0)
+    problems.push(`符尾が符頭から離れている（${result.detachedStems}件）— 音楽フォントの読み込み前に描いていないか確認`);
   if (result.overlappingNotes > 0) problems.push(`音符が重なっている（${result.overlappingNotes}件）`);
   if (result.notesOutsideBar > 0) problems.push(`小節からはみ出した音符（${result.notesOutsideBar}件）`);
   if (result.horizontalScroll) problems.push("横スクロールが発生している");

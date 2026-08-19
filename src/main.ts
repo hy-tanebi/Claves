@@ -3,6 +3,7 @@ import type { Pattern } from "./domain/types";
 import { Scheduler } from "./audio/scheduler";
 import { createBellBuffers, WebAudioClock } from "./audio/web-audio-clock";
 import { renderPattern } from "./notation/renderer";
+import { whenMusicFontsReady } from "./notation/fonts";
 
 /** 25ms ごとに予約を補充する（設計上の先読み窓は 0.5 秒） */
 const PUMP_INTERVAL_MS = 25;
@@ -129,4 +130,8 @@ els.volume.addEventListener("input", () => {
 
 // 初期化
 els.bpmValue.value = String(bpm);
-drawScore();
+
+// 音楽フォントの読み込みを待ってから描く。
+// 待たずに描くと VexFlow が代替フォントの幅で位置を計算し、
+// 符尾が符頭から離れ、小節幅も膨れて段が余計に増える。
+void whenMusicFontsReady().then(drawScore);
