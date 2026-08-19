@@ -12,6 +12,8 @@ import type { Pattern } from "../types";
  *   小節1: ♩. + ♪ + 𝄽 + ♩     = 144 + 48 + 96 + 96 = 384
  *   小節2: 𝄽  + ♩ + ♩  + 𝄽     = 96 + 96 + 96 + 96   = 384
  *
+ * BPM は2分音符で数える（カットタイム）。BPM 100 で1周期 2.4 秒。
+ *
  * 打点は8分音符換算で 0 / 3 / 6（1小節目）、2 / 4（2小節目）。
  * 2つ目の打点は8分音符で書き、次の打点までを4分休符で埋める。
  * 打楽器の一撃を長く伸ばして書かないため、この形になる。
@@ -21,7 +23,7 @@ export const SAMBA_REGGAE: Pattern = {
   name: "Samba Reggae",
   category: "samba-reggae",
   meter: { beats: 2, beatUnit: 2, beatGroups: [1, 1] },
-  bpmUnit: 96,
+  bpmUnit: 192,
   bars: [
     {
       items: [
