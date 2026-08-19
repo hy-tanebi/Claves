@@ -49,7 +49,7 @@ describe("renderPattern", () => {
   it("画面幅に追従する viewBox が付く（横スクロールしない）", () => {
     renderPattern(container, SAMBA_REGGAE);
     const svg = container.querySelector("svg")!;
-    expect(svg.getAttribute("viewBox")).toMatch(/^0 0 \d+ \d+$/);
+    expect(svg.getAttribute("viewBox")).toMatch(/^0 -?[\d.]+ \d+ [\d.]+$/);
     expect(svg.getAttribute("width")).toBeNull();
     expect(svg.style.width).toBe("100%");
   });

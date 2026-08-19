@@ -43,9 +43,18 @@ for (const width of WIDTHS) {
     const svg = document.querySelector(".score svg");
     if (!svg) return { error: "譜面が描かれていない" };
 
-    const lines = [...svg.querySelectorAll(".vf-stave path")]
-      .slice(0, 5)
-      .map((e) => e.getBoundingClientRect().y);
+    // 譜表は1本線なので「五線の高さ」は測れない。
+    // 譜面の大きさは符頭の幅で見る（インクを canvas で測る）
+    const inkCtx = document.createElement("canvas").getContext("2d");
+    const inkOf = (el) => {
+      const size = Number(el.getAttribute("font-size"));
+      const y = Number(el.getAttribute("y"));
+      if (!Number.isFinite(size) || !Number.isFinite(y)) return null;
+      inkCtx.font = `${size}px Bravura`;
+      const m = inkCtx.measureText(el.textContent ?? "");
+      return { top: y - m.actualBoundingBoxAscent, bottom: y + m.actualBoundingBoxDescent,
+               width: m.width };
+    };
     const staves = [...svg.querySelectorAll(".vf-stave")].map((e) => e.getBoundingClientRect());
     const notes = [...svg.querySelectorAll(".vf-stavenote")].map((e) => e.getBoundingClientRect());
 
@@ -74,9 +83,46 @@ for (const width of WIDTHS) {
       if (Math.abs(s.left - h.right) > 3) detachedStems++;
     }
 
+    // 見切れ検出：描かれた内容が viewBox の縦範囲に収まっているか。
+    //
+    // **テキストは枠ではなくインクで測る。** SVG テキストの枠は
+    // 音楽フォントの巨大な行送りを含み、実際の5倍近くになるため、
+    // 枠で判定すると常に見切れ扱いになって役に立たない。
+    const vb = svg.getAttribute("viewBox").split(" ").map(Number);
+    const vbTop = vb[1];
+    const vbBottom = vb[1] + vb[3];
+    let clipped = 0;
+
+    for (const path of svg.querySelectorAll("path")) {
+      const d = path.getAttribute("d") ?? "";
+      for (const m of d.matchAll(/[ML]\s*(-?[\d.]+)\s+(-?[\d.]+)/g)) {
+        const y = Number(m[2]);
+        if (y < vbTop - 0.5 || y > vbBottom + 0.5) clipped++;
+      }
+    }
+    for (const rect of svg.querySelectorAll("rect")) {
+      const y = Number(rect.getAttribute("y"));
+      const h = Number(rect.getAttribute("height"));
+      if (!Number.isFinite(y) || !Number.isFinite(h)) continue;
+      if (y < vbTop - 0.5 || y + h > vbBottom + 0.5) clipped++;
+    }
+    for (const text of svg.querySelectorAll("text")) {
+      const ink = inkOf(text);
+      if (!ink) continue;
+      if (ink.top < vbTop - 0.5 || ink.bottom > vbBottom + 0.5) clipped++;
+    }
+
+    const heads = [...svg.querySelectorAll(".vf-notehead text")].map(inkOf).filter(Boolean);
+    const svgScale = svg.getBoundingClientRect().width / vb[2];
+    const noteheadPx = heads.length ? +(heads[0].width * svgScale).toFixed(1) : null;
+    // 5線のうち中央だけを表示している。描かれる path の本数で数える
+    const staffLines = svg.querySelectorAll(".vf-stave path").length / staves.length;
+
     const doc = document.documentElement;
     return {
-      staffHeight: +(lines[4] - lines[0]).toFixed(1),
+      clippedElements: clipped,
+      staffLinesPerBar: staffLines,
+      noteheadPx,
       systems: new Set(staves.map((s) => Math.round(s.top))).size,
       bars: staves.length,
       notesOutsideBar: outside,
@@ -91,12 +137,17 @@ for (const width of WIDTHS) {
 
   const problems = [];
   if (result.error) problems.push(result.error);
+  if (result.clippedElements > 0)
+    problems.push(`SVG の表示範囲から見切れている要素（${result.clippedElements}件）— viewBox の高さが足りない`);
   if (result.detachedStems > 0)
     problems.push(`符尾が符頭から離れている（${result.detachedStems}件）— 音楽フォントの読み込み前に描いていないか確認`);
   if (result.overlappingNotes > 0) problems.push(`音符が重なっている（${result.overlappingNotes}件）`);
   if (result.notesOutsideBar > 0) problems.push(`小節からはみ出した音符（${result.notesOutsideBar}件）`);
   if (result.horizontalScroll) problems.push("横スクロールが発生している");
-  if (result.staffHeight < 18) problems.push(`五線が小さすぎる（${result.staffHeight}px）`);
+  if (result.noteheadPx !== null && result.noteheadPx < 6)
+    problems.push(`音符が小さすぎる（符頭 ${result.noteheadPx}px）`);
+  if (result.staffLinesPerBar !== 1)
+    problems.push(`譜表が1本線になっていない（${result.staffLinesPerBar}本）`);
 
   const mark = problems.length === 0 ? "OK " : "NG ";
   console.log(`${mark}${width}px  ${JSON.stringify(result)}`);

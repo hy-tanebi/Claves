@@ -6,6 +6,7 @@ import {
   LAYOUT,
   measureTimeSignatureWidth,
   planSystems,
+  LINE_VISIBILITY,
   PT_TO_UNIT,
   type SystemPlan,
 } from "./layout";
@@ -35,6 +36,74 @@ function normalizeFontUnits(svg: SVGElement): void {
     const pt = /^([\d.]+)pt$/.exec(size);
     if (pt) el.setAttribute("font-size", String(Number(pt[1]) * PT_TO_UNIT));
   }
+}
+
+/**
+ * 実際に描かれた内容に合わせて viewBox の縦範囲を決める。
+ *
+ * 高さを定数で決め打つと、拍子記号の数字や符尾が上下にはみ出して
+ * 見切れる。どこまで描かれたかは拍子や音価によって変わるため、
+ * 描画後に実測して合わせる。
+ *
+ * **横は LAYOUT.systemWidth のまま固定する。** 横も内容に合わせると
+ * パターンごとに表示倍率が変わり、リズムを切り替えたときに
+ * 譜面の大きさが揃わなくなる。
+ */
+function fitViewBox(svg: SVGElement, fallbackHeight: number): string {
+  const PAD = 8;
+  let top = Infinity;
+  let bottom = -Infinity;
+  const cover = (a: number, b: number) => {
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return;
+    top = Math.min(top, a);
+    bottom = Math.max(bottom, b);
+  };
+
+  // 譜表の線・符尾・連桁は path。d から座標を直接読む（正確）
+  for (const path of Array.from(svg.querySelectorAll("path"))) {
+    const d = path.getAttribute("d") ?? "";
+    for (const m of d.matchAll(/[ML]\s*(-?[\d.]+)\s+(-?[\d.]+)/g)) {
+      const y = Number(m[2]);
+      cover(y, y);
+    }
+  }
+
+  // 小節線は rect
+  for (const rect of Array.from(svg.querySelectorAll("rect"))) {
+    const y = Number(rect.getAttribute("y"));
+    const h = Number(rect.getAttribute("height"));
+    cover(y, y + h);
+  }
+
+  // グリフは text。**枠ではなくインクを測る。**
+  // SVG テキストの枠は音楽フォントの巨大な行送りを含み、実際の
+  // 5倍近くになるため、そのまま使うと余白だらけの譜面になる。
+  const ctx = inkMeasureContext();
+  if (ctx) {
+    for (const text of Array.from(svg.querySelectorAll("text"))) {
+      const size = Number(text.getAttribute("font-size"));
+      const y = Number(text.getAttribute("y"));
+      if (!Number.isFinite(size) || !Number.isFinite(y)) continue;
+      ctx.font = `${size}px Bravura`;
+      const m = ctx.measureText(text.textContent ?? "");
+      cover(y - m.actualBoundingBoxAscent, y + m.actualBoundingBoxDescent);
+    }
+  }
+
+  if (!Number.isFinite(top) || bottom <= top) {
+    return `0 0 ${LAYOUT.systemWidth} ${fallbackHeight}`;
+  }
+  return `0 ${top - PAD} ${LAYOUT.systemWidth} ${bottom - top + PAD * 2}`;
+}
+
+/** テキストのインクを測るための canvas。jsdom では使えないので null を返す */
+function inkMeasureContext(): CanvasRenderingContext2D | null {
+  if (typeof document === "undefined") return null;
+  const ctx = document.createElement("canvas").getContext("2d");
+  // jsdom の canvas は measureText を持たない
+  if (!ctx || typeof ctx.measureText !== "function") return null;
+  const probe = ctx.measureText("x");
+  return typeof probe.actualBoundingBoxAscent === "number" ? ctx : null;
 }
 
 /** domain 側で決めた連桁グループを VexFlow の Beam にする */
@@ -87,12 +156,13 @@ export function renderPattern(container: HTMLDivElement, pattern: Pattern): Rend
       const width = system.widths[i]! + extra;
 
       const stave = new Stave(x, y, width);
+      stave.setConfigForLines(LINE_VISIBILITY);
       if (si === 0 && isFirstOfSystem) {
         stave.addTimeSignature(`${pattern.meter.beats}/${pattern.meter.beatUnit}`);
       }
-      // 見本にならい、パターンの始まりと終わりを複縦線で囲む
-      stave.setBegBarType(isFirstOfPattern ? Barline.type.DOUBLE : Barline.type.SINGLE);
-      stave.setEndBarType(isLastOfPattern ? Barline.type.DOUBLE : Barline.type.SINGLE);
+      // 繰り返して鳴らすパターンなので、リピート記号で囲む
+      stave.setBegBarType(isFirstOfPattern ? Barline.type.REPEAT_BEGIN : Barline.type.SINGLE);
+      stave.setEndBarType(isLastOfPattern ? Barline.type.REPEAT_END : Barline.type.SINGLE);
       stave.setContext(ctx).draw();
 
       const { voice, notes } = buildVoice(bar, pattern);
@@ -123,7 +193,7 @@ export function renderPattern(container: HTMLDivElement, pattern: Pattern): Rend
   const svg = container.querySelector("svg");
   if (svg) {
     normalizeFontUnits(svg);
-    svg.setAttribute("viewBox", `0 0 ${LAYOUT.systemWidth} ${logicalHeight}`);
+    svg.setAttribute("viewBox", fitViewBox(svg, logicalHeight));
     svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
     svg.removeAttribute("width");
     svg.removeAttribute("height");

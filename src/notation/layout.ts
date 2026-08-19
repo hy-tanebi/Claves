@@ -2,15 +2,33 @@ import { Dot, Formatter, Stave, StaveNote, Voice } from "vexflow";
 import type { Bar, NotationItem, Pattern, Pitch } from "../domain/types";
 
 /**
- * 打楽器譜の音高位置。
- * アゴゴ／カウベルの高音・低音を五線上の2つの位置に描き分ける。
+ * 表示する線の設定。
+ *
+ * **見た目は1本線にする。** 打楽器で音程がないため五線である必要がなく、
+ * 見本の the Clave も1本線。
+ *
+ * ただし `numLines: 1` にはしない。それだと小節線が線1本ぶんの高さしか
+ * 描かれず、ほとんど見えなくなる。5線のまま中央の1本だけを表示すれば、
+ * 小節線とリピート記号は通常どおりの高さで描かれる。
+ */
+export const LINE_VISIBILITY = [
+  { visible: false },
+  { visible: false },
+  { visible: true },
+  { visible: false },
+  { visible: false },
+];
+
+/**
+ * 音高位置。中央の線（b/4）が見える線なので、そこに乗せる。
+ * 高音・低音を書き分けるときは、低音を1つ下の位置にする。
  */
 export const STAFF_POSITION: Record<Pitch, string> = {
-  high: "c/5",
-  low: "f/4",
+  high: "b/4",
+  low: "g/4",
 };
 
-/** 休符は五線の中央に置く */
+/** 休符も中央の線に置く */
 export const REST_POSITION = "b/4";
 
 /**
