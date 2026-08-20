@@ -1,4 +1,6 @@
+import { beatUnitLabel, normalizeBpm } from "./domain/bpm";
 import { PATTERNS } from "./domain/registry";
+import { bpmFromTaps, pushTap } from "./domain/tap-tempo";
 import type { Pattern } from "./domain/types";
 import { Scheduler } from "./audio/scheduler";
 import { createBellBuffers, WebAudioClock } from "./audio/web-audio-clock";
@@ -23,6 +25,8 @@ const els = {
   status: $<HTMLParagraphElement>("status"),
   bpm: $<HTMLInputElement>("bpm"),
   bpmValue: $<HTMLOutputElement>("bpmValue"),
+  tap: $<HTMLButtonElement>("tap"),
+  tapHint: $<HTMLSpanElement>("tapHint"),
   volume: $<HTMLInputElement>("volume"),
   play: $<HTMLButtonElement>("play"),
 };
@@ -34,13 +38,19 @@ let pumpTimer: number | null = null;
 let rafId: number | null = null;
 
 const pattern: Pattern = PATTERNS[0]!;
-let bpm = Number(els.bpm.value);
+let bpm = normalizeBpm(els.bpm.value) ?? 120;
 let noteElements = new Map<string, SVGElement>();
+/** タップテンポの打刻。performance.now() の値を積む */
+let taps: number[] = [];
 
 function drawScore(): void {
   const { beats, beatUnit } = pattern.meter;
   els.name.textContent = pattern.name;
   els.meta.textContent = `${beats}/${beatUnit}　${pattern.bars.length}小節`;
+  // 何を叩けばいいのかを必ず出す。同じ 120 BPM でも
+  // 2分音符と4分音符では速さが倍違い、数字だけでは読み取れない
+  const unit = beatUnitLabel(pattern.bpmUnit);
+  els.tapHint.textContent = unit ? `タップ：${unit}` : "タップしてテンポを取る";
   noteElements = renderPattern(els.score, pattern).noteElements;
 }
 
@@ -78,6 +88,7 @@ async function ensureAudio(): Promise<WebAudioClock> {
 
 async function play(): Promise<void> {
   const audioClock = await ensureAudio();
+  taps = [];
   scheduler = new Scheduler(audioClock);
   // 少しだけ先から始める（開始直後の予約が過去にならないように）
   scheduler.start(pattern, bpm, audioClock.now() + 0.1);
@@ -91,6 +102,7 @@ async function play(): Promise<void> {
 }
 
 function stop(): void {
+  taps = [];
   scheduler?.stop();
   scheduler = null;
   if (pumpTimer !== null) window.clearInterval(pumpTimer);
@@ -114,21 +126,78 @@ els.play.addEventListener("click", () => {
   }
 });
 
-els.bpm.addEventListener("input", () => {
-  bpm = Number(els.bpm.value);
-  els.bpmValue.value = String(bpm);
+/**
+ * テンポ更新の唯一の入口。スライダーもタップもここを通る。
+ *
+ * 停止中は値と表示を更新するだけで再生はしない。次に play() したとき
+ * この値が Scheduler へ渡る。
+ */
+function setBpm(next: number): void {
+  bpm = next;
+  els.bpm.value = String(next);
+  els.bpmValue.value = String(next);
   if (scheduler) {
     // 次の拍の頭から効く（予約の取り消しが発生しない）
-    scheduler.requestTempoChange(bpm);
-    els.status.textContent = `再生中　次の拍から ${bpm} BPM`;
+    scheduler.requestTempoChange(next);
+    els.status.textContent = `再生中　次の拍から ${next} BPM`;
+  } else {
+    els.status.textContent = "停止中";
   }
+}
+
+els.bpm.addEventListener("input", () => {
+  const next = normalizeBpm(els.bpm.value);
+  if (next !== null) setBpm(next);
 });
+
+function handleTap(): void {
+  taps = pushTap(taps, performance.now());
+  if (taps.length < 2) {
+    els.status.textContent = "タップを続けてください";
+    return;
+  }
+  const next = bpmFromTaps(taps);
+  if (next === null) {
+    // 範囲外や乱れたタップ。clamp せず、いまの値を保つ
+    els.status.textContent = "テンポを取れません（40〜240 の範囲で一定に）";
+    return;
+  }
+  setBpm(next);
+}
+
+const setPressed = (on: boolean) => {
+  els.tap.dataset.pressed = String(on);
+};
+
+// タップは click ではなく pointerdown で取る。click は押してから離すまで待つ
+els.tap.addEventListener("pointerdown", (e) => {
+  // マルチタッチの2本目以降と、マウスの左以外は無視する
+  if (!e.isPrimary || e.button !== 0) return;
+  setPressed(true);
+  handleTap();
+});
+for (const type of ["pointerup", "pointercancel", "pointerleave"] as const) {
+  els.tap.addEventListener(type, () => setPressed(false));
+}
+
+// キーボードからも叩けるようにする。button は Enter / Space で click を出すが、
+// click は押しっぱなしの間隔を測れないので keydown で受ける
+els.tap.addEventListener("keydown", (e) => {
+  if (e.repeat) return;
+  if (e.key !== "Enter" && e.key !== " ") return;
+  e.preventDefault(); // Space によるスクロールを止める
+  setPressed(true);
+  handleTap();
+});
+els.tap.addEventListener("keyup", () => setPressed(false));
+els.tap.addEventListener("blur", () => setPressed(false));
 
 els.volume.addEventListener("input", () => {
   clock?.setVolume(Number(els.volume.value) / 100);
 });
 
 // 初期化
+els.bpm.value = String(bpm);
 els.bpmValue.value = String(bpm);
 
 // 音楽フォントの読み込みを待ってから描く。

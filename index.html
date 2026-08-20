@@ -21,10 +21,14 @@
       <p id="status" class="status">停止中</p>
 
       <section class="tempo">
-        <div class="bpm">
-          <output id="bpmValue">120</output>
-          <span class="bpmUnit">BPM</span>
-        </div>
+        <!-- BPM の表示そのものがタップ面。指で狙う面積が最大になる -->
+        <button id="tap" class="bpm" type="button">
+          <span class="bpmRow">
+            <output id="bpmValue">120</output>
+            <span class="bpmUnit">BPM</span>
+          </span>
+          <span id="tapHint" class="tapHint">タップしてテンポを取る</span>
+        </button>
         <input id="bpm" type="range" min="40" max="240" step="1" value="120" aria-label="テンポ" />
       </section>
 
