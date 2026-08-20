@@ -1,3 +1,4 @@
+import { MAX_BPM, MIN_BPM } from "../domain/constants";
 import { toPlaybackEvents } from "../domain/derive";
 import { secPerTick, totalTicks } from "../domain/ticks";
 import { validatePattern } from "../domain/validate";
@@ -10,8 +11,7 @@ import type { AudioClock, ScheduledSound } from "./clock";
  */
 export const LOOKAHEAD_SEC = 0.5;
 
-export const MIN_BPM = 40;
-export const MAX_BPM = 240;
+export { MAX_BPM, MIN_BPM };
 
 export type HighlightEntry = {
   generation: number;
@@ -135,10 +135,19 @@ export class Scheduler {
   /**
    * テンポ変更を予約する。次の拍境界から効く。
    * 予約済みの音より後の境界にしか置かないので、取り消しは発生しない。
+   *
+   * パターン変更が保留中なら、それを潰さずに bpm だけ差し替える。
+   * タップテンポはこの要求を1打ごとに撃つので、単純に上書きすると
+   * 「タップしながら曲を切り替えると切り替わらない」ことが起きる。
    */
   requestTempoChange(bpm: number): void {
     assertBpm(bpm);
     this.assertRunning();
+    if (this.pending?.kind === "pattern") {
+      // atTick は動かさない。まだ到達していないので置き直す理由がない
+      this.pending = { ...this.pending, bpm };
+      return;
+    }
     this.pending = { kind: "tempo", bpm, atTick: this.nextBoundaryTick() };
   }
 

@@ -209,3 +209,68 @@ describe("切替要求のタイミングを動かしても壊れない", () => {
     }
   });
 });
+
+describe("パターン変更とテンポ変更が重なったとき", () => {
+  it("パターン変更の保留中にテンポを変えても、パターン変更が消えない", () => {
+    const { clock, scheduler } = setup();
+    scheduler.start(FIXTURE_4_4, 120, 0);
+    runUntil(clock, scheduler, 0.3);
+
+    scheduler.requestPatternChange(FIXTURE_6_8, 120);
+    const atTick = scheduler.pendingSwitchTick!;
+
+    // タップテンポはこの要求を毎打ごとに撃つ
+    scheduler.requestTempoChange(180);
+    expect(scheduler.pendingSwitchTick).toBe(atTick); // 切替点は動かさない
+
+    runUntil(clock, scheduler, 6);
+
+    expect(clock.fired.filter((r) => r.noteId.startsWith("c")).length).toBeGreaterThan(0);
+    expect(clock.fired.filter((r) => r.noteId.startsWith("b"))).toEqual([]);
+    expectNoCancellation(clock);
+  });
+
+  it("あとから来たテンポが、新パターンに適用される", () => {
+    const { clock, scheduler } = setup();
+    scheduler.start(FIXTURE_4_4, 120, 0);
+    runUntil(clock, scheduler, 0.3);
+
+    scheduler.requestPatternChange(FIXTURE_6_8, 120);
+    scheduler.requestTempoChange(180);
+
+    runUntil(clock, scheduler, 6);
+
+    // 6/8 / bpmUnit=144 / BPM180 で、1.0 秒から先頭 tick 0 / 48 / 96
+    const spt = 60 / 180 / 144;
+    const after = clock.firedTimes.filter((t) => t >= 1.0);
+    expect(after[0]).toBeCloseTo(1.0, 9);
+    expect(after[1]).toBeCloseTo(1.0 + 48 * spt, 9);
+    expect(after[2]).toBeCloseTo(1.0 + 96 * spt, 9);
+  });
+});
+
+// 既存の挙動を固定する回帰テスト（実装より後に書いたので、最初から緑）。
+// タップテンポは1打ごとにテンポ変更を撃つため、ここが崩れると
+// 切替点が撃つたびに後ろへずれ、テンポが効かなくなる。
+describe("タップテンポのように連続で要求しても", () => {
+  it("同じ時点なら切替点は動かず、最後の値だけが残る", () => {
+    const { clock, scheduler } = setup();
+    scheduler.start(FIXTURE_4_4, 120, 0);
+    runUntil(clock, scheduler, 0.3);
+
+    scheduler.requestTempoChange(180);
+    const atTick = scheduler.pendingSwitchTick!;
+    scheduler.requestTempoChange(200);
+    scheduler.requestTempoChange(160);
+    expect(scheduler.pendingSwitchTick).toBe(atTick);
+
+    runUntil(clock, scheduler, 4);
+
+    // 切替点 tick 192 = 1.0 秒。そこから先は最後に要求した 160 BPM で進む
+    const spt = 60 / 160 / 96;
+    const after = clock.firedTimes.filter((t) => t >= 1.0);
+    expect(after[0]).toBeCloseTo(1.0 + (288 - 192) * spt, 9);
+    expectNoCancellation(clock);
+    expectCleanTickRun(clock);
+  });
+});

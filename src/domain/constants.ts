@@ -9,3 +9,7 @@ export const BASE_TICKS = {
   "16": 24,
   "32": 12,
 } as const;
+
+/** 受け付けるテンポの範囲。ここが入力層と Scheduler の共通の根拠になる */
+export const MIN_BPM = 40;
+export const MAX_BPM = 240;
