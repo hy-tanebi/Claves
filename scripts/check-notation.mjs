@@ -39,6 +39,20 @@ for (const width of WIDTHS) {
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);
 
+  // **収録リズムを1つずつ表示して検証する。**
+  // 既定表示の1つだけを見ていると、あとから追加したリズムの崩れを見逃す。
+  const items = page.locator("#patternList .sheetItem");
+  const names = await items.evaluateAll((els) =>
+    els.map((el) => el.querySelector("span")?.textContent ?? "?"),
+  );
+
+  for (let pi = 0; pi < names.length; pi++) {
+    if (pi > 0) {
+      await page.click("#patternPicker");
+      await items.nth(pi).click();
+      await page.waitForTimeout(300);
+    }
+
   const result = await page.evaluate((tolerance) => {
     const svg = document.querySelector(".score svg");
     if (!svg) return { error: "譜面が描かれていない" };
@@ -133,7 +147,8 @@ for (const width of WIDTHS) {
     };
   }, BBOX_TOLERANCE_PX);
 
-  await page.screenshot({ path: `${OUT}/app-${width}.png` });
+  const slug = names[pi].replace(/[^\w.-]+/g, "_");
+  await page.screenshot({ path: `${OUT}/app-${width}-${slug}.png` });
 
   const problems = [];
   if (result.error) problems.push(result.error);
@@ -150,9 +165,10 @@ for (const width of WIDTHS) {
     problems.push(`譜表が1本線になっていない（${result.staffLinesPerBar}本）`);
 
   const mark = problems.length === 0 ? "OK " : "NG ";
-  console.log(`${mark}${width}px  ${JSON.stringify(result)}`);
+  console.log(`${mark}${width}px  ${names[pi]}  ${JSON.stringify(result)}`);
   for (const p of problems) console.log(`     - ${p}`);
   if (problems.length > 0) failed = true;
+  }
 
   await page.close();
 }
