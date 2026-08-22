@@ -4,6 +4,7 @@ import { toPlaybackEvents } from "./derive";
 import { AFRO_GROOVE } from "./patterns/afro-groove";
 import { AFRO_GROOVE_2 } from "./patterns/afro-groove-2";
 import { AFRO_GROOVE_6_8 } from "./patterns/afro-groove-6-8";
+import { IJEXA } from "./patterns/ijexa";
 import { PATTERNS } from "./registry";
 import { totalTicks } from "./ticks";
 import { validatePattern } from "./validate";
@@ -116,4 +117,48 @@ it("打点の id はパターンをまたいでも重複しない", () => {
   const all = PATTERNS.flatMap((p) => toPlaybackEvents(p).map((e) => `${e.noteId}`));
   const duplicated = all.filter((id, i) => all.indexOf(id) !== i);
   expect(duplicated).toEqual([]);
+});
+
+describe("IJEXA", () => {
+  it("カ＝8分・カン＝4分 として打点が並ぶ", () => {
+    // 8分音符換算で 0 / 1 / 3 / 5 / 6（小節1）、8 / 10 / 12 / 14（小節2）
+    expect(toPlaybackEvents(IJEXA).map((e) => e.tick)).toEqual([
+      0, 48, 144, 240, 288, 384, 480, 576, 672,
+    ]);
+  });
+
+  it("高低が「高高・低低低・高高・低低」に分かれる", () => {
+    expect(toPlaybackEvents(IJEXA).map((e) => e.pitch)).toEqual([
+      "high",
+      "high",
+      "low",
+      "low",
+      "low",
+      "high",
+      "high",
+      "low",
+      "low",
+    ]);
+  });
+
+  it("高低の切り替わりは小節の真ん中と小節線", () => {
+    // 小節1は前半が高・後半が低、小節2も前半が高・後半が低
+    const byBar = [0, 1].map((bi) =>
+      toPlaybackEvents(IJEXA)
+        .filter((e) => Math.floor(e.tick / 384) === bi)
+        .map((e) => e.pitch),
+    );
+    expect(byBar[0]).toEqual(["high", "high", "low", "low", "low"]);
+    expect(byBar[1]).toEqual(["high", "high", "low", "low"]);
+  });
+
+  it("1周期は 768 tick（2/2 × 2小節）", () => {
+    expect(totalTicks(IJEXA)).toBe(768);
+    expect(IJEXA.bars).toHaveLength(2);
+  });
+
+  it("BPM は2分音符で数える（カットタイム）", () => {
+    expect(IJEXA.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
+    expect(IJEXA.bpmUnit).toBe(192);
+  });
 });
