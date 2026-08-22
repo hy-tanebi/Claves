@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MAX_BPM, MIN_BPM } from "./constants";
-import { beatUnitLabel, normalizeBpm } from "./bpm";
+import { normalizeBpm } from "./bpm";
 
 describe("normalizeBpm", () => {
   it("範囲内の整数はそのまま通す", () => {
@@ -46,25 +46,5 @@ describe("normalizeBpm", () => {
     expect(normalizeBpm(NaN)).toBeNull();
     expect(normalizeBpm(Infinity)).toBeNull();
     expect(normalizeBpm(-Infinity)).toBeNull();
-  });
-});
-
-describe("beatUnitLabel", () => {
-  it("BPM が何の音符で数えられているかを返す", () => {
-    expect(beatUnitLabel(96)).toBe("4分音符");
-    expect(beatUnitLabel(192)).toBe("2分音符");
-    expect(beatUnitLabel(384)).toBe("全音符");
-    expect(beatUnitLabel(48)).toBe("8分音符");
-  });
-
-  it("付点を見分ける", () => {
-    expect(beatUnitLabel(144)).toBe("付点4分音符");
-    expect(beatUnitLabel(288)).toBe("付点2分音符");
-    expect(beatUnitLabel(72)).toBe("付点8分音符");
-  });
-
-  it("音価に対応しない tick は null", () => {
-    expect(beatUnitLabel(100)).toBeNull();
-    expect(beatUnitLabel(0)).toBeNull();
   });
 });

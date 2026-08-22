@@ -43,8 +43,8 @@ for (const width of WIDTHS) {
   // 既定表示の1つだけを見ていると、あとから追加したリズムの崩れを見逃す。
   const items = page.locator("#patternList .sheetItem");
   const names = await items.evaluateAll((els) =>
-    // 行は「見出し（名前＋拍子）」と「譜面」の2段。名前は見出しの最初の span
-    els.map((el) => el.querySelector(".sheetHead > span")?.textContent ?? "?"),
+    // 行は「名前」と「譜面」の2段
+    els.map((el) => el.querySelector(".sheetName")?.textContent ?? "?"),
   );
 
   for (let pi = 0; pi < names.length; pi++) {

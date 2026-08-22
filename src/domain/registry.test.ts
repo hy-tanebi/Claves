@@ -55,7 +55,7 @@ describe("Afro Groove", () => {
   });
 });
 
-describe("Afro Groove（6/8）", () => {
+describe("Afro Groove (6/8)", () => {
   it("小節1は 0/2/4/5、小節2は 1/3/5 に打点が並ぶ（8分音符換算）", () => {
     expect(toPlaybackEvents(AFRO_GROOVE_6_8).map((e) => e.tick)).toEqual([
       0, 96, 192, 240, 336, 432, 528,

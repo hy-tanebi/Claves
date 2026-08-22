@@ -43,8 +43,6 @@ body {
 .head {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
 }
 
 /* リズム名を兼ねた一覧ボタン。button の既定の見た目は消す */
@@ -124,11 +122,7 @@ body {
   text-align: left;
 }
 
-.sheetHead {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
+.sheetName {
   font-weight: 600;
 }
 
@@ -139,13 +133,6 @@ body {
 .sheetItem[aria-current="true"] {
   background: var(--accent-soft);
   border-color: var(--accent);
-}
-
-.sheetItem .sub {
-  color: var(--dim);
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
 /* 行の中の譜面。本体の譜面と同じく紙の色に黒で描く。
@@ -166,13 +153,6 @@ body {
   width: 100%;
   padding: 0.7rem;
   cursor: pointer;
-}
-
-.meta {
-  color: var(--dim);
-  font-size: 0.8rem;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
 /* ---- 譜面 ----
@@ -235,12 +215,15 @@ body {
 
 /* ---- 操作 ---- */
 
+/* 音を出せないときだけ出る。空のときは高さを取らない */
 .status {
-  color: var(--dim);
+  color: var(--accent);
   font-size: 0.78rem;
   text-align: center;
-  font-variant-numeric: tabular-nums;
-  min-height: 1.2em;
+}
+
+.status:empty {
+  display: none;
 }
 
 /* BPM 表示を兼ねたタップテンポのボタン。
@@ -323,6 +306,7 @@ body {
 
 .field span {
   min-width: 2.6rem;
+  letter-spacing: 0.08em;
 }
 
 .field input[type="range"] {

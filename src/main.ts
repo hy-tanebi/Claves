@@ -1,4 +1,4 @@
-import { beatUnitLabel, normalizeBpm } from "./domain/bpm";
+import { normalizeBpm } from "./domain/bpm";
 import { toPlaybackEvents } from "./domain/derive";
 import { PATTERNS, pickPattern } from "./domain/registry";
 import { bpmFromTaps, pushTap } from "./domain/tap-tempo";
@@ -26,13 +26,11 @@ const els = {
   dialog: $<HTMLDialogElement>("patternDialog"),
   list: $<HTMLUListElement>("patternList"),
   close: $<HTMLButtonElement>("patternClose"),
-  meta: $<HTMLParagraphElement>("patternMeta"),
   score: $<HTMLDivElement>("score"),
   status: $<HTMLParagraphElement>("status"),
   bpm: $<HTMLInputElement>("bpm"),
   bpmValue: $<HTMLOutputElement>("bpmValue"),
   tap: $<HTMLButtonElement>("tap"),
-  tapHint: $<HTMLSpanElement>("tapHint"),
   volume: $<HTMLInputElement>("volume"),
   play: $<HTMLButtonElement>("play"),
 };
@@ -58,14 +56,22 @@ let noteElements = new Map<string, SVGElement>();
 let taps: number[] = [];
 
 function drawScore(): void {
-  const { beats, beatUnit } = pattern.meter;
   els.name.textContent = pattern.name;
-  els.meta.textContent = `${beats}/${beatUnit}　${pattern.bars.length}小節`;
-  // 何を叩けばいいのかを必ず出す。同じ 120 BPM でも
-  // 2分音符と4分音符では速さが倍違い、数字だけでは読み取れない
-  const unit = beatUnitLabel(pattern.bpmUnit);
-  els.tapHint.textContent = unit ? `タップ：${unit}` : "タップしてテンポを取る";
   noteElements = renderPattern(els.score, pattern).noteElements;
+}
+
+/**
+ * 状態表示。**普段は空にしておく。**
+ * 音を出せないときだけ理由を出すために残している。
+ * ここを完全に無くすと、初期化に失敗しても画面が無反応になるだけで
+ * 原因が分からなくなる。
+ */
+function showError(message: string): void {
+  els.status.textContent = message;
+}
+
+function clearError(): void {
+  els.status.textContent = "";
 }
 
 function flash(noteId: string): void {
@@ -92,7 +98,6 @@ function startHighlightLoop(): void {
         switchingIds = new Set();
         drawScore();
         markCurrent();
-        els.status.textContent = "再生中";
       }
       flash(h.noteId);
     }
@@ -126,9 +131,9 @@ async function play(): Promise<void> {
   pumpTimer = window.setInterval(() => scheduler?.pump(), PUMP_INTERVAL_MS);
   startHighlightLoop();
 
-  els.play.textContent = "停止";
+  els.play.textContent = "STOP";
   els.play.dataset.playing = "true";
-  els.status.textContent = "再生中";
+  clearError();
 }
 
 function stop(): void {
@@ -149,9 +154,8 @@ function stop(): void {
   rafId = null;
   for (const el of noteElements.values()) el.classList.remove("on");
 
-  els.play.textContent = "再生";
+  els.play.textContent = "PLAY";
   els.play.dataset.playing = "false";
-  els.status.textContent = "停止中";
 }
 
 els.play.addEventListener("click", () => {
@@ -159,7 +163,7 @@ els.play.addEventListener("click", () => {
     stop();
   } else {
     void play().catch((e: unknown) => {
-      els.status.textContent = `音を再生できません: ${String(e)}`;
+      showError(`Audio unavailable: ${String(e)}`);
     });
   }
 });
@@ -174,13 +178,8 @@ function setBpm(next: number): void {
   bpm = next;
   els.bpm.value = String(next);
   els.bpmValue.value = String(next);
-  if (scheduler) {
-    // 次の拍の頭から効く（予約の取り消しが発生しない）
-    scheduler.requestTempoChange(next);
-    els.status.textContent = `再生中　次の拍から ${next} BPM`;
-  } else {
-    els.status.textContent = "停止中";
-  }
+  // 次の拍の頭から効く（予約の取り消しが発生しない）
+  scheduler?.requestTempoChange(next);
 }
 
 els.bpm.addEventListener("input", () => {
@@ -190,17 +189,9 @@ els.bpm.addEventListener("input", () => {
 
 function handleTap(): void {
   taps = pushTap(taps, performance.now());
-  if (taps.length < 2) {
-    els.status.textContent = "タップを続けてください";
-    return;
-  }
+  // 2打目から値が出る。範囲外や乱れたタップは clamp せず、いまの値を保つ
   const next = bpmFromTaps(taps);
-  if (next === null) {
-    // 範囲外や乱れたタップ。clamp せず、いまの値を保つ
-    els.status.textContent = "テンポを取れません（40〜240 の範囲で一定に）";
-    return;
-  }
-  setBpm(next);
+  if (next !== null) setBpm(next);
 }
 
 const setPressed = (on: boolean) => {
@@ -246,7 +237,6 @@ function selectPattern(next: Pattern): void {
     scheduler.requestPatternChange(next, bpm);
     switchingTo = next;
     switchingIds = new Set(toPlaybackEvents(next).map((e) => e.noteId));
-    els.status.textContent = `再生中　次の拍から ${next.name}`;
     markCurrent();
     return;
   }
@@ -272,21 +262,16 @@ function buildList(): void {
       btn.type = "button";
       btn.className = "sheetItem";
 
-      const head = document.createElement("span");
-      head.className = "sheetHead";
       const name = document.createElement("span");
+      name.className = "sheetName";
       name.textContent = p.name;
-      const sub = document.createElement("span");
-      sub.className = "sub";
-      sub.textContent = `${p.meter.beats}/${p.meter.beatUnit}　${p.bars.length}小節`;
-      head.append(name, sub);
 
       // 行に譜面を出す。名前と拍子だけでは、鳴らさないと区別がつかない
       const score = document.createElement("div");
       score.className = "rowScore";
       renderPattern(score, p);
 
-      btn.append(head, score);
+      btn.append(name, score);
       btn.addEventListener("click", () => {
         selectPattern(p);
         els.dialog.close();
