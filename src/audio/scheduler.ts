@@ -1,6 +1,8 @@
-import { MAX_BPM, MIN_BPM } from "../domain/constants";
+import { MAX_BPM, MIN_BPM, PPQ } from "../domain/constants";
 import { toPlaybackEvents } from "../domain/derive";
-import { secPerTick, totalTicks } from "../domain/ticks";
+import { totalTicks } from "../domain/ticks";
+import { eventAt, secondsAtTick, secondsPerTick, tickAtSeconds } from "../domain/transport";
+import type { TransportPlan } from "../domain/transport";
 import { validatePattern } from "../domain/validate";
 import type { Pattern, PlaybackEvent } from "../domain/types";
 import type { AudioClock, ScheduledSound } from "./clock";
@@ -58,7 +60,7 @@ export class Scheduler {
   private events: PlaybackEvent[] = [];
   private total = 0;
   private bpmUnit = 0;
-  private spt = 0;
+  private bpm = 0;
   /** 基準点。切替のたびにここを打ち直す */
   private tickOrigin = 0;
   private timeOrigin = 0;
@@ -111,7 +113,7 @@ export class Scheduler {
     this.events = toPlaybackEvents(pattern);
     this.total = totalTicks(pattern);
     this.bpmUnit = pattern.bpmUnit;
-    this.spt = secPerTick(pattern, bpm);
+    this.bpm = bpm;
     this.tickOrigin = 0;
     this.timeOrigin = startTime;
     this.nextIndex = 0;
@@ -243,7 +245,7 @@ export class Scheduler {
       this.tickOrigin = atTick;
     }
 
-    this.spt = 60 / p.bpm / this.bpmUnit;
+    this.bpm = p.bpm;
     this.timeOrigin = switchTime;
     this.pending = null;
   }
@@ -258,23 +260,42 @@ export class Scheduler {
     this.entries = this.entries.filter((e) => e.time > now);
   }
 
+  /**
+   * いまの状態を、JS と Swift が共有する再生計画の形で表す。
+   *
+   * **時刻の計算はすべてこの計画を通す。** ここを経路にしておくことで、
+   * golden fixture（`golden/transport.json`）が机上の別実装ではなく、
+   * 実際に鳴らしている式そのものを写したものになる。
+   */
+  private plan(): TransportPlan {
+    return {
+      schemaVersion: 1,
+      ppq: PPQ,
+      bpmUnit: this.bpmUnit,
+      cycleTicks: this.total,
+      bpm: this.bpm,
+      originTick: this.tickOrigin,
+      originSeconds: this.timeOrigin,
+      events: this.events.map((e) => ({ tick: e.tick, pitch: e.pitch })),
+    };
+  }
+
   /** グローバル通し番号 index の絶対 tick */
   private absTickOf(index: number): number {
-    const loop = Math.floor(index / this.events.length);
-    return loop * this.total + this.events[index % this.events.length]!.tick;
+    return eventAt(this.plan(), index).absTick;
   }
 
   /** グローバル通し番号 index の発音時刻 */
   private timeOf(index: number): number {
-    return this.timeOfTick(this.absTickOf(index));
+    return eventAt(this.plan(), index).seconds;
   }
 
   private timeOfTick(tick: number): number {
-    return this.timeOrigin + (tick - this.tickOrigin) * this.spt;
+    return secondsAtTick(this.plan(), tick);
   }
 
   private tickAtTime(time: number): number {
-    return this.tickOrigin + (time - this.timeOrigin) / this.spt;
+    return tickAtSeconds(this.plan(), time);
   }
 
   private scheduleAt(index: number): void {

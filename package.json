@@ -8,7 +8,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "check:notation": "node scripts/check-notation.mjs"
+    "check:notation": "node scripts/check-notation.mjs",
+    "gen:golden": "vitest run -u src/domain/transport.golden.test.ts"
   },
   "devDependencies": {
     "jsdom": "^30.0.1",
