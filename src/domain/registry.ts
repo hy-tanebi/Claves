@@ -18,3 +18,13 @@ export const PATTERNS: Pattern[] = [
   AFRO_GROOVE_6_8,
   IJEXA,
 ];
+
+/**
+ * id からリズムを引く。知らない id や null なら先頭のリズムを返す。
+ *
+ * 端末に保存された id をそのまま信用しない。収録から外したリズムの id が
+ * 残っていることがあり、そのまま使うと画面が空になる。
+ */
+export function pickPattern(id: string | null): Pattern {
+  return PATTERNS.find((p) => p.id === id) ?? PATTERNS[0]!;
+}

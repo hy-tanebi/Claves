@@ -1,12 +1,13 @@
 import { beatUnitLabel, normalizeBpm } from "./domain/bpm";
 import { toPlaybackEvents } from "./domain/derive";
-import { PATTERNS } from "./domain/registry";
+import { PATTERNS, pickPattern } from "./domain/registry";
 import { bpmFromTaps, pushTap } from "./domain/tap-tempo";
 import type { Pattern } from "./domain/types";
 import { Scheduler } from "./audio/scheduler";
 import { createBellBuffers, WebAudioClock } from "./audio/web-audio-clock";
 import { renderPattern } from "./notation/renderer";
 import { whenMusicFontsReady } from "./notation/fonts";
+import { loadPatternId, savePatternId } from "./preferences";
 
 /** 25ms ごとに予約を補充する（設計上の先読み窓は 0.5 秒） */
 const PUMP_INTERVAL_MS = 25;
@@ -42,8 +43,8 @@ let scheduler: Scheduler | null = null;
 let pumpTimer: number | null = null;
 let rafId: number | null = null;
 
-/** 画面に出ているリズム。切替の唯一の持ち主 */
-let pattern: Pattern = PATTERNS[0]!;
+/** 画面に出ているリズム。切替の唯一の持ち主。前回選んだものから始める */
+let pattern: Pattern = pickPattern(loadPatternId());
 /**
  * 再生中に切替を予約したリズム。**新しいリズムの音が実際に鳴った瞬間**に
  * 譜面を差し替えるため、それまで持っておく。
@@ -235,6 +236,9 @@ function selectPattern(next: Pattern): void {
   if (next.id === pattern.id) return;
   // 拍子が変わるとタップ1打の意味が変わる。履歴は持ち越さない
   taps = [];
+  // 実際に鳴り始めるのは次の拍境界だが、選んだ時点の意思を覚える。
+  // アプリは OS に落とされて再起動されるので、毎回1曲目に戻ると練習の邪魔になる
+  savePatternId(next.id);
 
   if (scheduler) {
     // 次の拍境界から、新パターンの先頭で鳴り始める。
