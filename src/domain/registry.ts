@@ -2,7 +2,7 @@ import { AFRO_GROOVE } from "./patterns/afro-groove";
 import { AFRO_GROOVE_2 } from "./patterns/afro-groove-2";
 import { AFRO_GROOVE_6_8 } from "./patterns/afro-groove-6-8";
 import { IJEXA } from "./patterns/ijexa";
-import { SAMBA_REGGAE } from "./patterns/samba-reggae";
+import { THREE_TWO_GROOVE } from "./patterns/three-two-groove";
 import type { Pattern } from "./types";
 
 /**
@@ -12,7 +12,7 @@ import type { Pattern } from "./types";
  * テスト用のフィクスチャ（fixtures.ts）は絶対に載せない。
  */
 export const PATTERNS: Pattern[] = [
-  SAMBA_REGGAE,
+  THREE_TWO_GROOVE,
   AFRO_GROOVE,
   AFRO_GROOVE_2,
   AFRO_GROOVE_6_8,

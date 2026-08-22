@@ -30,7 +30,7 @@ describe("収録リズム", () => {
 });
 
 describe("Afro Groove", () => {
-  it("Samba Reggae の1小節目を2回繰り返した形になっている", () => {
+  it("3-2 Groove の1小節目を2回繰り返した形になっている", () => {
     const [first, second] = AFRO_GROOVE.bars;
     // id だけが違い、音価と休符の並びは同じ
     const shape = (b: typeof first) =>
@@ -45,7 +45,7 @@ describe("Afro Groove", () => {
     ]);
   });
 
-  it("1周期は Samba Reggae と同じ 768 tick", () => {
+  it("1周期は 3-2 Groove と同じ 768 tick", () => {
     expect(totalTicks(AFRO_GROOVE)).toBe(768);
   });
 

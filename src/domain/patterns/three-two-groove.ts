@@ -1,7 +1,10 @@
 import type { Pattern } from "../types";
 
 /**
- * サンバヘギの骨格タイムライン。
+ * 3-2 Groove。**サンバヘギの骨格タイムライン。**
+ *
+ * 表示名は打点の形（ソンクラーベ 3-2）から取っている。
+ * 由来がサンバヘギであることは category と source に残す。
  *
  * 打点の配置はソンクラーベ 3-2 と同一（8分音符換算で 0 / 3 / 6 / 10 / 12）。
  * 3-2 のみを収録し、2-3（反転）は持たない。
@@ -18,9 +21,9 @@ import type { Pattern } from "../types";
  * 2つ目の打点は8分音符で書き、次の打点までを4分休符で埋める。
  * 打楽器の一撃を長く伸ばして書かないため、この形になる。
  */
-export const SAMBA_REGGAE: Pattern = {
-  id: "samba-reggae",
-  name: "Samba Reggae",
+export const THREE_TWO_GROOVE: Pattern = {
+  id: "three-two-groove",
+  name: "3-2 Groove",
   category: "samba-reggae",
   meter: { beats: 2, beatUnit: 2, beatGroups: [1, 1] },
   bpmUnit: 192,
