@@ -1,4 +1,5 @@
 import { beatUnitLabel, normalizeBpm } from "./domain/bpm";
+import { toPlaybackEvents } from "./domain/derive";
 import { PATTERNS } from "./domain/registry";
 import { bpmFromTaps, pushTap } from "./domain/tap-tempo";
 import type { Pattern } from "./domain/types";
@@ -44,10 +45,12 @@ let rafId: number | null = null;
 /** 画面に出ているリズム。切替の唯一の持ち主 */
 let pattern: Pattern = PATTERNS[0]!;
 /**
- * 再生中に切替を予約したリズム。Scheduler が拍境界で切り替えた瞬間に
- * 譜面も差し替えるため、それまで持っておく
+ * 再生中に切替を予約したリズム。**新しいリズムの音が実際に鳴った瞬間**に
+ * 譜面を差し替えるため、それまで持っておく。
  */
 let switchingTo: Pattern | null = null;
+/** 切替先の打点 id。これが鳴ったら切替が発音まで到達したと判る */
+let switchingIds = new Set<string>();
 let bpm = normalizeBpm(els.bpm.value) ?? 120;
 let noteElements = new Map<string, SVGElement>();
 /** タップテンポの打刻。performance.now() の値を積む */
@@ -75,14 +78,23 @@ function flash(noteId: string): void {
 function startHighlightLoop(): void {
   const tick = () => {
     if (!scheduler || !clock) return;
-    // 予約が消えた＝拍境界で切り替わった。音と同じ瞬間に譜面を差し替える
-    if (switchingTo && scheduler.pendingSwitchTick === null) {
-      pattern = switchingTo;
-      switchingTo = null;
-      drawScore();
-      els.status.textContent = "再生中";
+    for (const h of scheduler.drainHighlightsUpTo(clock.now())) {
+      // 切替先の打点が鳴った瞬間に譜面を差し替える。
+      //
+      // **Scheduler の pending が消えたかどうかで判定してはいけない。**
+      // pending は先読み窓の中で「予約が確定した」時点で消えるので、
+      // 実際に音が鳴るより最大1拍早い。それで判定すると、
+      // 譜面だけ先に変わって音と絵がずれる。
+      if (switchingTo && switchingIds.has(h.noteId)) {
+        pattern = switchingTo;
+        switchingTo = null;
+        switchingIds = new Set();
+        drawScore();
+        markCurrent();
+        els.status.textContent = "再生中";
+      }
+      flash(h.noteId);
     }
-    for (const h of scheduler.drainHighlightsUpTo(clock.now())) flash(h.noteId);
     rafId = requestAnimationFrame(tick);
   };
   rafId = requestAnimationFrame(tick);
@@ -124,7 +136,9 @@ function stop(): void {
   if (switchingTo) {
     pattern = switchingTo;
     switchingTo = null;
+    switchingIds = new Set();
     drawScore();
+    markCurrent();
   }
   scheduler?.stop();
   scheduler = null;
@@ -227,45 +241,70 @@ function selectPattern(next: Pattern): void {
     // 譜面は切り替わった瞬間に差し替える（rAF ループが検知する）
     scheduler.requestPatternChange(next, bpm);
     switchingTo = next;
+    switchingIds = new Set(toPlaybackEvents(next).map((e) => e.noteId));
     els.status.textContent = `再生中　次の拍から ${next.name}`;
-    renderList();
+    markCurrent();
     return;
   }
 
   pattern = next;
   drawScore();
-  renderList();
+  markCurrent();
 }
 
-function renderList(): void {
-  const shown = switchingTo ?? pattern;
+/**
+ * 一覧の行。**パターンごとに1度だけ組む。**
+ * 行ごとに譜面を描くので、開くたびに作り直すと無駄が大きい。
+ * 以後は選択状態だけ差し替える。
+ */
+const listRows = new Map<string, HTMLButtonElement>();
+
+function buildList(): void {
+  listRows.clear();
   els.list.replaceChildren(
     ...PATTERNS.map((p) => {
       const li = document.createElement("li");
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "sheetItem";
-      if (p.id === shown.id) btn.setAttribute("aria-current", "true");
 
+      const head = document.createElement("span");
+      head.className = "sheetHead";
       const name = document.createElement("span");
       name.textContent = p.name;
       const sub = document.createElement("span");
       sub.className = "sub";
       sub.textContent = `${p.meter.beats}/${p.meter.beatUnit}　${p.bars.length}小節`;
+      head.append(name, sub);
 
-      btn.append(name, sub);
+      // 行に譜面を出す。名前と拍子だけでは、鳴らさないと区別がつかない
+      const score = document.createElement("div");
+      score.className = "rowScore";
+      renderPattern(score, p);
+
+      btn.append(head, score);
       btn.addEventListener("click", () => {
         selectPattern(p);
         els.dialog.close();
       });
       li.append(btn);
+      listRows.set(p.id, btn);
       return li;
     }),
   );
+  markCurrent();
+}
+
+/** 選択中の行に印を付ける。再生中の切替予約中は「切替先」を選択中として扱う */
+function markCurrent(): void {
+  const shown = switchingTo ?? pattern;
+  for (const [id, btn] of listRows) {
+    if (id === shown.id) btn.setAttribute("aria-current", "true");
+    else btn.removeAttribute("aria-current");
+  }
 }
 
 els.picker.addEventListener("click", () => {
-  renderList();
   els.dialog.showModal();
 });
 els.close.addEventListener("click", () => els.dialog.close());
@@ -287,5 +326,5 @@ els.bpmValue.value = String(bpm);
 // 符尾が符頭から離れ、小節幅も膨れて段が余計に増える。
 void whenMusicFontsReady().then(() => {
   drawScore();
-  renderList();
+  buildList();
 });

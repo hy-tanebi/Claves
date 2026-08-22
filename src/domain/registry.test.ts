@@ -109,3 +109,11 @@ describe("Afro Groove2", () => {
     ]);
   });
 });
+
+// 再生中の切替で「新しいリズムの音が鳴った瞬間」を打点 id で判定している。
+// id がパターンをまたいで重複すると、譜面が音より早く切り替わる。
+it("打点の id はパターンをまたいでも重複しない", () => {
+  const all = PATTERNS.flatMap((p) => toPlaybackEvents(p).map((e) => `${e.noteId}`));
+  const duplicated = all.filter((id, i) => all.indexOf(id) !== i);
+  expect(duplicated).toEqual([]);
+});

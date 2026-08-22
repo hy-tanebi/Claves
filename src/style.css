@@ -111,17 +111,25 @@ body {
   font: inherit;
   color: inherit;
   background: none;
-  border: 0;
+  /* 選択時だけ枠を付けると 1px ぶん行がずれる。最初から透明の枠を持たせる */
+  border: 1px solid transparent;
   width: 100%;
-  padding: 0.8rem 0.9rem;
+  padding: 0.6rem 0.65rem;
   border-radius: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  text-align: left;
+}
+
+.sheetHead {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem;
-  cursor: pointer;
-  touch-action: manipulation;
-  text-align: left;
+  font-weight: 600;
 }
 
 .sheetItem:hover {
@@ -130,7 +138,7 @@ body {
 
 .sheetItem[aria-current="true"] {
   background: var(--accent-soft);
-  border: 1px solid var(--accent);
+  border-color: var(--accent);
 }
 
 .sheetItem .sub {
@@ -138,6 +146,14 @@ body {
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+/* 行の中の譜面。本体の譜面と同じく紙の色に黒で描く。
+   暗い面に細い線を引くと輪郭が沈んで読めない */
+.rowScore {
+  background: var(--panel);
+  border-radius: 0.5rem;
+  padding: 0.15rem 0.25rem;
 }
 
 .sheetClose {
@@ -180,7 +196,7 @@ body {
   width: 100%;
 }
 
-.score svg {
+:is(.score, .rowScore) svg {
   display: block;
   width: 100%;
   height: auto;
@@ -188,20 +204,20 @@ body {
 
 /* 音部記号・拍子記号・符頭・休符は text 要素、符尾と連桁は path で描かれる。
    どちらも濃い墨色に揃える。 */
-.score svg text,
-.score svg path,
-.score svg rect {
+:is(.score, .rowScore) svg text,
+:is(.score, .rowScore) svg path,
+:is(.score, .rowScore) svg rect {
   fill: var(--ink);
   stroke: none;
 }
 
-.score svg .vf-stem path,
-.score svg .vf-beam path {
+:is(.score, .rowScore) svg .vf-stem path,
+:is(.score, .rowScore) svg .vf-beam path {
   stroke: var(--ink);
 }
 
 /* 五線の横線だけ淡くして、音符を前に出す */
-.score svg .vf-stave path {
+:is(.score, .rowScore) svg .vf-stave path {
   stroke: #bdb2a3;
   fill: none;
 }
