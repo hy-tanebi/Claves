@@ -28,7 +28,6 @@ const bar = (n: 1 | 2): Bar => ({
 export const AFRO_GROOVE: Pattern = {
   id: "afro-groove",
   name: "Afro Groove",
-  category: "samba-afro",
   meter: { beats: 2, beatUnit: 2, beatGroups: [1, 1] },
   bpmUnit: 192,
   bars: [bar(1), bar(2)],

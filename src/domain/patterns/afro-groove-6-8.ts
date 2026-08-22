@@ -25,7 +25,6 @@ import type { Pattern } from "../types";
 export const AFRO_GROOVE_6_8: Pattern = {
   id: "afro-groove-6-8",
   name: "Afro Groove (6/8)",
-  category: "candomble",
   meter: { beats: 6, beatUnit: 8, beatGroups: [3, 3] },
   bpmUnit: 144,
   bars: [

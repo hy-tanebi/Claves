@@ -34,8 +34,6 @@ export type Bar = {
   beams?: Array<[number, number]>;
 };
 
-export type Category = "samba-reggae" | "samba-afro" | "candomble";
-
 /** 出典は種別ごとに構造を変える（文字列1本では追跡できないため） */
 export type SourceLocator =
   | { type: "primary"; person: string; role: string; place?: string }
@@ -62,7 +60,6 @@ export type Meter = {
 export type Pattern = {
   id: string;
   name: string;
-  category: Category;
   meter: Meter;
   /** BPM の1拍が何 tick か。4/4 なら 96、6/8 なら 144（付点4分） */
   bpmUnit: number;

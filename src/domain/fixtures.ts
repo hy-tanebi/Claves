@@ -15,7 +15,6 @@ const TEST_SOURCE: SourceMeta = {
 export const FIXTURE_4_4: Pattern = {
   id: "fixture-4-4",
   name: "Fixture 4/4",
-  category: "samba-reggae",
   meter: { beats: 4, beatUnit: 4, beatGroups: [1, 1, 1, 1] },
   bpmUnit: 96,
   bars: [
@@ -58,7 +57,6 @@ export const FIXTURE_4_4: Pattern = {
 export const FIXTURE_2_4: Pattern = {
   id: "fixture-2-4",
   name: "Fixture 2/4",
-  category: "samba-reggae",
   meter: { beats: 2, beatUnit: 4, beatGroups: [1, 1] },
   bpmUnit: 96,
   bars: [
@@ -97,7 +95,6 @@ export const FIXTURE_2_4: Pattern = {
 export const FIXTURE_6_8: Pattern = {
   id: "fixture-6-8",
   name: "Fixture 6/8",
-  category: "candomble",
   meter: { beats: 6, beatUnit: 8, beatGroups: [3, 3] },
   bpmUnit: 144,
   bars: [

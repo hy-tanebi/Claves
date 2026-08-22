@@ -20,7 +20,6 @@ import type { Pattern } from "../types";
 export const AFRO_GROOVE_2: Pattern = {
   id: "afro-groove-2",
   name: "Afro Groove2",
-  category: "samba-afro",
   meter: { beats: 2, beatUnit: 2, beatGroups: [1, 1] },
   bpmUnit: 192,
   bars: [

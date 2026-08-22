@@ -30,7 +30,6 @@ import type { Pattern } from "../types";
 export const IJEXA: Pattern = {
   id: "ijexa",
   name: "IJEXA",
-  category: "candomble",
   meter: { beats: 2, beatUnit: 2, beatGroups: [1, 1] },
   bpmUnit: 192,
   bars: [
@@ -67,7 +66,6 @@ export const IJEXA: Pattern = {
     arrangementNotes:
       "口唱歌「カカンカ ンカカン カンカン カンカン」と、" +
       "高低の区切り「カカン（高）カンカカン（低）カンカン（高）カンカン（低）」による。" +
-      "カン＝4分音符、カ＝8分音符として記譜した。" +
-      "種別は Ijexá が候補にした位置づけから candomble としたが、本人の指定ではない。",
+      "カン＝4分音符、カ＝8分音符として記譜した。",
   },
 };
