@@ -1,12 +1,25 @@
+/* ラスタカラー（緑・金・赤）を役割で使い分ける。
+   飾りとして散らすのではなく、色ごとに意味を1つだけ持たせる。
+
+     緑 … 再生する・進んでいる
+     金 … いまの値（BPM の数字、鳴っている打点）
+     赤 … いま選ばれている位置（つまみ、一覧の選択行、停止）
+
+   紙色の譜面パネルは残す。暗い面に細い線を引くと輪郭が沈んで読めない。 */
 :root {
-  --bg: #14110f;
-  --panel: #fbf7f0;
-  --line: #2b2521;
-  --text: #f4efe8;
-  --dim: #a1968a;
-  --ink: #1a1512;
-  --accent: #ef6b39;
-  --accent-soft: #6b3220;
+  --bg: #0a0a0a;
+  --surface: #131313;
+  --panel: #fffdf6;
+  --line: #232323;
+  --text: #fbf9f4;
+  --dim: #9a978f;
+  --ink: #101010;
+  --gold: #ffc61a;
+  --green: #009b4e;
+  --red: #e02b20;
+  /* 一覧シートだけ、地の色をわずかに緑へ振って本体と分ける */
+  --sheet: #161a14;
+  --sheet-line: #2a2f26;
 }
 
 * {
@@ -43,6 +56,8 @@ body {
 .head {
   display: flex;
   align-items: baseline;
+  border-bottom: 3px solid var(--red);
+  padding-bottom: 0.5rem;
 }
 
 /* リズム名を兼ねた一覧ボタン。button の既定の見た目は消す */
@@ -65,12 +80,12 @@ body {
 }
 
 .picker .chev {
-  color: var(--dim);
+  color: var(--gold);
   font-size: 0.75rem;
 }
 
 .picker:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--gold);
   outline-offset: 2px;
   border-radius: 0.4rem;
 }
@@ -85,8 +100,8 @@ body {
   margin: auto;
   padding: 0.5rem;
   color: var(--text);
-  background: #1d1815;
-  border: 1px solid #3a312b;
+  background: var(--sheet);
+  border: 1px solid var(--sheet-line);
   border-radius: 1rem;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -127,12 +142,12 @@ body {
 }
 
 .sheetItem:hover {
-  background: #261f1a;
+  background: #212619;
 }
 
 .sheetItem[aria-current="true"] {
-  background: var(--accent-soft);
-  border-color: var(--accent);
+  background: rgb(224 43 32 / 0.22);
+  border-color: var(--red);
 }
 
 /* 行の中の譜面。本体の譜面と同じく紙の色に黒で描く。
@@ -148,10 +163,11 @@ body {
   font-size: 0.9rem;
   color: var(--dim);
   background: none;
-  border: 1px solid #3a312b;
+  border: 1px solid var(--sheet-line);
   border-radius: 0.7rem;
   width: 100%;
   padding: 0.7rem;
+  letter-spacing: 0.06em;
   cursor: pointer;
 }
 
@@ -161,7 +177,8 @@ body {
 
 .stage {
   background: var(--panel);
-  border-radius: 0.9rem;
+  border: 3px solid var(--gold);
+  border-radius: 0.25rem;
   padding: 0.75rem 0.5rem;
   display: flex;
   align-items: center;
@@ -198,7 +215,7 @@ body {
 
 /* 五線の横線だけ淡くして、音符を前に出す */
 :is(.score, .rowScore) svg .vf-stave path {
-  stroke: #bdb2a3;
+  stroke: #b9b3a4;
   fill: none;
 }
 
@@ -206,18 +223,18 @@ body {
 .score svg g.on text,
 .score svg g.on path,
 .score svg g.on rect {
-  fill: var(--accent);
+  fill: var(--gold);
 }
 
 .score svg g.on path {
-  stroke: var(--accent);
+  stroke: var(--gold);
 }
 
 /* ---- 操作 ---- */
 
 /* 音を出せないときだけ出る。空のときは高さを取らない */
 .status {
-  color: var(--accent);
+  color: var(--gold);
   font-size: 0.78rem;
   text-align: center;
 }
@@ -231,7 +248,7 @@ body {
 .bpm {
   font: inherit;
   color: inherit;
-  background: none;
+  background: var(--surface);
   border: 0;
   padding: 0.25rem 0.5rem;
   width: 100%;
@@ -239,7 +256,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 0.15rem;
-  border-radius: 0.85rem;
+  border-radius: 0.25rem;
   cursor: pointer;
   /* ダブルタップのズーム待ち（約300ms）を消す。タップの間隔を測るので致命的 */
   touch-action: manipulation;
@@ -262,19 +279,20 @@ body {
 
 /* 押した瞬間の手応え。pointerdown で付け、pointerup/cancel で外す */
 .bpm[data-pressed="true"] {
-  background: #241d18;
+  background: #1e1e1e;
 }
 
 .bpm[data-pressed="true"] #bpmValue {
-  color: var(--accent);
+  color: #ffd75e;
 }
 
 .bpm:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
 
 #bpmValue {
+  color: var(--gold);
   font-size: 3.6rem;
   font-weight: 700;
   line-height: 1;
@@ -326,9 +344,9 @@ input[type="range"] {
 
 /* 指で掴みやすいつまみと、はっきり見えるレール */
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 0.35rem;
+  height: 0.5rem;
   border-radius: 999px;
-  background: #38302a;
+  background: var(--line);
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -337,22 +355,22 @@ input[type="range"]::-webkit-slider-thumb {
   height: 1.6rem;
   margin-top: -0.625rem;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--red);
   border: 3px solid var(--bg);
   box-shadow: 0 1px 6px rgb(0 0 0 / 0.5);
 }
 
 input[type="range"]::-moz-range-track {
-  height: 0.35rem;
+  height: 0.5rem;
   border-radius: 999px;
-  background: #38302a;
+  background: var(--line);
 }
 
 input[type="range"]::-moz-range-thumb {
   width: 1.6rem;
   height: 1.6rem;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--red);
   border: 3px solid var(--bg);
 }
 
@@ -360,19 +378,21 @@ input[type="range"]::-moz-range-thumb {
   font: inherit;
   font-size: 1.15rem;
   font-weight: 650;
-  color: var(--text);
-  background: var(--accent-soft);
-  border: 1px solid var(--accent);
-  border-radius: 0.85rem;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  background: var(--green);
+  border: 0;
+  border-radius: 0.25rem;
   cursor: pointer;
   flex: 2 1 0;
   min-height: 3.4rem;
   max-height: 5.5rem;
 }
 
+/* 再生中は停止ボタンになる。緑のままだと「押すと始まる」に見える */
 .play[data-playing="true"] {
-  background: var(--accent);
-  color: #1a0d08;
+  background: var(--red);
+  color: #ffffff;
 }
 
 .play:active {
