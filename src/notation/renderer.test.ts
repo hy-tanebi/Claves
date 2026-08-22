@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from "vitest";
 import { SAMBA_REGGAE } from "../domain/patterns/samba-reggae";
+import { AFRO_GROOVE_6_8 } from "../domain/patterns/afro-groove-6-8";
 import { toPlaybackEvents } from "../domain/derive";
 import { renderPattern } from "./renderer";
 import { LAYOUT, measureBars, measureTimeSignatureWidth, planSystems } from "./layout";
@@ -77,18 +78,20 @@ describe("renderPattern", () => {
     const systems = planSystems(SAMBA_REGGAE, timeSigWidth);
 
     systems.forEach((system, si) => {
-      const required = system.barIndices.reduce((sum, i) => sum + bars[i]!.hard, 0);
+      const required = system.barIndices.reduce((sum, i) => sum + bars[i]!, 0);
       const available =
         LAYOUT.systemWidth - LAYOUT.sidePadding * 2 - (si === 0 ? timeSigWidth : 0);
       expect(available).toBeGreaterThanOrEqual(required);
     });
   });
 
-  it("小節の幅を均等割りせず、必要量の比で配分する", () => {
-    // 均等割りだと音符の多い小節が詰まり、少ない小節が間延びする
-    const systems = planSystems(SAMBA_REGGAE, measureTimeSignatureWidth(SAMBA_REGGAE));
-    const widths = systems.flatMap((s) => s.widths);
-    expect(new Set(widths.map((w) => Math.round(w))).size).toBeGreaterThan(1);
+  it("同じ長さの小節には同じ幅を配る", () => {
+    // バリデータが全小節を同じ tick 長に強制しているので、幅も揃うのが正しい。
+    // 中身の要求量の比で配ると、同じ長さなのに幅が 1.5 倍近く変わって傾いて見える
+    for (const p of [SAMBA_REGGAE, AFRO_GROOVE_6_8]) {
+      const widths = planSystems(p, measureTimeSignatureWidth(p)).flatMap((s) => s.widths);
+      expect(`${p.id}: ${new Set(widths.map((w) => Math.round(w))).size}`).toBe(`${p.id}: 1`);
+    }
   });
 
   it("Samba Reggae は1段に収まる", () => {

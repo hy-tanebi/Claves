@@ -115,23 +115,70 @@ export function measureTimeSignatureWidth(pattern: Pattern): number {
  *
  * `preCalculateMinTotalWidth()` は不揃いな音価に対する余裕を上乗せして返すが、
  * 実際の描画では小節ごとに幅を与えて詰めるため、そこまでは要らない。
- * 上乗せ前の値（`getMinTotalWidth()`）を段組みの判定に使い、
- * 上乗せ後の値は小節間の幅の配分比に使う。
+ * 上乗せ前の値（`getMinTotalWidth()`）を使う。
+ *
+ * **`preCalculateMinTotalWidth()` の呼び出しを省いてはいけない。**
+ * VexFlow は先にこれ（か `preFormat`）を通していないと
+ * `getMinTotalWidth()` で NoMinTotalWidth を投げる。戻り値は使わない。
  */
-export type BarWidth = {
-  /** 段に収まるかの判定に使う（上乗せなし） */
-  hard: number;
-  /** 小節間で幅を配分する比率に使う（上乗せあり） */
-  weight: number;
-};
-
-export function measureBars(pattern: Pattern): BarWidth[] {
+export function measureBars(pattern: Pattern): number[] {
   return pattern.bars.map((bar) => {
     const { voice } = buildVoice(bar, pattern);
     const formatter = new Formatter().joinVoices([voice]);
-    const weight = formatter.preCalculateMinTotalWidth([voice]);
-    return { hard: formatter.getMinTotalWidth(), weight };
+    formatter.preCalculateMinTotalWidth([voice]);
+    return formatter.getMinTotalWidth();
   });
+}
+
+/**
+ * 小節が実際に要求する幅。VexFlow の見積もりに下限を掛けたもの。
+ *
+ * **段送りの判定と幅の配分は同じ値を使うこと。** 判定に下限前の値、
+ * 配分に下限後の値を使うと、段に収まると判定した小節群が
+ * 配分では収まらず、譜面が段からはみ出す。
+ */
+function effectiveMinWidth(minWidth: number): number {
+  return Math.max(LAYOUT.minNoteArea, minWidth);
+}
+
+/**
+ * 段に載せる小節へ幅を配る。
+ *
+ * **同じ長さの小節には同じ幅を与える。** 記譜の慣習であり、
+ * このアプリでは `validate.ts` が全小節を同じ tick 長に強制しているので、
+ * 等分がそのまま「長さに比例した配分」になる。
+ * 音符の数が違っても幅は変えない。変わるのは小節の中での間隔だけ。
+ *
+ * かつては「小節の中身が要求する幅」の比で配っていたが、
+ * 同じ長さの小節どうしで幅が 1.5 倍近く変わり、譜面が傾いて見えた。
+ *
+ * 等分では収まらないほど密な小節があるときだけ、その小節に必要量を渡し、
+ * 残りを他の小節で分け直す（水を注ぐように、低いところから埋める）。
+ *
+ * 小節の長さが揃わなくなったら（アウフタクトを許す等）、
+ * ここを tick 長に比例した配分へ変える。
+ */
+export function allocateWidths(barMinWidths: number[], available: number): number[] {
+  const need = barMinWidths.map(effectiveMinWidth);
+  const widths = new Array<number>(barMinWidths.length).fill(0);
+  const pending = new Set(barMinWidths.map((_, i) => i));
+  let remaining = available;
+
+  while (pending.size > 0) {
+    const share = remaining / pending.size;
+    const tooTight = [...pending].filter((i) => need[i]! > share);
+    if (tooTight.length === 0) {
+      for (const i of pending) widths[i] = share;
+      break;
+    }
+    for (const i of tooTight) {
+      widths[i] = need[i]!;
+      remaining -= need[i]!;
+      pending.delete(i);
+    }
+  }
+
+  return widths;
 }
 
 export type SystemPlan = {
@@ -145,8 +192,7 @@ export type SystemPlan = {
  * 小節を段に振り分け、各小節の幅を決める。
  *
  * 段の幅は固定なので、収まらない小節は次の段へ送る。
- * 段内の幅は各小節の必要量の比で配分する（均等割りにすると、
- * 音符の多い小節が詰まり、少ない小節が間延びする）。
+ * 段内の配分は allocateWidths に任せる。
  */
 export function planSystems(pattern: Pattern, timeSigWidth: number): SystemPlan[] {
   const bars = measureBars(pattern);
@@ -158,24 +204,24 @@ export function planSystems(pattern: Pattern, timeSigWidth: number): SystemPlan[
   const availableFor = (isFirstSystem: boolean) =>
     LAYOUT.systemWidth - LAYOUT.sidePadding * 2 - (isFirstSystem ? timeSigWidth : 0);
 
-  bars.forEach((bar, i) => {
+  bars.forEach((minWidth, i) => {
     const available = availableFor(systems.length === 0);
-    if (current.length > 0 && used + bar.hard > available) {
+    const need = effectiveMinWidth(minWidth);
+    if (current.length > 0 && used + need > available) {
       systems.push({ barIndices: current, widths: [] });
       current = [];
       used = 0;
     }
     current.push(i);
-    used += bar.hard;
+    used += need;
   });
   if (current.length > 0) systems.push({ barIndices: current, widths: [] });
 
-  // 段ごとに、必要量の比で幅を配分する
   systems.forEach((system, si) => {
-    const available = availableFor(si === 0);
-    const weights = system.barIndices.map((i) => bars[i]!.weight);
-    const total = weights.reduce((a, b) => a + b, 0);
-    system.widths = weights.map((w) => Math.max(LAYOUT.minNoteArea, (available * w) / total));
+    system.widths = allocateWidths(
+      system.barIndices.map((i) => bars[i]!),
+      availableFor(si === 0),
+    );
   });
 
   return systems;
