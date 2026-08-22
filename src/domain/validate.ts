@@ -11,7 +11,7 @@ const BEAMABLE = new Set<string>(["8", "16", "32"]);
  *        見本の the Clave も "in cut time" で 40〜200 BPM と明記している。
  * 2/4 … 同じリズムを細かく割って書く場合。1拍は4分音符
  * 4/4 … 2小節を1周期として書く場合。1拍は4分音符
- * 6/8 … カンドンブレ系。BPM は慣習的に付点4分（1拍 = 144 tick）で数える
+ * 6/8 … 付点4分を1拍として数える拍子。BPM も慣習的に付点4分（1拍 = 144 tick）で数える
  */
 const ALLOWED_METERS = [
   { beats: 2, beatUnit: 2, bpmUnit: 192 },
