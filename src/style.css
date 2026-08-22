@@ -47,10 +47,109 @@ body {
   gap: 0.75rem;
 }
 
-h1 {
+/* リズム名を兼ねた一覧ボタン。button の既定の見た目は消す */
+.picker {
+  font: inherit;
   font-size: 1.35rem;
   font-weight: 650;
   letter-spacing: 0.01em;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0.15rem 0.35rem 0.15rem 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  text-align: left;
+  min-width: 0;
+}
+
+.picker .chev {
+  color: var(--dim);
+  font-size: 0.75rem;
+}
+
+.picker:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 0.4rem;
+}
+
+/* ---- リズム一覧（シート） ----
+   収録が10以上になっても1画面レイアウトを崩さないよう、
+   本体には並べず dialog に載せる。Esc と背景タップで閉じる */
+
+.sheet {
+  width: min(26rem, calc(100vw - 2rem));
+  max-height: 70dvh;
+  margin: auto;
+  padding: 0.5rem;
+  color: var(--text);
+  background: #1d1815;
+  border: 1px solid #3a312b;
+  border-radius: 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet::backdrop {
+  background: rgb(0 0 0 / 0.6);
+}
+
+.sheetList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sheetItem {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border-radius: 0.7rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  text-align: left;
+}
+
+.sheetItem:hover {
+  background: #261f1a;
+}
+
+.sheetItem[aria-current="true"] {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+}
+
+.sheetItem .sub {
+  color: var(--dim);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sheetClose {
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--dim);
+  background: none;
+  border: 1px solid #3a312b;
+  border-radius: 0.7rem;
+  width: 100%;
+  padding: 0.7rem;
+  cursor: pointer;
 }
 
 .meta {

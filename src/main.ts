@@ -19,7 +19,11 @@ const $ = <T extends HTMLElement>(id: string): T => {
 };
 
 const els = {
-  name: $<HTMLHeadingElement>("patternName"),
+  name: $<HTMLSpanElement>("patternName"),
+  picker: $<HTMLButtonElement>("patternPicker"),
+  dialog: $<HTMLDialogElement>("patternDialog"),
+  list: $<HTMLUListElement>("patternList"),
+  close: $<HTMLButtonElement>("patternClose"),
   meta: $<HTMLParagraphElement>("patternMeta"),
   score: $<HTMLDivElement>("score"),
   status: $<HTMLParagraphElement>("status"),
@@ -37,7 +41,13 @@ let scheduler: Scheduler | null = null;
 let pumpTimer: number | null = null;
 let rafId: number | null = null;
 
-const pattern: Pattern = PATTERNS[0]!;
+/** 画面に出ているリズム。切替の唯一の持ち主 */
+let pattern: Pattern = PATTERNS[0]!;
+/**
+ * 再生中に切替を予約したリズム。Scheduler が拍境界で切り替えた瞬間に
+ * 譜面も差し替えるため、それまで持っておく
+ */
+let switchingTo: Pattern | null = null;
 let bpm = normalizeBpm(els.bpm.value) ?? 120;
 let noteElements = new Map<string, SVGElement>();
 /** タップテンポの打刻。performance.now() の値を積む */
@@ -65,6 +75,13 @@ function flash(noteId: string): void {
 function startHighlightLoop(): void {
   const tick = () => {
     if (!scheduler || !clock) return;
+    // 予約が消えた＝拍境界で切り替わった。音と同じ瞬間に譜面を差し替える
+    if (switchingTo && scheduler.pendingSwitchTick === null) {
+      pattern = switchingTo;
+      switchingTo = null;
+      drawScore();
+      els.status.textContent = "再生中";
+    }
     for (const h of scheduler.drainHighlightsUpTo(clock.now())) flash(h.noteId);
     rafId = requestAnimationFrame(tick);
   };
@@ -103,6 +120,12 @@ async function play(): Promise<void> {
 
 function stop(): void {
   taps = [];
+  // 切替の予約中に止めたら、選んだリズムはそのまま採用する
+  if (switchingTo) {
+    pattern = switchingTo;
+    switchingTo = null;
+    drawScore();
+  }
   scheduler?.stop();
   scheduler = null;
   if (pumpTimer !== null) window.clearInterval(pumpTimer);
@@ -192,6 +215,65 @@ els.tap.addEventListener("keydown", (e) => {
 els.tap.addEventListener("keyup", () => setPressed(false));
 els.tap.addEventListener("blur", () => setPressed(false));
 
+/* ---- リズムの切替 ---- */
+
+function selectPattern(next: Pattern): void {
+  if (next.id === pattern.id) return;
+  // 拍子が変わるとタップ1打の意味が変わる。履歴は持ち越さない
+  taps = [];
+
+  if (scheduler) {
+    // 次の拍境界から、新パターンの先頭で鳴り始める。
+    // 譜面は切り替わった瞬間に差し替える（rAF ループが検知する）
+    scheduler.requestPatternChange(next, bpm);
+    switchingTo = next;
+    els.status.textContent = `再生中　次の拍から ${next.name}`;
+    renderList();
+    return;
+  }
+
+  pattern = next;
+  drawScore();
+  renderList();
+}
+
+function renderList(): void {
+  const shown = switchingTo ?? pattern;
+  els.list.replaceChildren(
+    ...PATTERNS.map((p) => {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sheetItem";
+      if (p.id === shown.id) btn.setAttribute("aria-current", "true");
+
+      const name = document.createElement("span");
+      name.textContent = p.name;
+      const sub = document.createElement("span");
+      sub.className = "sub";
+      sub.textContent = `${p.meter.beats}/${p.meter.beatUnit}　${p.bars.length}小節`;
+
+      btn.append(name, sub);
+      btn.addEventListener("click", () => {
+        selectPattern(p);
+        els.dialog.close();
+      });
+      li.append(btn);
+      return li;
+    }),
+  );
+}
+
+els.picker.addEventListener("click", () => {
+  renderList();
+  els.dialog.showModal();
+});
+els.close.addEventListener("click", () => els.dialog.close());
+// 背景（backdrop）を叩いたら閉じる。dialog 自身が click の対象になる
+els.dialog.addEventListener("click", (e) => {
+  if (e.target === els.dialog) els.dialog.close();
+});
+
 els.volume.addEventListener("input", () => {
   clock?.setVolume(Number(els.volume.value) / 100);
 });
@@ -203,4 +285,7 @@ els.bpmValue.value = String(bpm);
 // 音楽フォントの読み込みを待ってから描く。
 // 待たずに描くと VexFlow が代替フォントの幅で位置を計算し、
 // 符尾が符頭から離れ、小節幅も膨れて段が余計に増える。
-void whenMusicFontsReady().then(drawScore);
+void whenMusicFontsReady().then(() => {
+  drawScore();
+  renderList();
+});
