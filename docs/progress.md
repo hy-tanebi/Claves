@@ -4,31 +4,40 @@
 
 ---
 
-## 現在地（2026-08-23）
+## 現在地（2026-08-26）
 
-**ブラウザで動く。譜面が出て、音が鳴り、BPM を変えられる。iOS 化の設計が固まり、着手中。**
+**iOS アプリとして起動するところまで来た。** シミュレータ上で譜面が描画され、
+UI が操作できる状態。ここから先はバックグラウンド再生のためのネイティブ実装。
 
 - リポジトリ: https://github.com/hy-tanebi/Claves （private）
 - デフォルトブランチ: `dev`。`main` は初期セットアップのみ（リリース時まで触らない）
 - テスト 207 件 PASS / 型エラー 0 件 / 実ブラウザ検証 OK（5リズム × 375・390・430px）
+- Bundle ID: `com.tanebicreative.claves`（**App Store 提出後は変更不可**）
+- アプリ表示名: `Claves`（仮。正式名称が決まったら `Info.plist` を書き換える）
 
 ### 次にやること（このセッションで最初に見る）
 
-**オーナーが Xcode.app のインストールを進行中。完了報告を待っている。**
-
-完了したら次の一手は **P0-b**: CocoaPods 導入 → Capacitor 化
-（`pnpm add @capacitor/core @capacitor/cli @capacitor/ios` → `npx cap init` → `add ios`）
-→ **前景・Web Audio のまま** iOS 実機で起動確認。オーナーの手は実機を貸すだけで足りる
-（無料の Apple ID で動作確認できる。$99/年が要るのは TestFlight 配布と申請から）。
-
-依存追加時に `pnpm-workspace.yaml` の `blockExoticSubdeps` が誤検知で止まることがある。
-`CLAUDE.md` の手順どおり一時解除して `pnpm add`、戻してから
-`pnpm install --frozen-lockfile` が通ることを確認する。
-
-P0-b の後は P1（Swift の再生エンジン。`AVAudioSourceNode` のサンプル駆動、
-tick ⇔ サンプル時刻の変換、`applyAtTick` でのアトミック切替）。
+**次の一手は P1: Swift の再生エンジン。**
+`ios/App/App/` に `AVAudioSourceNode` ベースの再生エンジンを実装する。
+tick ⇔ サンプル時刻の変換、`applyAtTick` でのアトミック切替。
 **`golden/transport.json` を Swift 側の入出力テストに読ませて一致を確認する**
-（`src/domain/transport.ts` が式の唯一の真実源）。P1 まではオーナーの手を止めない。
+（`src/domain/transport.ts` が式の唯一の真実源）。
+
+Web を作り直したら `pnpm build && pnpm exec cap sync ios` で iOS 側へ反映する。
+シミュレータでの確認は署名不要:
+
+```bash
+cd ios/App && xcodebuild -project App.xcodeproj -scheme App \
+  -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17' \
+  CODE_SIGNING_ALLOWED=NO build
+xcrun simctl install booted <上で出た App.app のパス>
+xcrun simctl launch booted com.tanebicreative.claves
+xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数秒おいてから撮る
+```
+
+依存追加時は `pnpm-workspace.yaml` の `blockExoticSubdeps` が誤検知で止まる。
+`CLAUDE.md` の手順どおり一時解除して `pnpm add`、戻してから
+`pnpm install --frozen-lockfile` が通ることを確認する（実績あり）。
 
 ### 動いているもの
 
@@ -105,8 +114,7 @@ tick ⇔ サンプル時刻の変換、`applyAtTick` でのアトミック切替
 進行フェーズ（P0〜P4）:
 
 - [x] **P0-a** golden fixture（`golden/transport.json`）と `transport.ts` への集約
-- [ ] **P0-b** CocoaPods 導入 → Capacitor 化 → 前景のまま iOS 起動確認
-      — **オーナーの Xcode インストール待ち**
+- [x] **P0-b** Capacitor 化 → 前景のまま iOS 起動確認（2026-08-26 シミュレータで確認）
 - [ ] **P1** Swift の再生エンジン（`AVAudioSourceNode`、tick⇔サンプル時刻、`applyAtTick`）
 - [ ] **P2** ブリッジと検証層（`TransportPlan` の上限値チェック等。codex 指摘のセキュリティ項目）
 - [ ] **P3** ライフサイクル対応。決定済みの4仕様:
@@ -141,6 +149,25 @@ P0-b〜P2 はオーナーの手を止めない（実機を貸すだけで足り�
 ---
 
 ## 更新履歴
+
+### 2026-08-26
+
+- **P0-b 完了: iOS アプリとして起動した。** シミュレータ（iPhone 17 / iOS 26.5）で
+  譜面が描画され、UI が操作できることをスクリーンショットで確認した。
+  符尾も符頭に付いており、レイアウトの崩れはない。
+  **これは実 WebKit 上の描画なので、jsdom では保証できない見た目の検証としても有効。**
+- 決めたこと: **Bundle ID は `com.tanebicreative.claves`**。
+  逆ドメイン記法の慣習に従い社名ベースにした（参考: the Clave は `com.mammalsoft.theClave`）。
+  **App Store 提出後は変更できない。** 表示名 `Claves` は仮で、後から `Info.plist` で変えられる。
+- **前提の訂正: Capacitor 8 は CocoaPods を使わない。** Swift Package Manager を使う
+  （`ios/App/CapApp-SPM/Package.swift`）。以前の progress.md にあった「CocoaPods 導入」は
+  古い前提だった。CocoaPods 1.17.0 は入れてしまったが、使っていない
+- 環境: Xcode 26.6 / iOS 26.5 SDK・シミュレータ。`xcode-select` は Xcode.app を向いている
+- `package.json` に `build` スクリプトが無かったので追加した（Capacitor は `dist` を取り込む）
+- `blockExoticSubdeps` は**既存の `vitest → vite` で誤検知した**（Capacitor が原因ではない）。
+  `CLAUDE.md` の手順どおり一時解除 → `pnpm add` → 復元 →
+  `pnpm install --frozen-lockfile` 通過（終了コード 0）を確認済み
+- テスト 207 件 PASS / 型エラー 0 件（変更後も維持）
 
 ### 2026-08-23（2）
 
