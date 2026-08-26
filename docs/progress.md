@@ -17,11 +17,26 @@ UI が操作できる状態。ここから先はバックグラウンド再生�
 
 ### 次にやること（このセッションで最初に見る）
 
-**次の一手は P1: Swift の再生エンジン。**
-`ios/App/App/` に `AVAudioSourceNode` ベースの再生エンジンを実装する。
-tick ⇔ サンプル時刻の変換、`applyAtTick` でのアトミック切替。
-**`golden/transport.json` を Swift 側の入出力テストに読ませて一致を確認する**
-（`src/domain/transport.ts` が式の唯一の真実源）。
+**P1 の前半（時刻計算の中核）は済んだ。次は音を出す部分。**
+
+`ios/ClavesEngine/` に純粋な計算だけのパッケージを切り出し、
+`golden/transport.json` との突き合わせを含む 8 件のテストが通っている。
+UIKit にも AVFoundation にも依存しないので、実機もシミュレータも要らず
+`swift test` だけで検証できる:
+
+```bash
+cd ios/ClavesEngine && swift test
+```
+
+**次は `AVAudioSourceNode` で実際に音を出す部分。** ここは
+`ClavesEngine` を使う側（`ios/App/App/`）に書く。やること:
+
+- `AVAudioSourceNode` のレンダーコールバックでサンプル単位に打点を鳴らす
+- tick ⇔ サンプル時刻の変換（`AVAudioTime` のサンプル時刻を使う。
+  **`Date` や壁時計は絶対に使わない** — codex レビューでの指摘）
+- `TransportPlan` を差し替えるときは `nextBoundaryTick` で境界を決める
+- `ClavesEngine` を Xcode プロジェクトにローカルパッケージとして追加する
+  （まだ未リンク。音を出す実装に入る時点で繋ぐ）
 
 Web を作り直したら `pnpm build && pnpm exec cap sync ios` で iOS 側へ反映する。
 シミュレータでの確認は署名不要:
@@ -115,7 +130,9 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 
 - [x] **P0-a** golden fixture（`golden/transport.json`）と `transport.ts` への集約
 - [x] **P0-b** Capacitor 化 → 前景のまま iOS 起動確認（2026-08-26 シミュレータで確認）
-- [ ] **P1** Swift の再生エンジン（`AVAudioSourceNode`、tick⇔サンプル時刻、`applyAtTick`）
+- [ ] **P1** Swift の再生エンジン
+      - [x] 時刻計算の中核（`ios/ClavesEngine/`）。golden fixture との突き合わせ済み
+      - [ ] `AVAudioSourceNode` での発音、tick⇔サンプル時刻、`applyAtTick`
 - [ ] **P2** ブリッジと検証層（`TransportPlan` の上限値チェック等。codex 指摘のセキュリティ項目）
 - [ ] **P3** ライフサイクル対応。決定済みの4仕様:
       割り込み後は自動再開しない／イヤホン抜去で止める／他アプリと非mix／
@@ -149,6 +166,22 @@ P0-b〜P2 はオーナーの手を止めない（実機を貸すだけで足り�
 ---
 
 ## 更新履歴
+
+### 2026-08-26（2）
+
+- **P1 前半完了: 時刻計算の Swift 実装を `ios/ClavesEngine/` に作った。** テスト 8 件 PASS
+  - **UIKit にも AVFoundation にも依存させない**独立パッケージにした。
+    純粋な計算だけなので実機もシミュレータも要らず `swift test` で検証できる
+  - `golden/transport.json` は**コピーしない**。`#filePath` からリポジトリの
+    実ファイルを読む。コピーすると二重管理になり、JS 側を更新したときに黙って食い違う
+  - **golden テストが本当に効くことを、実装をわざと壊して確認した。**
+    `seconds(atTick:)` から `originSeconds` を落としたところ、
+    ユニットテスト2件は通ったまま golden テストだけが検出した
+    （`originSeconds: 1` を持つのが切替後の plan だけのため）。
+    **golden fixture がユニットテストの届かない範囲を実際に守っている証拠**
+  - `nextBoundaryTick` も移植した。JS 側と同じく
+    「予約済みの tick がちょうど拍境界に乗っていても、境界はその先に置く」を守る
+- 次は `AVAudioSourceNode` での発音。`ClavesEngine` はまだ Xcode プロジェクトに未リンク
 
 ### 2026-08-26
 

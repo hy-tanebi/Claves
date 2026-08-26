@@ -6,3 +6,6 @@ screenshots/
 
 # ローンチ手順のページ。手元で開くための資料で、GitHub には置かない
 docs/launch-plan.html
+
+# Swift Package Manager のビルド成果物
+ios/ClavesEngine/.build/
