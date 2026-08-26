@@ -128,6 +128,32 @@ struct TransportGoldenTests {
         }
     }
 
+    /// **検証層が厳しすぎないことの確認。**
+    ///
+    /// 上限や許容値を絞りすぎると、壊れた入力ではなく
+    /// **実際に収録しているリズムを弾いてしまう**。
+    /// 5リズム × 3テンポ（40 / 120 / 240）と切替の全ケースが通ることを固定する。
+    @Test("収録している全リズム・全テンポが検証を通る")
+    func realRhythmsPassValidation() throws {
+        let golden = try Self.load()
+
+        for scenario in golden.scenarios {
+            if let plan = scenario.plan {
+                #expect(throws: Never.self, "\(scenario.name) が弾かれた") {
+                    try PlanValidator.validate(plan.asPlan)
+                }
+            }
+            if let before = scenario.before, let after = scenario.after {
+                #expect(throws: Never.self, "\(scenario.name)（切替前）が弾かれた") {
+                    try PlanValidator.validate(before.plan.asPlan)
+                }
+                #expect(throws: Never.self, "\(scenario.name)（切替後）が弾かれた") {
+                    try PlanValidator.validate(after.plan.asPlan)
+                }
+            }
+        }
+    }
+
     static func verify(plan: TransportPlan, expected: [ExpectedJSON], label: String) {
         for (index, want) in expected.enumerated() {
             let got = plan.event(at: index)
