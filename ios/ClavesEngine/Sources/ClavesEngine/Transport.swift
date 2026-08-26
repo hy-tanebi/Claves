@@ -106,6 +106,23 @@ public struct TransportPlan: Sendable {
         Double(originTick) + (seconds - originSeconds) / secondsPerTick
     }
 
+    /// 基準点を指定の時刻に置き直した写し。
+    ///
+    /// **JS は切替時刻を知らない**（時計を持っているのはネイティブ）ので、
+    /// JS が組む計画の基準点は常に 0 になる。
+    /// そのまま使うと新しい計画の打点が全部過去になり、
+    /// 読み飛ばされて無音になる。切替点に合わせ直すのはネイティブ側の責任。
+    public func anchored(atSeconds seconds: Double) -> TransportPlan {
+        TransportPlan(
+            bpmUnit: bpmUnit,
+            cycleTicks: cycleTicks,
+            bpm: bpm,
+            originTick: 0,
+            originSeconds: seconds,
+            events: events
+        )
+    }
+
     /// 切替を置ける最初の拍境界。
     ///
     /// **予約済みの範囲より後にしか境界を置かない。**

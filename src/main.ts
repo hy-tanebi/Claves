@@ -5,6 +5,8 @@ import { bpmFromTaps, pushTap } from "./domain/tap-tempo";
 import type { Pattern } from "./domain/types";
 import { Scheduler } from "./audio/scheduler";
 import { createBellBuffers, WebAudioClock } from "./audio/web-audio-clock";
+import { nativeAudio } from "./audio/native-plugin";
+import { noteIdAtTick } from "./domain/playhead";
 import { renderPattern } from "./notation/renderer";
 import { whenMusicFontsReady } from "./notation/fonts";
 import { loadPatternId, savePatternId } from "./preferences";
@@ -106,6 +108,46 @@ function startHighlightLoop(): void {
   rafId = requestAnimationFrame(tick);
 }
 
+/**
+ * ネイティブ再生中のハイライト。
+ *
+ * **再生位置はネイティブに聞く。** 時計を持っているのはネイティブなので、
+ * JS 側で別に数えると必ずずれる。
+ */
+function startNativeHighlightLoop(): void {
+  let lastNoteId: string | null = null;
+  let lastTick = -1;
+
+  const step = async (): Promise<void> => {
+    if (!nativeAudio || els.play.dataset.playing !== "true") return;
+
+    const snapshot = await nativeAudio.snapshot();
+    if (snapshot.isPlaying) {
+      // 切替が起きると、新しい計画の基準点に合わせて tick が 0 付近へ戻る。
+      // **これが「新しいリズムの音が実際に鳴り始めた」合図。**
+      // 予約が確定した時点で譜面を差し替えると、音より先に絵が変わる
+      if (switchingTo && snapshot.tick < lastTick) {
+        pattern = switchingTo;
+        switchingTo = null;
+        switchingIds = new Set();
+        drawScore();
+        markCurrent();
+        lastNoteId = null;
+      }
+      lastTick = snapshot.tick;
+
+      const noteId = noteIdAtTick(pattern, snapshot.tick);
+      if (noteId !== lastNoteId) {
+        flash(noteId);
+        lastNoteId = noteId;
+      }
+    }
+    rafId = requestAnimationFrame(() => void step());
+  };
+
+  rafId = requestAnimationFrame(() => void step());
+}
+
 async function ensureAudio(): Promise<WebAudioClock> {
   if (ctx && clock) {
     if (ctx.state === "suspended") await ctx.resume();
@@ -122,14 +164,23 @@ async function ensureAudio(): Promise<WebAudioClock> {
 }
 
 async function play(): Promise<void> {
-  const audioClock = await ensureAudio();
   taps = [];
-  scheduler = new Scheduler(audioClock);
-  // 少しだけ先から始める（開始直後の予約が過去にならないように）
-  scheduler.start(pattern, bpm, audioClock.now() + 0.1);
 
-  pumpTimer = window.setInterval(() => scheduler?.pump(), PUMP_INTERVAL_MS);
-  startHighlightLoop();
+  if (nativeAudio) {
+    // iOS ではバックグラウンドで WKWebView ごと止まるため、
+    // 再生クロックはネイティブが持つ。JS は計画を渡すだけ
+    await nativeAudio.start(pattern, bpm);
+    await nativeAudio.setVolume(Number(els.volume.value) / 100);
+    startNativeHighlightLoop();
+  } else {
+    const audioClock = await ensureAudio();
+    scheduler = new Scheduler(audioClock);
+    // 少しだけ先から始める（開始直後の予約が過去にならないように）
+    scheduler.start(pattern, bpm, audioClock.now() + 0.1);
+
+    pumpTimer = window.setInterval(() => scheduler?.pump(), PUMP_INTERVAL_MS);
+    startHighlightLoop();
+  }
 
   els.play.textContent = "STOP";
   els.play.dataset.playing = "true";
@@ -146,6 +197,7 @@ function stop(): void {
     drawScore();
     markCurrent();
   }
+  void nativeAudio?.stop();
   scheduler?.stop();
   scheduler = null;
   if (pumpTimer !== null) window.clearInterval(pumpTimer);
@@ -159,7 +211,9 @@ function stop(): void {
 }
 
 els.play.addEventListener("click", () => {
-  if (scheduler) {
+  // **`scheduler` の有無で判定してはいけない。**
+  // ネイティブ再生では scheduler を作らないので、常に停止中と見なしてしまう
+  if (els.play.dataset.playing === "true") {
     stop();
   } else {
     void play().catch((e: unknown) => {
@@ -180,6 +234,10 @@ function setBpm(next: number): void {
   els.bpmValue.value = String(next);
   // 次の拍の頭から効く（予約の取り消しが発生しない）
   scheduler?.requestTempoChange(next);
+  // ネイティブ再生中も同じ。基準点は切替点にネイティブが合わせ直す
+  if (nativeAudio && els.play.dataset.playing === "true") {
+    void nativeAudio.change(pattern, next);
+  }
 }
 
 els.bpm.addEventListener("input", () => {
@@ -230,6 +288,16 @@ function selectPattern(next: Pattern): void {
   // 実際に鳴り始めるのは次の拍境界だが、選んだ時点の意思を覚える。
   // アプリは OS に落とされて再起動されるので、毎回1曲目に戻ると練習の邪魔になる
   savePatternId(next.id);
+
+  if (nativeAudio && els.play.dataset.playing === "true") {
+    // 次の拍境界から新パターンの先頭で鳴り始める。
+    // 譜面は tick が戻った瞬間（＝実際に鳴り始めた合図）に差し替える
+    void nativeAudio.change(next, bpm);
+    switchingTo = next;
+    switchingIds = new Set(toPlaybackEvents(next).map((e) => e.noteId));
+    markCurrent();
+    return;
+  }
 
   if (scheduler) {
     // 次の拍境界から、新パターンの先頭で鳴り始める。
@@ -303,7 +371,9 @@ els.dialog.addEventListener("click", (e) => {
 });
 
 els.volume.addEventListener("input", () => {
-  clock?.setVolume(Number(els.volume.value) / 100);
+  const value = Number(els.volume.value) / 100;
+  clock?.setVolume(value);
+  void nativeAudio?.setVolume(value);
 });
 
 // 初期化

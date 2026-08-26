@@ -38,14 +38,26 @@ public struct TransportRenderer: Sendable {
     /// 境界は `TransportPlan.nextBoundaryTick` で決めること。
     /// 予約済みの範囲より後にしか置かないので、
     /// **すでに返した打点を取り消す必要がない**（二重発音が構造的に起こらない）。
+    /// **渡された計画の基準点は使わず、切替点に置き直す。**
+    /// JS は切替時刻を知らないので基準点は常に 0 で届く。
+    /// そのまま使うと新しい計画の打点が全部過去になり、読み飛ばされて無音になる。
     public mutating func apply(_ newPlan: TransportPlan, atTick tick: Int) {
         let seconds = plan.seconds(atTick: tick)
-        pending = (newPlan, Int64((seconds * sampleRate).rounded()))
+        pending = (newPlan.anchored(atSeconds: seconds), Int64((seconds * sampleRate).rounded()))
     }
 
     /// 通し番号 index の打点が鳴る絶対サンプル位置
     public func frame(ofEventAt index: Int) -> Int64 {
         Int64((plan.event(at: index).seconds * sampleRate).rounded())
+    }
+
+    /// サンプル位置に対応する再生位置（絶対 tick）。
+    ///
+    /// 譜面のハイライトはこれで動かす。
+    /// **ネイティブが時計を持つ以上、JS 側で別に数えると必ずずれる。**
+    /// 切替後は現在の計画の時間軸で数える。
+    public func tick(atFrame frame: Int64) -> Double {
+        plan.tick(atSeconds: Double(frame) / sampleRate)
     }
 
     /// `startFrame` から `frameCount` サンプルぶんのバッファに入る打点を返す。

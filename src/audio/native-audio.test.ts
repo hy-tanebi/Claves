@@ -20,6 +20,7 @@ describe("createNativeAudio", () => {
       stop: async () => void calls.push({ method: "stop", args: undefined }),
       applyPlan: async (o) => void calls.push({ method: "applyPlan", args: o }),
       setVolume: async (o) => void calls.push({ method: "setVolume", args: o }),
+      getSnapshot: async () => ({ tick: 0, isPlaying: true }),
     };
     return { plugin, calls };
   }
@@ -67,6 +68,22 @@ describe("createNativeAudio", () => {
     expect(calls[1]!.method).toBe("stop");
   });
 
+  /// 再生位置はネイティブに聞く。JS 側で別に数えると必ずずれる
+  it("再生位置はネイティブから受け取る", async () => {
+    const plugin: ClavesAudioPlugin = {
+      start: async () => {},
+      stop: async () => {},
+      applyPlan: async () => {},
+      setVolume: async () => {},
+      getSnapshot: async () => ({ tick: 288.5, isPlaying: true }),
+    };
+
+    expect(await createNativeAudio(plugin).snapshot()).toEqual({
+      tick: 288.5,
+      isPlaying: true,
+    });
+  });
+
   /// ネイティブが弾いた理由は握りつぶさない。
   /// 無音の原因が分からなくなるため
   it("ネイティブが弾いたらエラーをそのまま投げる", async () => {
@@ -77,6 +94,7 @@ describe("createNativeAudio", () => {
       stop: async () => {},
       applyPlan: async () => {},
       setVolume: async () => {},
+      getSnapshot: async () => ({ tick: 0, isPlaying: false }),
     };
 
     await expect(createNativeAudio(plugin).start(pattern, 120)).rejects.toThrow(

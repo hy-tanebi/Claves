@@ -79,6 +79,32 @@ struct SwitchTests {
         #expect(beforeSeam.allSatisfy { $0.pitch == .high })
     }
 
+    /// **JS は切替時刻を知らない。** 時計を持っているのはネイティブなので、
+    /// JS が組む計画の基準点は常に 0 になる。
+    ///
+    /// 基準点をそのまま使うと、切替が 1.0 秒地点で起きたときに
+    /// 新しい計画の打点が全部「0 秒あたり」＝過去になり、
+    /// 読み飛ばされて**無音になる**。
+    /// 切替点に基準点を合わせ直すのはネイティブ側の責任。
+    @Test("基準点が 0 の計画を渡しても、切替点から鳴り始める")
+    func anchorsIncomingPlanToTheSwitchPoint() {
+        var renderer = TransportRenderer(plan: Self.before(), sampleRate: 48000)
+
+        // JS が組む計画。切替時刻を知らないので基準点は 0
+        let fromJS = TransportPlan(
+            bpmUnit: 192, cycleTicks: 768, bpm: 180,
+            originTick: 0, originSeconds: 0,
+            events: [.init(tick: 0, pitch: .low)]
+        )
+        renderer.apply(fromJS, atTick: Self.switchTick)
+
+        let hits = renderer.hits(from: 0, frameCount: 60000)
+        let atSeam = hits.first { $0.frameOffset == Int(Self.switchFrame) }
+
+        #expect(atSeam != nil, "切替後が無音になっている（基準点が過去のまま）")
+        #expect(atSeam?.pitch == .low)
+    }
+
     /// 切替はバッファ境界と無関係に起こる。
     /// バッファを細かく刻んでも、継ぎ目の位置は変わってはいけない
     @Test("バッファの区切り方を変えても継ぎ目の位置は同じ")
