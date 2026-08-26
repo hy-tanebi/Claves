@@ -10,7 +10,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "check:notation": "node scripts/check-notation.mjs",
-    "gen:golden": "vitest run -u src/domain/transport.golden.test.ts"
+    "gen:golden": "vitest run -u src/domain/transport.golden.test.ts src/domain/plans.golden.test.ts"
   },
   "devDependencies": {
     "jsdom": "^30.0.1",
