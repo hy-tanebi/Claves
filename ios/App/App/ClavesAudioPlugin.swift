@@ -20,6 +20,7 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(#selector(stop), returnType: .promise),
         CAPPluginMethod(#selector(applyPlan), returnType: .promise),
         CAPPluginMethod(#selector(setVolume), returnType: .promise),
+        CAPPluginMethod(#selector(getSnapshot), returnType: .promise),
     ]
 
     private var engine: ClavesAudioEngine?
@@ -68,6 +69,21 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
         }
         engine?.setVolume(Float(value))
         call.resolve()
+    }
+
+    /// いま鳴らしている位置を返す。譜面のハイライトに使う。
+    ///
+    /// **ネイティブが時計を持つ以上、再生位置もネイティブに聞くしかない。**
+    /// JS 側で別に数えると必ずずれる。
+    @objc func getSnapshot(_ call: CAPPluginCall) {
+        guard let engine else {
+            call.resolve(["tick": 0, "isPlaying": false])
+            return
+        }
+        call.resolve([
+            "tick": engine.playheadTick,
+            "isPlaying": engine.isRunning,
+        ])
     }
 
     // MARK: - 補助

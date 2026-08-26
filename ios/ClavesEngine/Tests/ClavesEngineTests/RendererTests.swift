@@ -67,6 +67,39 @@ struct RendererTests {
     }
 
     /// 周期をまたいでも鳴り続ける。2周目の先頭は 768 tick = 2.0 秒 = 96000 サンプル
+    /// 譜面のハイライトは「いまどこを鳴らしているか」で動く。
+    /// **ネイティブが時計を持つ以上、再生位置もネイティブに聞くしかない。**
+    /// JS 側で別に数えると必ずずれる。
+    @Test("サンプル位置から再生位置（tick）を取れる")
+    func reportsPlayheadTick() {
+        let renderer = TransportRenderer(plan: Self.makePlan(), sampleRate: 48000)
+
+        // 1 tick = 0.5/192 秒。18000 サンプル = 0.375 秒 = 144 tick
+        #expect(abs(renderer.tick(atFrame: 0) - 0) < 1e-9)
+        #expect(abs(renderer.tick(atFrame: 18000) - 144) < 1e-9)
+        #expect(abs(renderer.tick(atFrame: 96000) - 768) < 1e-9)
+    }
+
+    /// 切替後は新しい計画の時間軸で数える。
+    /// 古い計画のまま数えるとハイライトが譜面とずれる
+    @Test("切替後は新しい計画の時間軸で再生位置を返す")
+    func playheadFollowsCurrentPlan() {
+        var renderer = TransportRenderer(plan: Self.makePlan(), sampleRate: 48000)
+
+        // 倍のテンポ（240bpm）に、1.0 秒地点で切り替える
+        let faster = TransportPlan(
+            bpmUnit: 192, cycleTicks: 768, bpm: 240,
+            originTick: 0, originSeconds: 1.0,
+            events: [.init(tick: 0, pitch: .high)]
+        )
+        renderer.apply(faster, atTick: 384)  // 120bpm では 1.0 秒
+        _ = renderer.hits(from: 0, frameCount: 60000)
+
+        // 切替後 0.5 秒（=1.5秒地点 = 72000 サンプル）。
+        // 240bpm では 1 tick = 0.5/2/192 秒なので 0.5 秒は 384 tick
+        #expect(abs(renderer.tick(atFrame: 72000) - 384) < 1e-9)
+    }
+
     @Test("周期をまたいでも鳴り続ける")
     func continuesAcrossCycles() {
         var renderer = TransportRenderer(plan: Self.makePlan(), sampleRate: 48000)

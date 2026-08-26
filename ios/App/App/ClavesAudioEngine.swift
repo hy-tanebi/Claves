@@ -38,6 +38,15 @@ final class ClavesAudioEngine {
     /// 予約済みの最後の tick。境界計算に使う
     private var lastScheduledTick: Int = 0
 
+    /// いま鳴らしている位置（絶対 tick）。譜面のハイライトに使う。
+    ///
+    /// **`renderer` を UI スレッドから直接読んではいけない。**
+    /// オーディオスレッドが書き換える構造体なのでデータ競合になる。
+    /// 代わりにオーディオスレッド側がこの値を書き出し、UI はこれだけを読む。
+    /// 8バイトの整列した読み書きなので分断されず、
+    /// 1バッファぶん古い値になってもハイライトの見た目に影響はない。
+    private(set) var playheadTick: Double = 0
+
     init(plan: TransportPlan, sampleRate: Double = 48000, maxFrames: Int = 4096) {
         self.sampleRate = sampleRate
         self.renderer = TransportRenderer(plan: plan, sampleRate: sampleRate)
@@ -153,6 +162,11 @@ final class ClavesAudioEngine {
         }
 
         currentFrame += Int64(count)
+        // UI が読む再生位置をここで書き出す（UI から renderer を触らせないため）
+        playheadTick = renderer.tick(atFrame: currentFrame)
         return noErr
     }
+
+    /// 再生中かどうか。停止後にハイライトを止めるために使う
+    var isRunning: Bool { engine.isRunning }
 }

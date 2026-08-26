@@ -14,7 +14,16 @@ export type ClavesAudioPlugin = {
   stop(): Promise<void>;
   applyPlan(options: { planJson: string }): Promise<void>;
   setVolume(options: { value: number }): Promise<void>;
+  /**
+   * いま鳴らしている位置。譜面のハイライトに使う。
+   *
+   * `tick` は**周期をまたいで増え続ける絶対 tick**で、
+   * サンプル位置からの換算なので小数になる。
+   */
+  getSnapshot(): Promise<TransportSnapshot>;
 };
+
+export type TransportSnapshot = { tick: number; isPlaying: boolean };
 
 export type Origin = { originTick: number; originSeconds: number };
 
@@ -43,6 +52,14 @@ export function createNativeAudio(plugin: ClavesAudioPlugin) {
 
     async setVolume(value: number): Promise<void> {
       await plugin.setVolume({ value });
+    },
+
+    /**
+     * 再生位置をネイティブに聞く。
+     * **JS 側で別に数えると必ずずれる**（時計を持っているのはネイティブ）。
+     */
+    async snapshot(): Promise<TransportSnapshot> {
+      return plugin.getSnapshot();
     },
   };
 }
