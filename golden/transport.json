@@ -574,7 +574,7 @@
         "schemaVersion": 1,
         "ppq": 96,
         "bpmUnit": 192,
-        "cycleTicks": 384,
+        "cycleTicks": 768,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -593,6 +593,22 @@
           },
           {
             "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 384,
+            "pitch": "high"
+          },
+          {
+            "tick": 432,
+            "pitch": "high"
+          },
+          {
+            "tick": 576,
+            "pitch": "high"
+          },
+          {
+            "tick": 624,
             "pitch": "high"
           }
         ]
@@ -637,6 +653,46 @@
           "absTick": 624,
           "seconds": 4.875,
           "pitch": "high"
+        },
+        {
+          "absTick": 768,
+          "seconds": 6,
+          "pitch": "high"
+        },
+        {
+          "absTick": 816,
+          "seconds": 6.375,
+          "pitch": "high"
+        },
+        {
+          "absTick": 960,
+          "seconds": 7.5,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1008,
+          "seconds": 7.875,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1152,
+          "seconds": 9,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1200,
+          "seconds": 9.375,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1344,
+          "seconds": 10.5,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1392,
+          "seconds": 10.875,
+          "pitch": "high"
         }
       ]
     },
@@ -647,7 +703,7 @@
         "schemaVersion": 1,
         "ppq": 96,
         "bpmUnit": 192,
-        "cycleTicks": 384,
+        "cycleTicks": 768,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -666,6 +722,22 @@
           },
           {
             "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 384,
+            "pitch": "high"
+          },
+          {
+            "tick": 432,
+            "pitch": "high"
+          },
+          {
+            "tick": 576,
+            "pitch": "high"
+          },
+          {
+            "tick": 624,
             "pitch": "high"
           }
         ]
@@ -710,6 +782,46 @@
           "absTick": 624,
           "seconds": 1.625,
           "pitch": "high"
+        },
+        {
+          "absTick": 768,
+          "seconds": 2,
+          "pitch": "high"
+        },
+        {
+          "absTick": 816,
+          "seconds": 2.125,
+          "pitch": "high"
+        },
+        {
+          "absTick": 960,
+          "seconds": 2.5,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1008,
+          "seconds": 2.625,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1152,
+          "seconds": 3,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1200,
+          "seconds": 3.125,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1344,
+          "seconds": 3.5,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1392,
+          "seconds": 3.625,
+          "pitch": "high"
         }
       ]
     },
@@ -720,7 +832,7 @@
         "schemaVersion": 1,
         "ppq": 96,
         "bpmUnit": 192,
-        "cycleTicks": 384,
+        "cycleTicks": 768,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -739,6 +851,22 @@
           },
           {
             "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 384,
+            "pitch": "high"
+          },
+          {
+            "tick": 432,
+            "pitch": "high"
+          },
+          {
+            "tick": 576,
+            "pitch": "high"
+          },
+          {
+            "tick": 624,
             "pitch": "high"
           }
         ]
@@ -782,6 +910,46 @@
         {
           "absTick": 624,
           "seconds": 0.8125,
+          "pitch": "high"
+        },
+        {
+          "absTick": 768,
+          "seconds": 1,
+          "pitch": "high"
+        },
+        {
+          "absTick": 816,
+          "seconds": 1.0625,
+          "pitch": "high"
+        },
+        {
+          "absTick": 960,
+          "seconds": 1.25,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1008,
+          "seconds": 1.3125,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1152,
+          "seconds": 1.5,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1200,
+          "seconds": 1.5625,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1344,
+          "seconds": 1.75,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1392,
+          "seconds": 1.8125,
           "pitch": "high"
         }
       ]

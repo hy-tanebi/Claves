@@ -158,7 +158,7 @@ describe("付点の描画", () => {
    */
   const noteheadTextCounts = (pattern: Parameters<typeof renderPattern>[1]) => {
     renderPattern(container, pattern);
-    return [...container.querySelectorAll(".vf-stavenote")].map(
+    return Array.from(container.querySelectorAll(".vf-stavenote")).map(
       (n) => n.querySelectorAll(".vf-notehead text").length,
     );
   };

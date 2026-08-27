@@ -88,14 +88,24 @@ describe("Afro Groove (6/8)", () => {
 });
 
 describe("Afro Groove2", () => {
-  it("2/2 の1小節に ●●・・●●・・ で打点が並ぶ", () => {
-    // 8分音符換算で 0 / 1 / 4 / 5
-    expect(toPlaybackEvents(AFRO_GROOVE_2).map((e) => e.tick)).toEqual([0, 48, 192, 240]);
+  it("「カカンカカン」を2セット並べる", () => {
+    // カ(8分=48) カン(音+間=144) で「カカン」が半小節 192 tick。
+    // 「カカンカカン」で1小節 384 tick。それが2小節で1周期
+    expect(toPlaybackEvents(AFRO_GROOVE_2).map((e) => e.tick)).toEqual([
+      0, 48, 192, 240, 384, 432, 576, 624,
+    ]);
   });
 
-  it("1周期は 384 tick（2/2 の1小節）", () => {
-    expect(totalTicks(AFRO_GROOVE_2)).toBe(384);
-    expect(AFRO_GROOVE_2.bars).toHaveLength(1);
+  it("1周期は 768 tick（2/2 の2小節）", () => {
+    expect(totalTicks(AFRO_GROOVE_2)).toBe(768);
+    expect(AFRO_GROOVE_2.bars).toHaveLength(2);
+  });
+
+  it("2小節はまったく同じ形", () => {
+    const [first, second] = AFRO_GROOVE_2.bars;
+    const shape = (b: typeof first) =>
+      b!.items.map((i) => `${i.kind}:${i.duration}:${i.dots ?? 0}`);
+    expect(shape(second)).toEqual(shape(first));
   });
 
   it("BPM は2分音符で数える（カットタイム）", () => {
