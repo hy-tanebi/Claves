@@ -21,6 +21,7 @@ describe("createNativeAudio", () => {
       applyPlan: async (o) => void calls.push({ method: "applyPlan", args: o }),
       setVolume: async (o) => void calls.push({ method: "setVolume", args: o }),
       getSnapshot: async () => ({ tick: 0, isPlaying: true }),
+    addListener: async () => ({ remove: async () => {} }),
     };
     return { plugin, calls };
   }
@@ -76,6 +77,7 @@ describe("createNativeAudio", () => {
       applyPlan: async () => {},
       setVolume: async () => {},
       getSnapshot: async () => ({ tick: 288.5, isPlaying: true }),
+    addListener: async () => ({ remove: async () => {} }),
     };
 
     expect(await createNativeAudio(plugin).snapshot()).toEqual({
@@ -95,10 +97,82 @@ describe("createNativeAudio", () => {
       applyPlan: async () => {},
       setVolume: async () => {},
       getSnapshot: async () => ({ tick: 0, isPlaying: false }),
+    addListener: async () => ({ remove: async () => {} }),
     };
 
     await expect(createNativeAudio(plugin).start(pattern, 120)).rejects.toThrow(
       /再生計画が不正です/,
     );
+  });
+});
+
+describe("ネイティブ都合の停止", () => {
+  const pattern = PATTERNS.find((p) => p.id === "three-two-groove")!;
+
+  /**
+   * 割り込みやイヤホン抜去でネイティブが止めたとき、
+   * **JS が知らないと画面のボタンが「再生中」のまま残る。**
+   */
+  it("停止の通知を受け取れる", async () => {
+    const listeners: Record<string, () => void> = {};
+    const plugin: ClavesAudioPlugin = {
+      start: async () => {},
+      stop: async () => {},
+      applyPlan: async () => {},
+      setVolume: async () => {},
+      getSnapshot: async () => ({ tick: 0, isPlaying: false }),
+      addListener: async (event, cb) => {
+        listeners[event] = cb;
+        return { remove: async () => {} };
+      },
+    };
+
+    let stopped = false;
+    await createNativeAudio(plugin).onPlaybackStopped(() => {
+      stopped = true;
+    });
+
+    listeners["playbackStopped"]!();
+    expect(stopped).toBe(true);
+  });
+
+  /// ロック画面の再生ボタンで鳴り出したときも同じ
+  it("再開の通知を受け取れる", async () => {
+    const listeners: Record<string, () => void> = {};
+    const plugin: ClavesAudioPlugin = {
+      start: async () => {},
+      stop: async () => {},
+      applyPlan: async () => {},
+      setVolume: async () => {},
+      getSnapshot: async () => ({ tick: 0, isPlaying: false }),
+      addListener: async (event, cb) => {
+        listeners[event] = cb;
+        return { remove: async () => {} };
+      },
+    };
+
+    let started = false;
+    await createNativeAudio(plugin).onPlaybackStarted(() => {
+      started = true;
+    });
+
+    listeners["playbackStarted"]!();
+    expect(started).toBe(true);
+  });
+
+  /// ロック画面に何のリズムか出すため、名前も渡す
+  it("リズム名をロック画面用に渡す", async () => {
+    const sent: Array<Record<string, unknown>> = [];
+    const plugin: ClavesAudioPlugin = {
+      start: async (o) => void sent.push(o),
+      stop: async () => {},
+      applyPlan: async () => {},
+      setVolume: async () => {},
+      getSnapshot: async () => ({ tick: 0, isPlaying: false }),
+      addListener: async () => ({ remove: async () => {} }),
+    };
+
+    await createNativeAudio(plugin).start(pattern, 120);
+    expect(sent[0]!.title).toBe(pattern.name);
   });
 });

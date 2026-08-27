@@ -10,7 +10,7 @@ import type { Pattern } from "../domain/types";
  * そのままネイティブに届くので、検査した経路と実際の経路が一致する。
  */
 export type ClavesAudioPlugin = {
-  start(options: { planJson: string }): Promise<void>;
+  start(options: { planJson: string; title: string }): Promise<void>;
   stop(): Promise<void>;
   applyPlan(options: { planJson: string }): Promise<void>;
   setVolume(options: { value: number }): Promise<void>;
@@ -21,7 +21,19 @@ export type ClavesAudioPlugin = {
    * サンプル位置からの換算なので小数になる。
    */
   getSnapshot(): Promise<TransportSnapshot>;
+  /**
+   * ネイティブ都合の再生・停止を受け取る。
+   *
+   * 割り込みやイヤホン抜去、ロック画面の操作で状態が変わったとき、
+   * **JS が知らないと画面のボタンが実際とずれる。**
+   */
+  addListener(
+    event: PlaybackEvent,
+    callback: () => void,
+  ): Promise<{ remove: () => Promise<void> }>;
 };
+
+export type PlaybackEvent = "playbackStopped" | "playbackStarted";
 
 export type TransportSnapshot = { tick: number; isPlaying: boolean };
 
@@ -39,7 +51,11 @@ const FROM_START: Origin = { originTick: 0, originSeconds: 0 };
 export function createNativeAudio(plugin: ClavesAudioPlugin) {
   return {
     async start(pattern: Pattern, bpm: number, origin: Origin = FROM_START): Promise<void> {
-      await plugin.start({ planJson: JSON.stringify(buildPlan(pattern, bpm, origin)) });
+      await plugin.start({
+        planJson: JSON.stringify(buildPlan(pattern, bpm, origin)),
+        // ロック画面に何を鳴らしているか出すため
+        title: pattern.name,
+      });
     },
 
     async change(pattern: Pattern, bpm: number, origin: Origin = FROM_START): Promise<void> {
@@ -60,6 +76,16 @@ export function createNativeAudio(plugin: ClavesAudioPlugin) {
      */
     async snapshot(): Promise<TransportSnapshot> {
       return plugin.getSnapshot();
+    },
+
+    /** 割り込み・イヤホン抜去・ロック画面の停止で呼ばれる */
+    async onPlaybackStopped(callback: () => void): Promise<void> {
+      await plugin.addListener("playbackStopped", callback);
+    },
+
+    /** ロック画面の再生ボタンで鳴り出したときに呼ばれる */
+    async onPlaybackStarted(callback: () => void): Promise<void> {
+      await plugin.addListener("playbackStarted", callback);
     },
   };
 }
