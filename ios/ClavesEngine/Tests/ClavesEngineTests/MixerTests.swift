@@ -9,16 +9,41 @@ import Testing
 @Suite("バッファへの書き込み")
 struct MixerTests {
 
+    /// **オーディオ側が要求するサンプル数は、用意したバッファより少ないのが普通。**
+    /// バッファは最大長で使い回し、実際に使うのは毎回その一部。
+    ///
+    /// バッファ長ぶん音を進めてしまうと、40ms のクリック（1920サンプル）が
+    /// 1回のコールバックで消費し尽くされ、聴こえるのは先頭の一部だけになる。
+    /// **音が途中でぶつ切りになり、打点ごとに鳴り方が変わって聴こえる。**
+    @Test("出力するぶんだけ音を進める")
+    func advancesOnlyByTheFramesActuallyUsed() {
+        let table = Click.samples(pitch: .high, sampleRate: 48000)
+        let used = 100
+
+        var mixer = ClickMixer(sampleRate: 48000)
+        // 4096 で確保して 100 サンプルだけ使う、という実際の使われ方
+        var buffer = [Float](repeating: 0, count: 4096)
+        mixer.fill(&buffer, count: used, hits: [ScheduledHit(frameOffset: 0, pitch: .high)])
+
+        var next = [Float](repeating: 0, count: 4096)
+        mixer.fill(&next, count: used, hits: [])
+
+        // 2回目は波形の 100 サンプル目から続く。
+        // バッファ長ぶん進めていると、ここは無音になる
+        #expect(next[0] == table[used], "音が途中で飛んでいる（進めすぎ）")
+        #expect(next[1] == table[used + 1])
+    }
+
     @Test("バッファの端で鳴り始めた打点は次のバッファへ続く")
     func voiceContinuesAcrossBuffers() {
         var mixer = ClickMixer(sampleRate: 48000)
 
         // 512 サンプルのバッファの、残り 10 サンプルの位置で鳴らす
         var first = [Float](repeating: 0, count: 512)
-        mixer.fill(&first, hits: [ScheduledHit(frameOffset: 502, pitch: .high)])
+        mixer.fill(&first, count: first.count, hits: [ScheduledHit(frameOffset: 502, pitch: .high)])
 
         var second = [Float](repeating: 0, count: 512)
-        mixer.fill(&second, hits: [])
+        mixer.fill(&second, count: second.count, hits: [])
 
         #expect(second.contains { $0 != 0 }, "次のバッファで音が途切れている")
     }
@@ -27,7 +52,7 @@ struct MixerTests {
     func silenceWithoutHits() {
         var mixer = ClickMixer(sampleRate: 48000)
         var buffer = [Float](repeating: 0, count: 512)
-        mixer.fill(&buffer, hits: [])
+        mixer.fill(&buffer, count: buffer.count, hits: [])
 
         #expect(buffer.allSatisfy { $0 == 0 })
     }
@@ -36,7 +61,7 @@ struct MixerTests {
     func hitStartsAtItsOffset() {
         var mixer = ClickMixer(sampleRate: 48000)
         var buffer = [Float](repeating: 0, count: 512)
-        mixer.fill(&buffer, hits: [ScheduledHit(frameOffset: 100, pitch: .high)])
+        mixer.fill(&buffer, count: buffer.count, hits: [ScheduledHit(frameOffset: 100, pitch: .high)])
 
         #expect(buffer[0..<100].allSatisfy { $0 == 0 }, "打点より前で鳴っている")
         #expect(buffer[100..<512].contains { $0 != 0 }, "打点の位置から鳴っていない")
@@ -48,12 +73,13 @@ struct MixerTests {
     func overlappingHitsAreMixed() {
         var single = ClickMixer(sampleRate: 48000)
         var one = [Float](repeating: 0, count: 512)
-        single.fill(&one, hits: [ScheduledHit(frameOffset: 0, pitch: .high)])
+        single.fill(&one, count: one.count, hits: [ScheduledHit(frameOffset: 0, pitch: .high)])
 
         var double = ClickMixer(sampleRate: 48000)
         var two = [Float](repeating: 0, count: 512)
         double.fill(
             &two,
+            count: two.count,
             hits: [
                 ScheduledHit(frameOffset: 0, pitch: .high),
                 ScheduledHit(frameOffset: 0, pitch: .high),
@@ -69,7 +95,7 @@ struct MixerTests {
     func clearsStaleBufferContent() {
         var mixer = ClickMixer(sampleRate: 48000)
         var buffer = [Float](repeating: 0.5, count: 512)  // 前回の残骸
-        mixer.fill(&buffer, hits: [])
+        mixer.fill(&buffer, count: buffer.count, hits: [])
 
         #expect(buffer.allSatisfy { $0 == 0 }, "前回の内容が残っている")
     }

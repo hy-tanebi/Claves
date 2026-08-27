@@ -2,6 +2,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { THREE_TWO_GROOVE } from "../domain/patterns/three-two-groove";
 import { AFRO_GROOVE_6_8 } from "../domain/patterns/afro-groove-6-8";
+import { AFRO_GROOVE_6_8_2 } from "../domain/patterns/afro-groove-6-8-2";
 import { toPlaybackEvents } from "../domain/derive";
 import { renderPattern } from "./renderer";
 import { LAYOUT, measureBars, measureTimeSignatureWidth, planSystems } from "./layout";
@@ -144,5 +145,30 @@ describe("renderPattern", () => {
     el.classList.add("on");
 
     expect(el.getAttribute("transform")).toBe(before);
+  });
+});
+
+describe("付点の描画", () => {
+  /**
+   * **付点は音価文字列とグリフの両方が要る。**
+   * 片方だけだと小節の長さは合うのに付点が見えない、という壊れ方をする。
+   *
+   * VexFlow は付点を符頭グループの中に2つ目の `<text>` として描く。
+   * 文字幅の測定に依らない構造の話なので jsdom でも検出できる。
+   */
+  const noteheadTextCounts = (pattern: Parameters<typeof renderPattern>[1]) => {
+    renderPattern(container, pattern);
+    return [...container.querySelectorAll(".vf-stavenote")].map(
+      (n) => n.querySelectorAll(".vf-notehead text").length,
+    );
+  };
+
+  it("付点音符には付点のグリフが描かれる", () => {
+    // カン(4分) カ(8分) カン(付点4分) が2小節。3つ目と6つ目に付点が付く
+    expect(noteheadTextCounts(AFRO_GROOVE_6_8_2)).toEqual([1, 1, 2, 1, 1, 2]);
+  });
+
+  it("付点のないリズムには付点が描かれない", () => {
+    expect(noteheadTextCounts(AFRO_GROOVE_6_8).every((n) => n === 1)).toBe(true);
   });
 });

@@ -4,6 +4,7 @@ import { toPlaybackEvents } from "./derive";
 import { AFRO_GROOVE } from "./patterns/afro-groove";
 import { AFRO_GROOVE_2 } from "./patterns/afro-groove-2";
 import { AFRO_GROOVE_6_8 } from "./patterns/afro-groove-6-8";
+import { AFRO_GROOVE_6_8_2 } from "./patterns/afro-groove-6-8-2";
 import { IJEXA } from "./patterns/ijexa";
 import { PATTERNS } from "./registry";
 import { totalTicks } from "./ticks";
@@ -160,5 +161,37 @@ describe("IJEXA", () => {
   it("BPM は2分音符で数える（カットタイム）", () => {
     expect(IJEXA.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
     expect(IJEXA.bpmUnit).toBe(192);
+  });
+});
+
+describe("6/8 Afro Groove 2", () => {
+  it("カンカカン（♩ ♪ ♩.）を2小節繰り返す", () => {
+    const ticks = toPlaybackEvents(AFRO_GROOVE_6_8_2).map((e) => e.tick);
+
+    // 1小節 288 tick。カン(4分=96) カ(8分=48) カン(付点4分=144)
+    // → 打点は小節頭・96・144。それが2小節
+    expect(ticks).toEqual([0, 96, 144, 288, 384, 432]);
+  });
+
+  it("1周期は 6/8 × 2小節ぶん", () => {
+    expect(totalTicks(AFRO_GROOVE_6_8_2)).toBe(576);
+  });
+
+  it("2小節はまったく同じ形", () => {
+    const [first, second] = AFRO_GROOVE_6_8_2.bars;
+    const shape = (b: typeof first) =>
+      b!.items.map((i) => `${i.kind}:${i.duration}:${i.dots ?? 0}`);
+    expect(shape(second)).toEqual(shape(first));
+  });
+
+  it("高低は打ち分けない（高低を使うのは IJEXA だけ）", () => {
+    expect(toPlaybackEvents(AFRO_GROOVE_6_8_2).every((e) => e.pitch === "high")).toBe(true);
+  });
+});
+
+describe("6/8 の名前", () => {
+  it("6/8 のリズムは 6/8 Afro Groove で揃える", () => {
+    expect(AFRO_GROOVE_6_8.name).toBe("6/8 Afro Groove 1");
+    expect(AFRO_GROOVE_6_8_2.name).toBe("6/8 Afro Groove 2");
   });
 });

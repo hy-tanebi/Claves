@@ -9,16 +9,31 @@ import Testing
 @Suite("クリック音の生成")
 struct ClickTests {
 
-    /// 波形の始まりと終わりが 0 でないと、その段差が「プチッ」というノイズになる。
+    /// 波形の始まりに段差があると「プチッ」というノイズになる。
     /// 打点は毎小節鳴るので、ここが雑だと聴き続けられない。
-    @Test("波形は無音から始まり無音で終わる")
-    func waveformStartsAndEndsSilent() {
+    @Test("波形は無音から始まる")
+    func waveformStartsSilent() {
         for pitch in [Pitch.high, Pitch.low] {
             let samples = Click.samples(pitch: pitch, sampleRate: 48000)
 
             #expect(!samples.isEmpty)
             #expect(abs(samples.first!) < 0.001, "\(pitch) の先頭に段差がある")
-            #expect(abs(samples.last!) < 0.001, "\(pitch) の末尾に段差がある")
+        }
+    }
+
+    /// 末尾は**ちょうど 0 にはならない**。指数減衰なので理屈上ゼロに達しない。
+    ///
+    /// 末尾のサンプル1点だけを見ると、サイン波がたまたまゼロ交差に近いかどうかで
+    /// 値が変わり、**運で通るテストになる**。包絡線が十分下がっていることを見る。
+    /// 0.0033（およそ -50dB）は聴こえない。
+    @Test("波形の末尾は聴こえない大きさまで減衰している")
+    func waveformDecaysToInaudible() {
+        for pitch in [Pitch.high, Pitch.low] {
+            let samples = Click.samples(pitch: pitch, sampleRate: 48000)
+            // 末尾 1ms の最大値で見る（1点だけだと偶然に左右される）
+            let tail = samples.suffix(48)
+
+            #expect(tail.allSatisfy { abs($0) < 0.005 }, "\(pitch) の末尾が減衰しきっていない")
         }
     }
 

@@ -98,7 +98,12 @@ struct TransportGoldenTests {
     func fixtureLoads() throws {
         let golden = try Self.load()
         #expect(golden.schemaVersion == 1)
-        #expect(golden.scenarios.count == 16)
+
+        // **件数は決め打ちしない。** 収録リズムが増えるたびに落ちるだけで、
+        // 何も守れない。空でないことと、両方の種別が揃っていることを見る
+        #expect(!golden.scenarios.isEmpty)
+        #expect(golden.scenarios.contains { $0.kind == "steady" })
+        #expect(golden.scenarios.contains { $0.kind == "switch" })
     }
 
     @Test("全シナリオで JS と同じ absTick・秒・音色になる")
