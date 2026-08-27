@@ -3,11 +3,12 @@ import { computeBeams } from "./beams";
 import { toPlaybackEvents } from "./derive";
 import { AFRO_GROOVE } from "./patterns/afro-groove";
 import { AFRO_GROOVE_2 } from "./patterns/afro-groove-2";
+import { AFRO_GROOVE_2_4_4 } from "./patterns/afro-groove-2-4-4";
 import { AFRO_GROOVE_6_8 } from "./patterns/afro-groove-6-8";
 import { AFRO_GROOVE_6_8_2 } from "./patterns/afro-groove-6-8-2";
 import { IJEXA } from "./patterns/ijexa";
 import { PATTERNS } from "./registry";
-import { totalTicks } from "./ticks";
+import { secPerTick, totalTicks } from "./ticks";
 import { validatePattern } from "./validate";
 
 describe("収録リズム", () => {
@@ -203,5 +204,33 @@ describe("6/8 の名前", () => {
   it("6/8 のリズムは 6/8 Afro Groove で揃える", () => {
     expect(AFRO_GROOVE_6_8.name).toBe("6/8 Afro Groove 1");
     expect(AFRO_GROOVE_6_8_2.name).toBe("6/8 Afro Groove 2");
+  });
+});
+
+describe("Afro Groove2 (4/4)", () => {
+  /**
+   * **2/2 版と打点の並びも1周期の長さも同じ。** 違うのは数え方だけ。
+   * 4/4 では1拍が4分音符になるので、**同じ BPM の数字でも速さが倍違う**。
+   * どちらが演奏の感覚に合うかを見比べるために両方を置いている。
+   */
+  it("打点の並びは 2/2 版とまったく同じ", () => {
+    expect(toPlaybackEvents(AFRO_GROOVE_2_4_4).map((e) => e.tick)).toEqual(
+      toPlaybackEvents(AFRO_GROOVE_2).map((e) => e.tick),
+    );
+  });
+
+  it("1周期の tick 数も 2/2 版と同じ", () => {
+    expect(totalTicks(AFRO_GROOVE_2_4_4)).toBe(totalTicks(AFRO_GROOVE_2));
+  });
+
+  it("BPM は4分音符で数える（ここだけが 2/2 版との違い）", () => {
+    expect(AFRO_GROOVE_2_4_4.meter).toEqual({ beats: 4, beatUnit: 4, beatGroups: [1, 1, 1, 1] });
+    expect(AFRO_GROOVE_2_4_4.bpmUnit).toBe(96);
+    expect(AFRO_GROOVE_2.bpmUnit).toBe(192);
+  });
+
+  it("同じ BPM の数字では 2/2 版の半分の速さになる", () => {
+    // secPerTick = 60 / bpm / bpmUnit。bpmUnit が半分なら1 tick は倍の長さ
+    expect(secPerTick(AFRO_GROOVE_2_4_4, 120)).toBeCloseTo(secPerTick(AFRO_GROOVE_2, 120) * 2, 12);
   });
 });

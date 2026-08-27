@@ -1,5 +1,6 @@
 import { AFRO_GROOVE } from "./patterns/afro-groove";
 import { AFRO_GROOVE_2 } from "./patterns/afro-groove-2";
+import { AFRO_GROOVE_2_4_4 } from "./patterns/afro-groove-2-4-4";
 import { AFRO_GROOVE_6_8 } from "./patterns/afro-groove-6-8";
 import { AFRO_GROOVE_6_8_2 } from "./patterns/afro-groove-6-8-2";
 import { IJEXA } from "./patterns/ijexa";
@@ -16,6 +17,7 @@ export const PATTERNS: Pattern[] = [
   THREE_TWO_GROOVE,
   AFRO_GROOVE,
   AFRO_GROOVE_2,
+  AFRO_GROOVE_2_4_4,
   AFRO_GROOVE_6_8,
   AFRO_GROOVE_6_8_2,
   IJEXA,
