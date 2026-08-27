@@ -376,6 +376,25 @@ els.volume.addEventListener("input", () => {
   void nativeAudio?.setVolume(value);
 });
 
+// ネイティブ都合の再生・停止に画面を追従させる。
+//
+// **割り込み（着信・Siri）やイヤホン抜去でネイティブが止めても、
+// JS が知らないとボタンが「再生中」のまま残る。**
+// ロック画面から操作されたときも同じ。
+if (nativeAudio) {
+  void nativeAudio.onPlaybackStopped(() => {
+    if (els.play.dataset.playing === "true") stop();
+  });
+  void nativeAudio.onPlaybackStarted(() => {
+    if (els.play.dataset.playing !== "true") {
+      els.play.textContent = "STOP";
+      els.play.dataset.playing = "true";
+      startNativeHighlightLoop();
+      clearError();
+    }
+  });
+}
+
 // 初期化
 els.bpm.value = String(bpm);
 els.bpmValue.value = String(bpm);

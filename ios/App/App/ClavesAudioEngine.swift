@@ -56,15 +56,76 @@ final class ClavesAudioEngine {
 
     // MARK: - セッション
 
-    /// 決定済みの仕様に合わせる:
+    /// 再生が自分の意思でなく止まったときに呼ぶ。
+    ///
+    /// **止めたことを JS に伝えないと、画面のボタンが「再生中」のまま残る。**
+    /// 割り込みやイヤホン抜去で止まったとき、UI と実際がずれるのを防ぐ。
+    var onStoppedByPolicy: (() -> Void)?
+
+    /// 決定済みの仕様に合わせる（2026-08-22 オーナー判断）:
     /// 他アプリと混ぜない（`.playback` を単独で使う）／
     /// サイレントスイッチでも鳴る（`.playback` の性質）。
     ///
-    /// 割り込み後の自動再開とイヤホン抜去での停止は P3 で扱う。
+    /// 割り込みと機器変更の監視もここで始める。
+    /// **何をするかの判断は `ClavesEngine` の `LifecyclePolicy` にある**
+    /// （実機なしでテストできるようにするため）。
     func configureSession() throws {
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(.playback, mode: .default, options: [])
         try session.setActive(true)
+        observeLifecycle(session)
+    }
+
+    private func observeLifecycle(_ session: AVAudioSession) {
+        let center = NotificationCenter.default
+
+        center.addObserver(
+            forName: AVAudioSession.interruptionNotification, object: session, queue: .main
+        ) { [weak self] note in
+            guard
+                let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
+                let type = AVAudioSession.InterruptionType(rawValue: raw)
+            else { return }
+
+            let options = (note.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt)
+                .map(AVAudioSession.InterruptionOptions.init(rawValue:)) ?? []
+
+            let phase: InterruptionPhase =
+                type == .began
+                ? .began
+                : .ended(systemSuggestsResume: options.contains(.shouldResume))
+
+            self?.apply(LifecyclePolicy.onInterruption(phase))
+        }
+
+        center.addObserver(
+            forName: AVAudioSession.routeChangeNotification, object: session, queue: .main
+        ) { [weak self] note in
+            let raw = note.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt
+            let reason = AVAudioSession.RouteChangeReason(rawValue: raw ?? 0)
+            self?.apply(LifecyclePolicy.onRouteChange(Self.translate(reason)))
+        }
+    }
+
+    /// AVFoundation の理由を `ClavesEngine` の型へ移す。
+    /// **`ClavesEngine` に AVFoundation を持ち込まないための変換点。**
+    private static func translate(_ reason: AVAudioSession.RouteChangeReason?) -> RouteChangeReason {
+        switch reason {
+        case .oldDeviceUnavailable: .oldDeviceUnavailable
+        case .newDeviceAvailable: .newDeviceAvailable
+        case .categoryChange: .categoryChange
+        case .override: .override
+        case .wakeFromSleep: .wakeFromSleep
+        case .noSuitableRouteForCategory: .noSuitableRouteForCategory
+        case .routeConfigurationChange: .routeConfigurationChange
+        default: .unknown
+        }
+    }
+
+    private func apply(_ command: PlaybackCommand) {
+        guard command == .stop, isRunning else { return }
+        stop()
+        onStoppedByPolicy?()
     }
 
     // MARK: - 開始と停止

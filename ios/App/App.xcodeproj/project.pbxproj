@@ -15,6 +15,7 @@
 		CE0000000000000000000004 /* ClavesAudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0000000000000000000005 /* ClavesAudioEngine.swift */; };
 		CE0000000000000000000006 /* ClavesAudioPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0000000000000000000007 /* ClavesAudioPlugin.swift */; };
 		CE0000000000000000000008 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0000000000000000000009 /* MainViewController.swift */; };
+		CE000000000000000000000A /* NowPlaying.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE000000000000000000000B /* NowPlaying.swift */; };
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
@@ -30,6 +31,7 @@
 		CE0000000000000000000005 /* ClavesAudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClavesAudioEngine.swift; sourceTree = "<group>"; };
 		CE0000000000000000000007 /* ClavesAudioPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClavesAudioPlugin.swift; sourceTree = "<group>"; };
 		CE0000000000000000000009 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		CE000000000000000000000B /* NowPlaying.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlaying.swift; sourceTree = "<group>"; };
 		504EC30C1FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				CE0000000000000000000005 /* ClavesAudioEngine.swift */,
 				CE0000000000000000000007 /* ClavesAudioPlugin.swift */,
 				CE0000000000000000000009 /* MainViewController.swift */,
+				CE000000000000000000000B /* NowPlaying.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
@@ -176,6 +179,7 @@
 				CE0000000000000000000004 /* ClavesAudioEngine.swift in Sources */,
 				CE0000000000000000000006 /* ClavesAudioPlugin.swift in Sources */,
 				CE0000000000000000000008 /* MainViewController.swift in Sources */,
+				CE000000000000000000000A /* NowPlaying.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

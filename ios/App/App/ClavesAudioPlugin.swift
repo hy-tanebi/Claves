@@ -27,25 +27,77 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
 
     // MARK: - メソッド
 
+    /// ロック画面に出す名前と、直前に鳴らした計画。
+    /// 再生ボタンから鳴らし直すために覚えておく
+    private var lastPlan: TransportPlan?
+    private var title = "Claves"
+
     @objc func start(_ call: CAPPluginCall) {
         do {
             let plan = try decodePlan(from: call)
-
-            let engine = ClavesAudioEngine(plan: plan)
-            try engine.configureSession()
-            try engine.start()
-            self.engine = engine
-
+            title = call.getString("title") ?? "Claves"
+            try startEngine(with: plan)
             call.resolve()
         } catch {
             call.reject(Self.message(for: error), nil, error)
         }
     }
 
+    private func startEngine(with plan: TransportPlan) throws {
+        let engine = ClavesAudioEngine(plan: plan)
+        try engine.configureSession()
+
+        // 割り込みやイヤホン抜去で止まったら JS に伝える。
+        // **伝えないと画面のボタンが「再生中」のまま残る**
+        engine.onStoppedByPolicy = { [weak self] in
+            self?.handleStoppedByPolicy()
+        }
+
+        try engine.start()
+        self.engine = engine
+        self.lastPlan = plan
+
+        NowPlaying.enableRemoteControls(
+            onPlay: { [weak self] in self?.resumeFromRemote() },
+            onStop: { [weak self] in self?.stopFromRemote() }
+        )
+        NowPlaying.update(title: title, bpm: plan.bpm, isPlaying: true)
+    }
+
     @objc func stop(_ call: CAPPluginCall) {
+        stopEngine()
+        call.resolve()
+    }
+
+    private func stopEngine() {
         engine?.stop()
         engine = nil
-        call.resolve()
+        NowPlaying.clear()
+    }
+
+    // MARK: - 自分の意思でない停止・再開
+
+    /// 割り込みやイヤホン抜去で止まったとき。
+    /// **ロック画面の表示も止まった状態にする**（鳴っていないのに再生中と出ると混乱する）
+    private func handleStoppedByPolicy() {
+        engine = nil
+        if let plan = lastPlan {
+            NowPlaying.update(title: title, bpm: plan.bpm, isPlaying: false)
+        }
+        notifyListeners("playbackStopped", data: [:])
+    }
+
+    /// ロック画面の再生ボタン。**画面を開かずに鳴らし直せるようにする**
+    private func resumeFromRemote() {
+        guard engine == nil, let plan = lastPlan else { return }
+        try? startEngine(with: plan)
+        notifyListeners("playbackStarted", data: [:])
+    }
+
+    private func stopFromRemote() {
+        guard engine != nil else { return }
+        stopEngine()
+        notifyListeners("playbackStopped", data: [:])
     }
 
     @objc func applyPlan(_ call: CAPPluginCall) {
