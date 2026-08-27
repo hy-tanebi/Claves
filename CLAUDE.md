@@ -50,6 +50,20 @@ pnpm check:notation   # 譜面の見た目（実ブラウザ）
 - コミットは Conventional Commits。`type(scope):` は英語、説明は日本語
 - push 前に `docs/progress.md` を更新する
 
+### iOS の署名
+
+- **Team ID は `ios/Signing.xcconfig`（git 管理外）に置く。** 新しい環境では
+  `ios/Signing.xcconfig.example` をコピーして作る。無くてもプロジェクトは開けるし
+  シミュレータ向けビルドも通る（`#include?` で読んでいるため）
+- **Xcode の Signing & Capabilities で Team を触ると、`project.pbxproj` に
+  `DEVELOPMENT_TEAM` が書き戻される。** コミット前に
+  `git diff ios/App/App.xcodeproj/project.pbxproj` を見て、
+  入っていたら消して `ios/Signing.xcconfig` 側に書く
+- Team ID 自体は**秘密情報ではない**（配布された全アプリから
+  `codesign -dv --verbose=4` で読める）。署名には秘密鍵と証明書が要るので
+  Team ID だけでは何もできない。**公開リポジトリに自分の識別子を置かないための整理**であって、
+  漏れても実害があるものではない
+
 ### 依存パッケージ
 
 - pnpm 10.26 以降を `packageManager` で固定（`pnpm-workspace.yaml` のサプライチェーン対策が効かなくなるため）
