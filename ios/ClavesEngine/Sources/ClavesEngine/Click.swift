@@ -1,48 +1,59 @@
 import Foundation
 
-/// 打点の音そのもの。
+/// 打点の音。**JS 側 `src/audio/bell.ts` と同じ式でなければならない。**
+///
+/// ブラウザは Web Audio、iOS はここが鳴らすので、音を作る式が2言語に存在する。
+/// 片方だけ変えると「ブラウザと iOS で音が違う」が黙って起きるため、
+/// `golden/click.json` を読む突き合わせテストで一致を保証する。
 ///
 /// **レンダーコールバックの中で作らない。** その中でメモリ確保や三角関数を回すと
 /// 締め切りに間に合わず音が途切れる。起動時にここで表を作っておき、
 /// 本番はコピーするだけにする。
 public enum Click {
 
-    /// 1打点の長さ（秒）。骨格を刻む用途なので短く切る
-    public static let duration: Double = 0.04
+    /// 1打点の長さ（秒）
+    public static let duration: Double = 0.35
 
-    /// 歪まないよう頭を抑える
-    private static let peak: Float = 0.9
+    /// 金属打楽器らしさは倍音が整数比から外れていることで出る
+    private static let partials: [(ratio: Double, gain: Double, decay: Double)] = [
+        (1.0, 1.0, 12),
+        (2.76, 0.55, 18),
+        (5.4, 0.3, 26),
+        (8.93, 0.15, 34),
+    ]
 
-    /// アクセント（骨格の頭）と通常打点を聴き分けるための高さ
-    private static func frequency(for pitch: Pitch) -> Double {
+    /// 先頭のごく短いアタック整形（クリックノイズを避けつつ立ち上がりは保つ）
+    private static let attackSeconds: Double = 0.0015
+    private static let gain: Double = 0.22
+
+    /// アゴゴの高音・低音。
+    ///
+    /// **高音と低音は同じ音色で、基音だけを変える。**
+    /// 別々の音色にすると、ひとつの楽器の高低ではなく別の楽器に聴こえてしまう。
+    public static func fundamental(for pitch: Pitch) -> Double {
         switch pitch {
-        case .high: 1600
-        case .low: 900
+        case .high: 1180
+        case .low: 790
         }
     }
 
-    /// 打点1つぶんの波形。
-    ///
-    /// 始まりと終わりを 0 に落とすのは**「プチッ」というノイズを出さないため**。
-    /// 段差があるとスピーカーが跳ね、毎小節それが鳴って聴き続けられなくなる。
+    /// 打点1つぶんの波形
     public static func samples(pitch: Pitch, sampleRate: Double) -> [Float] {
-        let count = Int((duration * sampleRate).rounded())
+        let count = Int((duration * sampleRate).rounded(.up))
         guard count > 0 else { return [] }
 
-        let frequency = frequency(for: pitch)
-        // 立ち上がりは 1ms。ここが 0 から始まらないと頭で段差が出る
-        let attackFrames = max(1.0, 0.001 * sampleRate)
-        // 終わりは 5ms かけて 0 へ。減衰だけだと末尾がわずかに残る
-        let releaseFrames = max(1.0, 0.005 * sampleRate)
-        // 指数減衰の時定数。打点らしく速く落とす
-        let tau = duration / 5
+        let fundamental = fundamental(for: pitch)
 
         return (0..<count).map { index in
             let t = Double(index) / sampleRate
-            let attack = min(1.0, Double(index) / attackFrames)
-            let release = min(1.0, Double(count - 1 - index) / releaseFrames)
-            let envelope = attack * exp(-t / tau) * release
-            return Float(sin(2 * .pi * frequency * t) * envelope) * peak
+            var value = 0.0
+            for partial in partials {
+                value +=
+                    sin(2 * .pi * fundamental * partial.ratio * t)
+                    * partial.gain * exp(-t * partial.decay)
+            }
+            let attack = min(1, t / attackSeconds)
+            return Float(value * attack * gain)
         }
     }
 }

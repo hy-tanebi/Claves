@@ -8,7 +8,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = CAPBridgeViewController()
+        // **ここでストーリーボードは使われない。** Info.plist に
+        // UISceneStoryboardFile があっても、自分でウィンドウと root を作るため
+        // ストーリーボード側のクラス指定は効かない。
+        // 自前プラグインを登録する MainViewController をここで指定する必要がある。
+        window?.rootViewController = MainViewController()
         window?.makeKeyAndVisible()
 
         SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)

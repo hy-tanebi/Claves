@@ -18,8 +18,12 @@ public struct ClickMixer {
     private var voices: [Voice] = []
 
     /// 同時に鳴らせる数の上限。速いテンポで打点が溜まっても
-    /// 処理量が青天井にならないようにする
-    private let maxVoices = 8
+    /// 処理量が青天井にならないようにする。
+    ///
+    /// **上限に達すると鳴っている音を途中で切るので、余裕を持たせる。**
+    /// 打点は 0.35 秒鳴る。最も密な IJEXA を上限の 400bpm で鳴らすと
+    /// 平均 0.075 秒間隔＝約5音が重なる。打点が偏る箇所を考えても 16 あれば届かない。
+    private let maxVoices = 16
 
     public init(sampleRate: Double) {
         tables = [
@@ -29,15 +33,23 @@ public struct ClickMixer {
         voices.reserveCapacity(maxVoices)
     }
 
-    /// バッファを埋める。`hits` はこのバッファ内で鳴り始める打点。
+    /// バッファの先頭 `count` サンプルを埋める。`hits` はその範囲で鳴り始める打点。
+    ///
+    /// **`count` は必ず渡す。** バッファは最大長で確保して使い回し、
+    /// オーディオ側が要求する数は毎回それより少ないのが普通。
+    /// バッファ長ぶん音を進めると、40ms のクリックが1回のコールバックで
+    /// 消費し尽くされ、音が途中でぶつ切りになる。
     ///
     /// バッファは使い回されるため、**まず 0 で埋め直す**。
     /// 残骸を放置すると前の音が繰り返し鳴る。
-    public mutating func fill(_ buffer: inout [Float], hits: [ScheduledHit]) {
-        for index in buffer.indices { buffer[index] = 0 }
+    public mutating func fill(_ buffer: inout [Float], count: Int, hits: [ScheduledHit]) {
+        let frames = min(count, buffer.count)
+        guard frames > 0 else { return }
+
+        for index in 0..<frames { buffer[index] = 0 }
 
         for hit in hits {
-            guard hit.frameOffset >= 0, hit.frameOffset < buffer.count else { continue }
+            guard hit.frameOffset >= 0, hit.frameOffset < frames else { continue }
             if voices.count >= maxVoices { voices.removeFirst() }
             // 表の先頭からではなく、バッファ内の位置ぶん遅らせて鳴らす
             voices.append(Voice(pitch: hit.pitch, position: -hit.frameOffset))
@@ -49,7 +61,7 @@ public struct ClickMixer {
             let table = tables[voices[voiceIndex].pitch] ?? []
             var position = voices[voiceIndex].position
 
-            for bufferIndex in buffer.indices {
+            for bufferIndex in 0..<frames {
                 if position >= 0 && position < table.count {
                     // 重なった打点は足し合わせる。上書きすると前の音が不自然に切れる
                     buffer[bufferIndex] += table[position]

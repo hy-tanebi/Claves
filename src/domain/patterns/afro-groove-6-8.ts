@@ -1,7 +1,7 @@
 import type { Pattern } from "../types";
 
 /**
- * Afro Groove (6/8)。
+ * 6/8 Afro Groove 1。
  *
  * オーナー提供の譜面画像に基づく。画像は
  *
@@ -24,7 +24,7 @@ import type { Pattern } from "../types";
  */
 export const AFRO_GROOVE_6_8: Pattern = {
   id: "afro-groove-6-8",
-  name: "Afro Groove (6/8)",
+  name: "6/8 Afro Groove 1",
   meter: { beats: 6, beatUnit: 8, beatGroups: [3, 3] },
   bpmUnit: 144,
   bars: [

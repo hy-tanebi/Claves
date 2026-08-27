@@ -151,13 +151,20 @@ final class ClavesAudioEngine {
             )
         }
 
-        mixer.fill(&scratch, hits: hits)
+        // **使うぶんだけ渡す。** バッファ長ぶん進めると 40ms のクリックが
+        // 1回のコールバックで消費し尽くされ、音が途中でぶつ切りになる
+        mixer.fill(&scratch, count: count, hits: hits)
 
         let buffers = UnsafeMutableAudioBufferListPointer(audioBufferList)
         for buffer in buffers {
             guard let destination = buffer.mData?.assumingMemoryBound(to: Float.self) else { continue }
             for frame in 0..<count {
                 destination[frame] = scratch[frame] * volume
+            }
+            // 用意した以上を要求された場合、残りを埋めないと
+            // 前回の中身がそのまま鳴る。無音で埋める
+            if frameCount > count {
+                for frame in count..<frameCount { destination[frame] = 0 }
             }
         }
 

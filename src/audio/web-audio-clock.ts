@@ -1,3 +1,4 @@
+import { BELL_FUNDAMENTALS, bellSamples } from "./bell";
 import type { Pitch } from "../domain/types";
 import type { AudioClock, ScheduleRequest, ScheduledSound } from "./clock";
 
@@ -60,37 +61,16 @@ export class WebAudioClock implements AudioClock {
  * 立ち上がりを鋭くしてアタックを明確にし、タイミングが取りやすいようにする。
  */
 export function synthBell(ctx: BaseAudioContext, fundamental: number): AudioBuffer {
-  const duration = 0.35;
-  const length = Math.ceil(ctx.sampleRate * duration);
-  const buf = ctx.createBuffer(1, length, ctx.sampleRate);
-  const data = buf.getChannelData(0);
-
-  // 非整数比の倍音を重ねて金属的な響きを作る
-  const partials = [
-    { ratio: 1.0, gain: 1.0, decay: 12 },
-    { ratio: 2.76, gain: 0.55, decay: 18 },
-    { ratio: 5.4, gain: 0.3, decay: 26 },
-    { ratio: 8.93, gain: 0.15, decay: 34 },
-  ];
-
-  for (let i = 0; i < length; i++) {
-    const t = i / ctx.sampleRate;
-    let v = 0;
-    for (const p of partials) {
-      v += Math.sin(2 * Math.PI * fundamental * p.ratio * t) * p.gain * Math.exp(-t * p.decay);
-    }
-    // 先頭 1.5ms のごく短いアタック整形（クリックノイズを避けつつ立ち上がりは保つ）
-    const attack = Math.min(1, t / 0.0015);
-    data[i] = v * attack * 0.22;
-  }
-
+  const data = bellSamples(fundamental, ctx.sampleRate);
+  const buf = ctx.createBuffer(1, data.length, ctx.sampleRate);
+  buf.getChannelData(0).set(data);
   return buf;
 }
 
 /** アゴゴの高音・低音を合成する */
 export function createBellBuffers(ctx: BaseAudioContext): Record<Pitch, AudioBuffer> {
   return {
-    high: synthBell(ctx, 1180),
-    low: synthBell(ctx, 790),
+    high: synthBell(ctx, BELL_FUNDAMENTALS.high),
+    low: synthBell(ctx, BELL_FUNDAMENTALS.low),
   };
 }
