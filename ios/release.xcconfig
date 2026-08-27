@@ -1,0 +1,5 @@
+// Release ビルドの設定。
+// 署名の情報は git 管理外の Signing.xcconfig から読む。
+// `#include?` は相手が無くても失敗しないので、
+// 初めて clone した環境でもプロジェクトが開ける。
+#include? "Signing.xcconfig"

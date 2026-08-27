@@ -42,17 +42,35 @@ enum NowPlaying {
         }
     }
 
+    /// ロック画面に出すアイコン。
+    ///
+    /// **アセットカタログのアプリアイコンは `UIImage(named:)` で読めないことがある。**
+    /// Web 資産としてバンドルに入る `public/icon-1024.png`（アプリアイコンと同じ絵）を読む。
+    /// これは `cap sync` が必ず配置するので確実に存在する。
+    ///
+    /// 毎回作り直すと重いので一度だけ作って持っておく。
+    private static let artwork: MPMediaItemArtwork? = {
+        guard
+            let url = Bundle.main.url(
+                forResource: "icon-1024", withExtension: "png", subdirectory: "public"),
+            let image = UIImage(contentsOfFile: url.path)
+        else { return nil }
+        return MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+    }()
+
     /// ロック画面の表示を更新する。
     ///
     /// **経過時間は出さない。** メトロノームは終わりのない繰り返しなので、
     /// 進捗バーが出ると意味のない表示になる。
     static func update(title: String, bpm: Double, isPlaying: Bool) {
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [
+        var info: [String: Any] = [
             MPMediaItemPropertyTitle: title,
             MPMediaItemPropertyArtist: "\(Int(bpm)) BPM",
             MPNowPlayingInfoPropertyPlaybackRate: isPlaying ? 1.0 : 0.0,
             MPNowPlayingInfoPropertyIsLiveStream: true,
         ]
+        if let artwork { info[MPMediaItemPropertyArtwork] = artwork }
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
     }
 
     static func clear() {

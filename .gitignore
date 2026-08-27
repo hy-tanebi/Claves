@@ -9,3 +9,7 @@ docs/launch-plan.html
 
 # Swift Package Manager のビルド成果物
 ios/ClavesEngine/.build/
+
+# 署名の設定。Team ID を公開リポジトリに置かないため。
+# 新しい環境では ios/Signing.xcconfig.example をコピーして作る
+ios/Signing.xcconfig
