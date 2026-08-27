@@ -1,0 +1,10 @@
+// 署名の設定のひな形。**これをコピーして `Signing.xcconfig` を作る。**
+//
+//   cp ios/Signing.xcconfig.example ios/Signing.xcconfig
+//
+// Team ID は Xcode の Signing & Capabilities → Team で選ぶと入る。
+// Apple Developer のサイト（Membership）でも確認できる。
+//
+// 空のままでも Xcode 上で手動で Team を選べばビルドできるが、
+// その場合 Xcode が project.pbxproj に Team ID を書き戻すので注意。
+DEVELOPMENT_TEAM =

@@ -123,22 +123,32 @@ final class ClavesAudioEngine {
     }
 
     private func apply(_ command: PlaybackCommand) {
-        guard command == .stop, isRunning else { return }
+        // **`engine.isRunning` で判定してはいけない。** 経路変更の最中は false になり、
+        // イヤホン抜去で止めるべき場面を取りこぼす
+        guard command == .stop, isPlaying else { return }
         stop()
         onStoppedByPolicy?()
     }
 
     // MARK: - 開始と停止
 
+    /// 繋ぎ直すときに使い回す。経路が変わっても再生位置は保つ
+    private lazy var format = AVAudioFormat(
+        commonFormat: .pcmFormatFloat32,
+        sampleRate: sampleRate,
+        channels: 1,
+        interleaved: false
+    )!
+
+    /// **「鳴らすつもりでいるか」。`engine.isRunning` とは別物。**
+    ///
+    /// 経路が変わると `AVAudioEngine` は一時的に止まる。
+    /// `isRunning` だけで判断すると、繋ぎ直している最中に
+    /// 「停止中」と見なされて画面と食い違う。
+    private(set) var isPlaying = false
+
     func start() throws {
         guard sourceNode == nil else { return }
-
-        let format = AVAudioFormat(
-            commonFormat: .pcmFormatFloat32,
-            sampleRate: sampleRate,
-            channels: 1,
-            interleaved: false
-        )!
 
         let node = AVAudioSourceNode { [weak self] _, _, frameCount, audioBufferList -> OSStatus in
             guard let self else { return noErr }
@@ -149,10 +159,43 @@ final class ClavesAudioEngine {
         engine.connect(node, to: engine.mainMixerNode, format: format)
         sourceNode = node
 
+        observeConfigurationChange()
         try engine.start()
+        isPlaying = true
+    }
+
+    /// **イヤホンを挿すなど出力経路が変わると、`AVAudioEngine` の接続が無効になって止まる。**
+    /// 止まったことは `isRunning` にしか出ないので、画面上は再生中のまま無音になる。
+    /// 繋ぎ直して再開する。
+    ///
+    /// `currentFrame` は自前の数えなので、繋ぎ直しても**再生位置は続きから**になる。
+    private func observeConfigurationChange() {
+        NotificationCenter.default.addObserver(
+            forName: .AVAudioEngineConfigurationChange, object: engine, queue: .main
+        ) { [weak self] _ in
+            self?.reconnectAfterConfigurationChange()
+        }
+    }
+
+    private func reconnectAfterConfigurationChange() {
+        // 止めたあとなら何もしない（停止中に経路が変わっても鳴らし始めない）
+        guard isPlaying, let node = sourceNode else { return }
+
+        engine.disconnectNodeOutput(node)
+        engine.connect(node, to: engine.mainMixerNode, format: format)
+
+        guard !engine.isRunning else { return }
+        do {
+            try engine.start()
+        } catch {
+            // 繋ぎ直せなければ、鳴っているつもりのまま無音になるより止めたほうがいい
+            stop()
+            onStoppedByPolicy?()
+        }
     }
 
     func stop() {
+        isPlaying = false
         engine.stop()
         if let sourceNode {
             engine.detach(sourceNode)
@@ -235,6 +278,10 @@ final class ClavesAudioEngine {
         return noErr
     }
 
-    /// 再生中かどうか。停止後にハイライトを止めるために使う
-    var isRunning: Bool { engine.isRunning }
+    /// 画面に見せる再生状態。
+    ///
+    /// **`engine.isRunning` をそのまま返してはいけない。**
+    /// 経路変更の最中は false になり、繋ぎ直している一瞬だけ
+    /// 画面が「停止中」に見えてしまう。
+    var isRunning: Bool { isPlaying }
 }
