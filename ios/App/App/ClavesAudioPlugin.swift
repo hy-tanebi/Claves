@@ -57,7 +57,7 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
         onControlQueue { [self] in
             do {
                 let plan = try decodePlan(from: call)
-                title = call.getString("title") ?? "Claves"
+                title = Self.clampedTitle(call.getString("title"))
                 try startEngine(with: plan)
                 call.resolve()
             } catch {
@@ -188,6 +188,15 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     // MARK: - 補助
+
+    /// ロック画面に出す名前の最大長。
+    /// 表示にしか使わないが、**際限なく受け取る理由がない**
+    static let maxTitleLength = 128
+
+    private static func clampedTitle(_ title: String?) -> String {
+        guard let title, !title.isEmpty else { return "Claves" }
+        return String(title.prefix(maxTitleLength))
+    }
 
     private func decodePlan(from call: CAPPluginCall) throws -> TransportPlan {
         guard let json = call.getString("planJson") else {

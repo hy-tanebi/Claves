@@ -13,6 +13,14 @@ public enum PlanDecoder {
     /// 4分音符の tick 数。ここが違うと tick の意味そのものが変わる
     public static let ppq = 96
 
+    /// 受け付ける JSON の最大バイト数。
+    ///
+    /// **`JSONDecoder` は件数を数える前に配列を丸ごと展開する。**
+    /// そのため `maxEvents` の検査だけではメモリ枯渇を防げない。
+    /// 検査に到達する前の展開で時間とメモリを使い切られる。
+    /// 収録データは全18計画あわせて約15KB なので、1計画 64KiB で十分に余る。
+    public static let maxBytes = 64 * 1024
+
     private struct Wire: Decodable {
         let schemaVersion: Int
         let ppq: Int
@@ -30,6 +38,12 @@ public enum PlanDecoder {
     }
 
     public static func decode(_ data: Data) throws -> TransportPlan {
+        // **中身を見る前に、大きさで打ち切る。**
+        // ここを通すと `JSONDecoder` が配列を丸ごと展開してしまう
+        guard data.count <= maxBytes else {
+            throw PlanValidationError.planTooLarge(bytes: data.count)
+        }
+
         let wire = try JSONDecoder().decode(Wire.self, from: data)
 
         guard wire.schemaVersion == schemaVersion else {
@@ -38,7 +52,8 @@ public enum PlanDecoder {
         guard wire.ppq == ppq else {
             throw PlanValidationError.unsupportedPPQ(wire.ppq)
         }
-        // 上限を超える数を先に弾く。中身を1件ずつ見る前に打ち切る
+        // 1件ずつ音色を引く前に打ち切る。
+        // **展開そのものは `maxBytes` で止めている**（ここまで来た時点で配列はもうある）
         guard wire.events.count <= PlanValidator.maxEvents else {
             throw PlanValidationError.tooManyEvents(wire.events.count)
         }
