@@ -13,6 +13,7 @@ public enum PlanValidationError: Error, Equatable {
     case tooManyEvents(Int)
     case eventOutsideCycle(index: Int, tick: Int)
     case eventsNotAscending(index: Int)
+    case eventsTooClose(index: Int, gap: Int)
     case planTooLarge(bytes: Int)
 }
 
@@ -45,6 +46,16 @@ public enum PlanValidator {
     /// 10^8 tick は最速テンポでも約21時間ぶん、10^6 秒は約11日ぶん
     public static let maxAbsOriginTick = 100_000_000
     public static let maxAbsOriginSeconds: Double = 1_000_000
+
+    /// 打点どうしの最小間隔（tick）。**周期をまたぐ継ぎ目にも課す。**
+    ///
+    /// 打点数の上限だけでは**密度**を縛れない。周期長を 1 にして毎周期1打点にすれば、
+    /// 打点数は1件のまま毎秒 1280 回鳴らせてしまう。
+    /// 重なった音は足し合わせるので、これは持続音になる。
+    ///
+    /// 収録中の最小間隔は 48（周期の継ぎ目も 48）。12 は PPQ=96 で32分音符にあたり、
+    /// 4倍の余裕がある。これで毎秒の発音は約107回に収まる
+    public static let minEventSpacing = 12
 
     /// 練習用メトロノームとして現実的な範囲。
     /// 上限を切らないと 1 tick が短くなりすぎて発音位置が進まなくなる
@@ -96,7 +107,20 @@ public enum PlanValidator {
             guard event.tick > previous else {
                 throw PlanValidationError.eventsNotAscending(index: index)
             }
+            if index > 0, event.tick - previous < minEventSpacing {
+                throw PlanValidationError.eventsTooClose(
+                    index: index, gap: event.tick - previous)
+            }
             previous = event.tick
+        }
+
+        // **周期の継ぎ目も見る。** 中の間隔だけ空けても、周期長が短ければ
+        // 折り返しで詰まる。打点1件・周期長1のような計画はここで落ちる
+        if let first = plan.events.first, let last = plan.events.last {
+            let wrap = plan.cycleTicks - last.tick + first.tick
+            guard wrap >= minEventSpacing else {
+                throw PlanValidationError.eventsTooClose(index: 0, gap: wrap)
+            }
         }
     }
 }

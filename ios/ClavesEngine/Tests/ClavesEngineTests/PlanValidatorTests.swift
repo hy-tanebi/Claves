@@ -122,6 +122,44 @@ struct PlanValidatorTests {
         try PlanValidator.validate(Self.valid(originTick: 384, originSeconds: 2))
     }
 
+    // MARK: - 密度
+
+    /// 打点数の上限だけでは密度を縛れない。
+    /// **周期長を縮めれば、打点1件のまま毎秒1000回以上鳴らせる。**
+    /// 重なった音は足し合わせるので、これは持続音になる
+    @Test("周期の継ぎ目が詰まっている計画は弾く")
+    func rejectsTightCycleWrap() {
+        // 打点1件・周期長1。中の間隔は測れないが、折り返しで毎 tick 鳴る
+        #expect(throws: PlanValidationError.eventsTooClose(index: 0, gap: 1)) {
+            try PlanValidator.validate(
+                Self.valid(cycleTicks: 1, events: [.init(tick: 0, pitch: .high)]))
+        }
+    }
+
+    @Test("打点どうしが近すぎたら弾く")
+    func rejectsTightlyPackedEvents() {
+        #expect(throws: PlanValidationError.eventsTooClose(index: 1, gap: 1)) {
+            try PlanValidator.validate(
+                Self.valid(events: [
+                    .init(tick: 0, pitch: .high),
+                    .init(tick: 1, pitch: .high),
+                ]))
+        }
+    }
+
+    /// 収録データの最小間隔は 48（周期の継ぎ目も 48）。下限 12 に対して4倍の余裕がある
+    @Test("収録データの間隔は通る")
+    func acceptsRealSpacing() throws {
+        try PlanValidator.validate(
+            Self.valid(
+                cycleTicks: 768,
+                events: [
+                    .init(tick: 0, pitch: .high),
+                    .init(tick: 48, pitch: .low),
+                    .init(tick: 720, pitch: .low),
+                ]))
+    }
+
     @Test("打点が空なら弾く")
     func rejectsEmptyEvents() {
         #expect(throws: PlanValidationError.noEvents) {

@@ -276,6 +276,9 @@ final class ClavesAudioEngine {
     }
 
     func setVolume(_ value: Float) {
+        // **非数を先に弾く。** `min` / `max` は NaN との比較が全て false になるため、
+        // `max(0, min(1, .nan))` は 0 でも NaN でもなく **1.0（最大音量）**を返す
+        guard value.isFinite else { return }
         os_unfair_lock_lock(&lock)
         pendingVolume = max(0, min(1, value))
         os_unfair_lock_unlock(&lock)
@@ -340,7 +343,12 @@ final class ClavesAudioEngine {
                 guard let destination = buffer.mData?.assumingMemoryBound(to: Float.self)
                 else { continue }
                 for frame in 0..<count {
-                    destination[written + frame] = scratch[frame] * volume
+                    // **最後に振り幅を切る。** 重なった打点は足し合わせるので、
+                    // 密な計画では合計が ±1 を超えうる。超えたまま出すと
+                    // 後段で歪んだ持続音になる。
+                    // 検証層を通った計画では届かない値で、**保険として置く**
+                    let sample = scratch[frame] * volume
+                    destination[written + frame] = max(-1, min(1, sample))
                 }
             }
 
