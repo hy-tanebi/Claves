@@ -161,8 +161,8 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func setVolume(_ call: CAPPluginCall) {
         onControlQueue { [self] in
-            guard let value = call.getDouble("value") else {
-                call.reject("value が必要です（0〜1）")
+            guard let value = call.getDouble("value"), value.isFinite else {
+                call.reject("value が必要です（0〜1 の有限の数）")
                 return
             }
             engine?.setVolume(Float(value))
