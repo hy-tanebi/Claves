@@ -110,4 +110,37 @@ struct RendererTests {
         #expect(nextCycle[0].frameOffset == 6000)  // 96000 - 90000
         #expect(nextCycle[0].pitch == .high)
     }
+
+    // MARK: - 使い回すバッファへ書く形
+
+    /// レンダーコールバックはリアルタイムスレッドで走るので、
+    /// **打点の配列を毎回作ってはいけない。** 呼ぶ側のバッファへ書く形が本体で、
+    /// 配列を返す形はそれを包んだだけ。両者が一致することを確かめる
+    @Test("バッファへ書く形と配列を返す形は同じ結果になる")
+    func bufferFormMatchesArrayForm() {
+        var byArray = TransportRenderer(plan: Self.makePlan(), sampleRate: 48000)
+        var byBuffer = TransportRenderer(plan: Self.makePlan(), sampleRate: 48000)
+
+        let expected = byArray.hits(from: 0, frameCount: 90000)
+
+        var buffer = [ScheduledHit](repeating: .placeholder, count: 256)
+        let count = byBuffer.hits(from: 0, frameCount: 90000, into: &buffer)
+
+        #expect(count == expected.count)
+        for index in 0..<count {
+            #expect(buffer[index] == expected[index])
+        }
+    }
+
+    /// 検証層を通った計画では溢れないが、溢れても落ちないことを確かめる。
+    /// **入りきらないぶんは読み飛ばす**（鳴らないだけで、位置は進む）
+    @Test("バッファに入りきらない打点は読み飛ばす")
+    func dropsHitsBeyondBufferCapacity() {
+        var renderer = TransportRenderer(plan: Self.makePlan(), sampleRate: 48000)
+
+        var tiny = [ScheduledHit](repeating: .placeholder, count: 1)
+        let count = renderer.hits(from: 0, frameCount: 90000, into: &tiny)
+
+        #expect(count == 1, "バッファの長さを超えて書き込まない")
+    }
 }

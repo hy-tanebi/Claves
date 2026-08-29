@@ -30,6 +30,12 @@ final class ClavesAudioEngine {
     private var currentFrame: Int64 = 0
     /// バッファはコールバックごとに確保せず、最大長ぶんを使い回す
     private var scratch: [Float]
+    /// 打点の受け皿。**これもコールバックごとに作らない。**
+    ///
+    /// 1バッファに入りうる打点数には上限がある。検証層が BPM を 400、
+    /// `bpmUnit` を 192 までに縛るので tick は毎秒 1280 が上限で、
+    /// 4096 サンプル（48kHz で約85ms）に入るのは約109。256 なら十分に余る
+    private var hitBuffer: [ScheduledHit]
     private var volume: Float = 1.0
     /// 予約済みの最後の tick。境界計算に使う
     private var lastScheduledTick: Int = 0
@@ -71,7 +77,10 @@ final class ClavesAudioEngine {
         self.renderer = TransportRenderer(plan: plan, sampleRate: sampleRate)
         self.mixer = ClickMixer(sampleRate: sampleRate)
         self.scratch = [Float](repeating: 0, count: maxFrames)
+        self.hitBuffer = [ScheduledHit](repeating: .placeholder, count: Self.maxHitsPerBuffer)
     }
+
+    private static let maxHitsPerBuffer = 256
 
     // MARK: - セッション
 
@@ -303,32 +312,42 @@ final class ClavesAudioEngine {
             renderer.apply(change.plan, atTick: boundary)
         }
 
-        let count = min(frameCount, scratch.count)
-        let hits = renderer.hits(from: currentFrame, frameCount: count)
-        if let last = hits.last {
-            lastScheduledTick = Int(
-                renderer.plan.tick(atSeconds: Double(currentFrame + Int64(last.frameOffset)) / sampleRate)
-            )
-        }
-
-        // **使うぶんだけ渡す。** バッファ長ぶん進めると 40ms のクリックが
-        // 1回のコールバックで消費し尽くされ、音が途中でぶつ切りになる
-        mixer.fill(&scratch, count: count, hits: hits)
-
         let buffers = UnsafeMutableAudioBufferListPointer(audioBufferList)
-        for buffer in buffers {
-            guard let destination = buffer.mData?.assumingMemoryBound(to: Float.self) else { continue }
-            for frame in 0..<count {
-                destination[frame] = scratch[frame] * volume
+
+        // **要求が使い回しバッファより大きいことがある。**
+        // 以前は入らないぶんを無音で埋めたうえ、時計はバッファ長しか進めていなかった。
+        // 出した音と再生位置がずれるので、**分けて全部埋める**。
+        //
+        // **使い回しバッファの長さぶんずつ渡す。** 一度に長く進めると
+        // 40ms のクリックが1回で消費し尽くされ、音が途中でぶつ切りになる
+        var written = 0
+        while written < frameCount {
+            let count = min(frameCount - written, scratch.count)
+
+            let hitCount = renderer.hits(
+                from: currentFrame, frameCount: count, into: &hitBuffer)
+            if hitCount > 0 {
+                let lastOffset = Int64(hitBuffer[hitCount - 1].frameOffset)
+                lastScheduledTick = Int(
+                    renderer.plan.tick(
+                        atSeconds: Double(currentFrame + lastOffset) / sampleRate)
+                )
             }
-            // 用意した以上を要求された場合、残りを埋めないと
-            // 前回の中身がそのまま鳴る。無音で埋める
-            if frameCount > count {
-                for frame in count..<frameCount { destination[frame] = 0 }
+
+            mixer.fill(&scratch, count: count, hits: hitBuffer, hitCount: hitCount)
+
+            for buffer in buffers {
+                guard let destination = buffer.mData?.assumingMemoryBound(to: Float.self)
+                else { continue }
+                for frame in 0..<count {
+                    destination[written + frame] = scratch[frame] * volume
+                }
             }
+
+            currentFrame += Int64(count)
+            written += count
         }
 
-        currentFrame += Int64(count)
         // 公開するのは次の回。ここでロックを取ると、取れなかったときに
         // 位置が止まって見える。**この値はこのスレッドの持ち物のまま置いておく**
         renderedTick = renderer.tick(atFrame: currentFrame)

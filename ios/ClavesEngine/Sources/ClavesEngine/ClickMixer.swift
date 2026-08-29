@@ -42,13 +42,18 @@ public struct ClickMixer {
     ///
     /// バッファは使い回されるため、**まず 0 で埋め直す**。
     /// 残骸を放置すると前の音が繰り返し鳴る。
-    public mutating func fill(_ buffer: inout [Float], count: Int, hits: [ScheduledHit]) {
+    /// `hits` は使い回されるバッファなので、**読むのは先頭 `hitCount` 件だけ**。
+    /// 残りは前回の中身が入ったままになっている
+    public mutating func fill(
+        _ buffer: inout [Float], count: Int, hits: [ScheduledHit], hitCount: Int
+    ) {
         let frames = min(count, buffer.count)
         guard frames > 0 else { return }
 
         for index in 0..<frames { buffer[index] = 0 }
 
-        for hit in hits {
+        for index in 0..<min(hitCount, hits.count) {
+            let hit = hits[index]
             guard hit.frameOffset >= 0, hit.frameOffset < frames else { continue }
             if voices.count >= maxVoices { voices.removeFirst() }
             // 表の先頭からではなく、バッファ内の位置ぶん遅らせて鳴らす
@@ -73,5 +78,10 @@ public struct ClickMixer {
 
         // 鳴り終わった音を落とす
         voices.removeAll { $0.position >= (tables[$0.pitch]?.count ?? 0) }
+    }
+
+    /// 確保してよい場面（テストと確認）向けの形
+    public mutating func fill(_ buffer: inout [Float], count: Int, hits: [ScheduledHit]) {
+        fill(&buffer, count: count, hits: hits, hitCount: hits.count)
     }
 }

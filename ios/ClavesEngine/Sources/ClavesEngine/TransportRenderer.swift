@@ -7,6 +7,10 @@ public struct ScheduledHit: Equatable, Sendable {
         self.frameOffset = frameOffset
         self.pitch = pitch
     }
+
+    /// 使い回すバッファを埋めておくための置き。
+    /// **意味を持たない。** 実際に読むのは `hits` が返した個数ぶんだけ
+    public static let placeholder = ScheduledHit(frameOffset: 0, pitch: .high)
 }
 
 /// 「このバッファの N サンプルを埋めろ」というレンダーコールバックの要求を、
@@ -60,15 +64,26 @@ public struct TransportRenderer: Sendable {
         plan.tick(atSeconds: Double(frame) / sampleRate)
     }
 
-    /// `startFrame` から `frameCount` サンプルぶんのバッファに入る打点を返す。
+    /// `startFrame` から `frameCount` サンプルぶんのバッファに入る打点を
+    /// `buffer` の先頭へ書き、**書いた個数を返す**。
+    ///
+    /// **配列を新しく作らない。** レンダーコールバックはリアルタイムスレッドで走るので、
+    /// ここでヒープを確保すると締め切りを落として音が途切れる。
+    /// 呼ぶ側が使い回すバッファを渡す。
     ///
     /// バッファより前になってしまった打点は**読み飛ばす**。
     /// 過去の位置で鳴らすと実機では即座に発音され、打点が連射されるため。
-    public mutating func hits(from startFrame: Int64, frameCount: Int) -> [ScheduledHit] {
-        guard !plan.events.isEmpty, frameCount > 0 else { return [] }
+    ///
+    /// `buffer` に入りきらないぶんも読み飛ばす。**入りきらない状況は、
+    /// 検証層を通った計画では起こらない**（テンポと拍の単位に上限があるため
+    /// 1バッファの打点数に上限がある）。溢れたときに落ちないための保険。
+    public mutating func hits(
+        from startFrame: Int64, frameCount: Int, into buffer: inout [ScheduledHit]
+    ) -> Int {
+        guard !plan.events.isEmpty, frameCount > 0, !buffer.isEmpty else { return 0 }
 
         let endFrame = startFrame + Int64(frameCount)
-        var hits: [ScheduledHit] = []
+        var count = 0
 
         while true {
             // 切替点がこのバッファに入っていて、旧 plan の次の打点が切替点以降なら、
@@ -88,18 +103,25 @@ public struct TransportRenderer: Sendable {
             let frame = self.frame(ofEventAt: nextIndex)
             if frame >= endFrame { break }
 
-            if frame >= startFrame {
-                hits.append(
-                    ScheduledHit(
-                        frameOffset: Int(frame - startFrame),
-                        pitch: plan.event(at: nextIndex).pitch
-                    )
+            if frame >= startFrame, count < buffer.count {
+                buffer[count] = ScheduledHit(
+                    frameOffset: Int(frame - startFrame),
+                    pitch: plan.event(at: nextIndex).pitch
                 )
+                count += 1
             }
             // frame < startFrame の打点は遅れているので鳴らさず読み飛ばす
             nextIndex += 1
         }
 
-        return hits
+        return count
+    }
+
+    /// 確保してよい場面（テストと確認）向けの形。
+    /// **レンダーコールバックからは呼ばない。**
+    public mutating func hits(from startFrame: Int64, frameCount: Int) -> [ScheduledHit] {
+        var buffer = [ScheduledHit](repeating: .placeholder, count: 512)
+        let count = hits(from: startFrame, frameCount: frameCount, into: &buffer)
+        return Array(buffer.prefix(count))
     }
 }
