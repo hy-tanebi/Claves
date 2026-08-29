@@ -10,6 +10,14 @@ import Foundation
 /// 「テストは通るのに実機で弾かれる」が起きうる。
 ///
 /// **弾いたときは必ず `reject` で JS に返す。** 黙って無音になると原因が分からない。
+///
+/// **このクラスの状態は main キューの上でだけ触る。**
+/// Capacitor はプラグインの呼び出しを専用のバックグラウンドキュー
+/// （`CapacitorBridge` の `DispatchQueue(label: "bridge")`）で実行する。
+/// 一方で割り込み通知とロック画面の操作は main で届く。
+/// `engine` / `lastPlan` / `title` はその両方から触られるため、
+/// 寄せ先を決めないとデータ競合になる。
+/// `MPNowPlayingInfoCenter` も main から触るのが前提なので、寄せ先は main にする。
 @objc(ClavesAudioPlugin)
 public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
 
@@ -25,21 +33,36 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
 
     private var engine: ClavesAudioEngine?
 
-    // MARK: - メソッド
-
     /// ロック画面に出す名前と、直前に鳴らした計画。
     /// 再生ボタンから鳴らし直すために覚えておく
     private var lastPlan: TransportPlan?
     private var title = "Claves"
 
+    // MARK: - キューの寄せ先
+
+    /// **プラグインの状態に触る処理はすべてここを通す。**
+    /// すでに main にいるなら積まずにそのまま実行する
+    /// （ロック画面の操作が1フレーム遅れないようにする）。
+    private func onControlQueue(_ work: @escaping () -> Void) {
+        if Thread.isMainThread {
+            work()
+        } else {
+            DispatchQueue.main.async(execute: work)
+        }
+    }
+
+    // MARK: - メソッド
+
     @objc func start(_ call: CAPPluginCall) {
-        do {
-            let plan = try decodePlan(from: call)
-            title = call.getString("title") ?? "Claves"
-            try startEngine(with: plan)
-            call.resolve()
-        } catch {
-            call.reject(Self.message(for: error), nil, error)
+        onControlQueue { [self] in
+            do {
+                let plan = try decodePlan(from: call)
+                title = call.getString("title") ?? "Claves"
+                try startEngine(with: plan)
+                call.resolve()
+            } catch {
+                call.reject(Self.message(for: error), nil, error)
+            }
         }
     }
 
@@ -65,8 +88,10 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func stop(_ call: CAPPluginCall) {
-        stopEngine()
-        call.resolve()
+        onControlQueue { [self] in
+            stopEngine()
+            call.resolve()
+        }
     }
 
     private func stopEngine() {
@@ -80,47 +105,60 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     /// 割り込みやイヤホン抜去で止まったとき。
     /// **ロック画面の表示も止まった状態にする**（鳴っていないのに再生中と出ると混乱する）
     private func handleStoppedByPolicy() {
-        engine = nil
-        if let plan = lastPlan {
-            NowPlaying.update(title: title, bpm: plan.bpm, isPlaying: false)
+        onControlQueue { [self] in
+            engine = nil
+            if let plan = lastPlan {
+                NowPlaying.update(title: title, bpm: plan.bpm, isPlaying: false)
+            }
+            notifyListeners("playbackStopped", data: [:])
         }
-        notifyListeners("playbackStopped", data: [:])
     }
 
     /// ロック画面の再生ボタン。**画面を開かずに鳴らし直せるようにする**
+    ///
+    /// **`MPRemoteCommandCenter` はどのスレッドで呼ぶか保証しない。**
+    /// ここも寄せ先を通す
     private func resumeFromRemote() {
-        guard engine == nil, let plan = lastPlan else { return }
-        try? startEngine(with: plan)
-        notifyListeners("playbackStarted", data: [:])
+        onControlQueue { [self] in
+            guard engine == nil, let plan = lastPlan else { return }
+            try? startEngine(with: plan)
+            notifyListeners("playbackStarted", data: [:])
+        }
     }
 
     private func stopFromRemote() {
-        guard engine != nil else { return }
-        stopEngine()
-        notifyListeners("playbackStopped", data: [:])
+        onControlQueue { [self] in
+            guard engine != nil else { return }
+            stopEngine()
+            notifyListeners("playbackStopped", data: [:])
+        }
     }
 
     @objc func applyPlan(_ call: CAPPluginCall) {
-        guard let engine else {
-            call.reject("再生が始まっていません。先に start を呼んでください")
-            return
-        }
-        do {
-            let plan = try decodePlan(from: call)
-            engine.requestChange(to: plan, bpmUnit: plan.bpmUnit)
-            call.resolve()
-        } catch {
-            call.reject(Self.message(for: error), nil, error)
+        onControlQueue { [self] in
+            guard let engine else {
+                call.reject("再生が始まっていません。先に start を呼んでください")
+                return
+            }
+            do {
+                let plan = try decodePlan(from: call)
+                engine.requestChange(to: plan, bpmUnit: plan.bpmUnit)
+                call.resolve()
+            } catch {
+                call.reject(Self.message(for: error), nil, error)
+            }
         }
     }
 
     @objc func setVolume(_ call: CAPPluginCall) {
-        guard let value = call.getDouble("value") else {
-            call.reject("value が必要です（0〜1）")
-            return
+        onControlQueue { [self] in
+            guard let value = call.getDouble("value") else {
+                call.reject("value が必要です（0〜1）")
+                return
+            }
+            engine?.setVolume(Float(value))
+            call.resolve()
         }
-        engine?.setVolume(Float(value))
-        call.resolve()
     }
 
     /// いま鳴らしている位置を返す。譜面のハイライトに使う。
@@ -128,14 +166,16 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     /// **ネイティブが時計を持つ以上、再生位置もネイティブに聞くしかない。**
     /// JS 側で別に数えると必ずずれる。
     @objc func getSnapshot(_ call: CAPPluginCall) {
-        guard let engine else {
-            call.resolve(["tick": 0, "isPlaying": false])
-            return
+        onControlQueue { [self] in
+            guard let engine else {
+                call.resolve(["tick": 0, "isPlaying": false])
+                return
+            }
+            call.resolve([
+                "tick": engine.playheadTick,
+                "isPlaying": engine.isRunning,
+            ])
         }
-        call.resolve([
-            "tick": engine.playheadTick,
-            "isPlaying": engine.isRunning,
-        ])
     }
 
     // MARK: - 補助
