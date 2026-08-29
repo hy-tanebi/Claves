@@ -67,6 +67,15 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     private func startEngine(with plan: TransportPlan) throws {
+        // **すでに鳴っているなら、畳んでから始める。**
+        // PLAY を素早く二度押すと、JS が再生中と知る前に start が二度届きうる。
+        // 参照を上書きするだけだと、前のエンジンは止められないまま参照を失い、
+        // 破棄されるまでの間だけ音が二重に鳴る。
+        if let running = self.engine {
+            running.stop()
+            self.engine = nil
+        }
+
         let engine = ClavesAudioEngine(plan: plan)
         try engine.configureSession()
 

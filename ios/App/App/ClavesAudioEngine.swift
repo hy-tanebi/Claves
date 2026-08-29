@@ -95,10 +95,18 @@ final class ClavesAudioEngine {
         observeLifecycle(session)
     }
 
+    /// 登録した通知の解除券。
+    ///
+    /// **`addObserver(forName:...)` の戻り値を捨ててはいけない。**
+    /// ブロック形式の observer は `NotificationCenter` 側に残り続け、
+    /// `[weak self]` を付けてもトークンとクロージャは解放されない。
+    /// `configureSession` は再生のたびに呼ばれるので、捨てると1回につき3個ずつ溜まる。
+    private var observers: [NSObjectProtocol] = []
+
     private func observeLifecycle(_ session: AVAudioSession) {
         let center = NotificationCenter.default
 
-        center.addObserver(
+        let interruption = center.addObserver(
             forName: AVAudioSession.interruptionNotification, object: session, queue: .main
         ) { [weak self] note in
             guard
@@ -117,13 +125,26 @@ final class ClavesAudioEngine {
             self?.apply(LifecyclePolicy.onInterruption(phase))
         }
 
-        center.addObserver(
+        let routeChange = center.addObserver(
             forName: AVAudioSession.routeChangeNotification, object: session, queue: .main
         ) { [weak self] note in
             let raw = note.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt
             let reason = AVAudioSession.RouteChangeReason(rawValue: raw ?? 0)
             self?.apply(LifecyclePolicy.onRouteChange(Self.translate(reason)))
         }
+
+        observers.append(contentsOf: [interruption, routeChange])
+    }
+
+    /// 登録した通知をすべて解除する。**停止時と破棄時の両方で呼ぶ。**
+    private func removeObservers() {
+        let center = NotificationCenter.default
+        for observer in observers { center.removeObserver(observer) }
+        observers.removeAll()
+    }
+
+    deinit {
+        removeObservers()
     }
 
     /// AVFoundation の理由を `ClavesEngine` の型へ移す。
@@ -189,11 +210,12 @@ final class ClavesAudioEngine {
     ///
     /// `currentFrame` は自前の数えなので、繋ぎ直しても**再生位置は続きから**になる。
     private func observeConfigurationChange() {
-        NotificationCenter.default.addObserver(
+        let token = NotificationCenter.default.addObserver(
             forName: .AVAudioEngineConfigurationChange, object: engine, queue: .main
         ) { [weak self] _ in
             self?.reconnectAfterConfigurationChange()
         }
+        observers.append(token)
     }
 
     private func reconnectAfterConfigurationChange() {
@@ -215,6 +237,9 @@ final class ClavesAudioEngine {
 
     func stop() {
         isPlaying = false
+        // **止めたら通知の購読も畳む。** 残しておくと、鳴っていないエンジンが
+        // 割り込みや経路変更に反応し続ける
+        removeObservers()
         engine.stop()
         if let sourceNode {
             engine.detach(sourceNode)
