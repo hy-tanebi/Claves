@@ -16,36 +16,55 @@ final class ClavesAudioEngine {
     private var sourceNode: AVAudioSourceNode?
     private let sampleRate: Double
 
-    // MARK: - オーディオスレッドが触る状態
+    // MARK: - オーディオスレッドだけが所有する状態
 
     /// レンダーコールバックは**リアルタイムスレッド**で走る。
     /// ここでメモリ確保・ロック待ち・システムコールをすると音が途切れる。
+    ///
+    /// **以下は `render` からしか触らない。** 他のスレッドから読むことも書くことも
+    /// しないので、ロックが要らない。逆に、外から読めるようにした瞬間に
+    /// 「ロックを取っているのに守られていない」状態が生まれる。
+    /// 外へ渡す値は `publishedTick` に書き出す。
     private var renderer: TransportRenderer
     private var mixer: ClickMixer
     private var currentFrame: Int64 = 0
     /// バッファはコールバックごとに確保せず、最大長ぶんを使い回す
     private var scratch: [Float]
-
-    // MARK: - 別スレッドからの受け渡し
-
-    /// UI スレッドが置いた切替の予約。
-    /// **オーディオスレッドは待たない**（`trylock` で取れなければ次の回に回す）。
-    private var lock = os_unfair_lock_s()
-    private var pendingPlan: (plan: TransportPlan, atTick: Int)?
-    private var pendingVolume: Float?
     private var volume: Float = 1.0
-
     /// 予約済みの最後の tick。境界計算に使う
     private var lastScheduledTick: Int = 0
+    /// 直近のレンダーが到達した再生位置。次の回に `publishedTick` へ写す
+    private var renderedTick: Double = 0
+
+    // MARK: - スレッド間の受け渡し
+
+    /// **`lock` が守るのはこの区画だけ。**
+    /// オーディオスレッドが所有する状態を、ここへ持ち込んではいけない。
+    ///
+    /// **オーディオスレッドは待たない**（`trylock` で取れなければ次の回に回す）。
+    /// 逆に UI 側は待ってよいので、通常のロックで入る。
+    private var lock = os_unfair_lock_s()
+
+    /// UI スレッドが置いた切替の予約。
+    /// **切替点は入っていない。** 境界はオーディオスレッドが自分の状態から決める
+    private var pendingPlan: (plan: TransportPlan, bpmUnit: Int)?
+    private var pendingVolume: Float?
+
+    /// オーディオスレッドが書き出した再生位置。UI が読むのはこれだけ
+    private var publishedTick: Double = 0
 
     /// いま鳴らしている位置（絶対 tick）。譜面のハイライトに使う。
     ///
     /// **`renderer` を UI スレッドから直接読んではいけない。**
     /// オーディオスレッドが書き換える構造体なのでデータ競合になる。
-    /// 代わりにオーディオスレッド側がこの値を書き出し、UI はこれだけを読む。
-    /// 8バイトの整列した読み書きなので分断されず、
-    /// 1バッファぶん古い値になってもハイライトの見た目に影響はない。
-    private(set) var playheadTick: Double = 0
+    /// オーディオスレッド側が `publishedTick` へ書き出し、UI はロック越しに読む。
+    /// 取り込みに失敗した回は1バッファぶん古い値になるが、
+    /// ハイライトの見た目には影響しない。
+    var playheadTick: Double {
+        os_unfair_lock_lock(&lock)
+        defer { os_unfair_lock_unlock(&lock) }
+        return publishedTick
+    }
 
     init(plan: TransportPlan, sampleRate: Double = 48000, maxFrames: Int = 4096) {
         self.sampleRate = sampleRate
@@ -210,15 +229,15 @@ final class ClavesAudioEngine {
     /// **境界は「予約済みの範囲より後にある最初の拍境界」に置く。**
     /// これにより予約済みの音を取り消す必要がなくなり、
     /// 二重発音と打点欠落が構造的に起こらない。
+    ///
+    /// **境界の計算はここでしない。** 境界は `currentFrame` と `lastScheduledTick`
+    /// から決まるが、どちらもオーディオスレッドが書き換える。ここで読むと競合するうえ、
+    /// 読んでから予約が取り込まれるまでの間に再生位置が進み、
+    /// **すでに鳴らした位置に境界を置いてしまう**（打点が飛ぶ）。
+    /// 計画と拍の単位だけ渡し、切替点はオーディオスレッドに決めさせる。
     func requestChange(to plan: TransportPlan, bpmUnit: Int) {
         os_unfair_lock_lock(&lock)
-        let nowTick = renderer.plan.tick(atSeconds: Double(currentFrame) / sampleRate)
-        let boundary = TransportPlan.nextBoundaryTick(
-            bpmUnit: bpmUnit,
-            lastScheduledTick: lastScheduledTick,
-            nowTick: nowTick
-        )
-        pendingPlan = (plan, boundary)
+        pendingPlan = (plan, bpmUnit)
         os_unfair_lock_unlock(&lock)
     }
 
@@ -233,18 +252,30 @@ final class ClavesAudioEngine {
     private func render(frameCount: Int, into audioBufferList: UnsafeMutablePointer<AudioBufferList>)
         -> OSStatus
     {
-        // UI スレッドの予約を取り込む。**取れなければ諦めて次の回に回す。**
+        // 予約の取り込みと再生位置の公開を1回のロックで済ませる。
+        // **取れなければ諦めて次の回に回す。**
         // ここで待つとオーディオの締め切りを落として音が途切れる
+        var change: (plan: TransportPlan, bpmUnit: Int)?
         if os_unfair_lock_trylock(&lock) {
-            if let pending = pendingPlan {
-                renderer.apply(pending.plan, atTick: pending.atTick)
-                pendingPlan = nil
-            }
+            publishedTick = renderedTick
+            change = pendingPlan
+            pendingPlan = nil
             if let value = pendingVolume {
                 volume = value
                 pendingVolume = nil
             }
             os_unfair_lock_unlock(&lock)
+        }
+
+        // 切替点はここで決める。**この計算が読む値はすべてこのスレッドの持ち物**
+        if let change {
+            let nowTick = renderer.plan.tick(atSeconds: Double(currentFrame) / sampleRate)
+            let boundary = TransportPlan.nextBoundaryTick(
+                bpmUnit: change.bpmUnit,
+                lastScheduledTick: lastScheduledTick,
+                nowTick: nowTick
+            )
+            renderer.apply(change.plan, atTick: boundary)
         }
 
         let count = min(frameCount, scratch.count)
@@ -273,8 +304,9 @@ final class ClavesAudioEngine {
         }
 
         currentFrame += Int64(count)
-        // UI が読む再生位置をここで書き出す（UI から renderer を触らせないため）
-        playheadTick = renderer.tick(atFrame: currentFrame)
+        // 公開するのは次の回。ここでロックを取ると、取れなかったときに
+        // 位置が止まって見える。**この値はこのスレッドの持ち物のまま置いておく**
+        renderedTick = renderer.tick(atFrame: currentFrame)
         return noErr
     }
 
