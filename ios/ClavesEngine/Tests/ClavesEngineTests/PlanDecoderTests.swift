@@ -86,17 +86,41 @@ struct PlanDecoderTests {
         }
     }
 
-    /// 上限を超える打点数を投げつけられても、
-    /// 配列を確保しきる前か直後に弾いて処理を止める
+    /// 上限を超える打点数は、音色を1件ずつ引く前に弾く
     @Test("打点が多すぎる JSON は弾く")
     func rejectsFloodOfEvents() {
         let flood = (0..<(PlanValidator.maxEvents + 10))
             .map { #"{"tick":\#($0),"pitch":"high"}"# }
             .joined(separator: ",")
 
-        #expect(throws: PlanValidationError.self) {
+        // **周期長は上限内にしておく。** そうしないと周期長で弾かれて、
+        // 打点数の検査を通ったかどうかが分からない
+        #expect(throws: PlanValidationError.tooManyEvents(PlanValidator.maxEvents + 10)) {
             _ = try PlanDecoder.decode(
-                Self.json(cycleTicks: 100_000, events: "[\(flood)]"))
+                Self.json(cycleTicks: PlanValidator.maxCycleTicks, events: "[\(flood)]"))
         }
+    }
+
+    /// **件数の上限だけではメモリ枯渇を防げない。**
+    /// `JSONDecoder` は件数を数える前に配列を丸ごと展開するため、
+    /// 検査に到達する前の展開で時間とメモリを使われる。
+    /// 中身を見る前に、大きさで打ち切れていることを確かめる
+    @Test("大きすぎる JSON は中身を見る前に弾く")
+    func rejectsOversizedPayload() {
+        var data = Self.json()
+        data.append(
+            contentsOf: Array(repeating: UInt8(ascii: " "), count: PlanDecoder.maxBytes))
+
+        #expect(throws: PlanValidationError.planTooLarge(bytes: data.count)) {
+            _ = try PlanDecoder.decode(data)
+        }
+    }
+
+    /// 上限ちょうどまでは受け付ける（境界で1バイトずれていないこと）
+    @Test("上限内の JSON は通る")
+    func acceptsPayloadWithinLimit() throws {
+        let data = Self.json()
+        #expect(data.count <= PlanDecoder.maxBytes)
+        _ = try PlanDecoder.decode(data)
     }
 }

@@ -16,6 +16,7 @@ struct PlanValidatorTests {
         bpmUnit: Int = 192,
         cycleTicks: Int = 768,
         bpm: Double = 120,
+        originTick: Int = 0,
         originSeconds: Double = 0,
         events: [TransportPlan.Event] = [
             .init(tick: 0, pitch: .high),
@@ -24,7 +25,7 @@ struct PlanValidatorTests {
     ) -> TransportPlan {
         TransportPlan(
             bpmUnit: bpmUnit, cycleTicks: cycleTicks, bpm: bpm,
-            originTick: 0, originSeconds: originSeconds, events: events)
+            originTick: originTick, originSeconds: originSeconds, events: events)
     }
 
     @Test("まっとうな計画は通る")
@@ -79,9 +80,46 @@ struct PlanValidatorTests {
         let many = (0..<(PlanValidator.maxEvents + 1)).map {
             TransportPlan.Event(tick: $0, pitch: .high)
         }
-        #expect(throws: PlanValidationError.self) {
-            try PlanValidator.validate(Self.valid(cycleTicks: 100_000, events: many))
+        // **周期長は上限内にしておく。** 上限超えで弾かれると
+        // 打点数を見ないまま通ってしまい、このテストの意味がなくなる
+        #expect(throws: PlanValidationError.tooManyEvents(PlanValidator.maxEvents + 1)) {
+            try PlanValidator.validate(
+                Self.valid(cycleTicks: PlanValidator.maxCycleTicks, events: many))
         }
+    }
+
+    /// 周期長に上限が無いと `event(at:)` の `loop * cycleTicks` が桁あふれし、
+    /// Swift の検査付き演算がプロセスごと落とす
+    @Test("周期長が上限を超えたら弾く")
+    func rejectsHugeCycle() {
+        #expect(throws: PlanValidationError.invalidCycleTicks(Int.max)) {
+            try PlanValidator.validate(Self.valid(cycleTicks: Int.max))
+        }
+        #expect(throws: PlanValidationError.self) {
+            try PlanValidator.validate(Self.valid(cycleTicks: PlanValidator.maxCycleTicks + 1))
+        }
+    }
+
+    /// `isFinite` を通る値でも、桁が大きすぎれば `tick - originTick` が
+    /// 桁あふれし、秒→サンプルの変換も `Int64` の範囲を超える
+    @Test("基準点が現実的な範囲を超えたら弾く")
+    func rejectsOriginOutOfRange() {
+        #expect(throws: PlanValidationError.self) {
+            try PlanValidator.validate(Self.valid(originTick: Int.min))
+        }
+        #expect(throws: PlanValidationError.self) {
+            try PlanValidator.validate(Self.valid(originTick: PlanValidator.maxAbsOriginTick + 1))
+        }
+        // 1e300 は有限だが、48kHz を掛けた時点で Int64 に入らない
+        #expect(throws: PlanValidationError.self) {
+            try PlanValidator.validate(Self.valid(originSeconds: 1e300))
+        }
+    }
+
+    /// 途中から鳴らし始める余地は残す。ゼロ固定にはしない
+    @Test("現実的な範囲の基準点は通る")
+    func acceptsReasonableOrigin() throws {
+        try PlanValidator.validate(Self.valid(originTick: 384, originSeconds: 2))
     }
 
     @Test("打点が空なら弾く")

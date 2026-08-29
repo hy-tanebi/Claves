@@ -8,10 +8,12 @@ public enum PlanValidationError: Error, Equatable {
     case invalidBpmUnit(Int)
     case invalidCycleTicks(Int)
     case nonFiniteOrigin(Double)
+    case originOutOfRange(tick: Int, seconds: Double)
     case noEvents
     case tooManyEvents(Int)
     case eventOutsideCycle(index: Int, tick: Int)
     case eventsNotAscending(index: Int)
+    case planTooLarge(bytes: Int)
 }
 
 /// JS から渡ってくる再生計画の検証。
@@ -26,8 +28,23 @@ public enum PlanValidationError: Error, Equatable {
 public enum PlanValidator {
 
     /// レンダーコールバック1回の処理量を読めるようにするための上限。
-    /// 実際のリズムはせいぜい数十打点なので、十分な余裕がある
-    public static let maxEvents = 512
+    /// **収録中の最大は9打点。** 128 で 14 倍の余裕がある
+    public static let maxEvents = 128
+
+    /// 周期長の上限。**上限が無いと `loop * cycleTicks` が桁あふれして
+    /// プロセスごと落ちる**（Swift の整数演算は検査付きでトラップする）。
+    /// 収録中の最大は 768（2小節）。6144 は 4/4 で 16 小節ぶんにあたる
+    public static let maxCycleTicks = 6_144
+
+    /// 基準点の範囲。**上限が無いと `tick - originTick` が桁あふれし、
+    /// 秒→サンプルの変換も `Int64` の範囲を超える。**
+    ///
+    /// 通常 JS は基準点ゼロで送ってくる（`native-audio.ts` の `FROM_START`）が、
+    /// 途中から鳴らし始める余地を API に残してあるため、
+    /// ゼロ固定にはせず現実的な範囲で縛る。
+    /// 10^8 tick は最速テンポでも約21時間ぶん、10^6 秒は約11日ぶん
+    public static let maxAbsOriginTick = 100_000_000
+    public static let maxAbsOriginSeconds: Double = 1_000_000
 
     /// 練習用メトロノームとして現実的な範囲。
     /// 上限を切らないと 1 tick が短くなりすぎて発音位置が進まなくなる
@@ -44,11 +61,25 @@ public enum PlanValidator {
         guard allowedBpmUnits.contains(plan.bpmUnit) else {
             throw PlanValidationError.invalidBpmUnit(plan.bpmUnit)
         }
-        guard plan.cycleTicks > 0 else {
+        guard plan.cycleTicks > 0, plan.cycleTicks <= maxCycleTicks else {
             throw PlanValidationError.invalidCycleTicks(plan.cycleTicks)
         }
         guard plan.originSeconds.isFinite else {
             throw PlanValidationError.nonFiniteOrigin(plan.originSeconds)
+        }
+        // **`isFinite` だけでは足りない。** 1e300 は有限だが、
+        // 秒→サンプルの変換で `Int64` の範囲を超える。
+        //
+        // **`abs()` を使ってはいけない。** `abs(Int.min)` は表現できる正の値が
+        // 無いためトラップする。検査そのものが落ちては意味がないので、
+        // 範囲の両端と直接比べる
+        guard
+            plan.originTick >= -maxAbsOriginTick, plan.originTick <= maxAbsOriginTick,
+            plan.originSeconds >= -maxAbsOriginSeconds,
+            plan.originSeconds <= maxAbsOriginSeconds
+        else {
+            throw PlanValidationError.originOutOfRange(
+                tick: plan.originTick, seconds: plan.originSeconds)
         }
         guard !plan.events.isEmpty else {
             throw PlanValidationError.noEvents
