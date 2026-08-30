@@ -96,18 +96,13 @@ body {
   text-overflow: ellipsis;
 }
 
-/* 丸い面に載せる。文字の一部ではなく操作の合図だと読める */
-.picker .chev {
+/* 一覧を開く印。**名前の前に置く。**
+   後ろに小さな記号を添えるより、先に目が行って押せると分かる */
+.picker .menuIcon {
   flex: 0 0 auto;
-  width: 1.5rem;
-  height: 1.5rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgb(255 198 26 / 0.16);
   color: var(--gold);
-  font-size: 0.7rem;
 }
 
 .picker:focus-visible {

@@ -16,9 +16,24 @@
       <header class="head">
         <!-- リズム名がそのまま一覧を開くボタン。1画面レイアウトを崩さない -->
         <button id="patternPicker" class="picker" type="button" aria-haspopup="dialog">
+          <!-- 押せることを示す印。文字だけだとタップ面に見えない。
+               名前の前に置く（後ろの小さな記号より先に目が行く） -->
+          <span class="menuIcon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="22"
+              height="22"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+            >
+              <path d="M4 7h16" />
+              <path d="M4 12h16" />
+              <path d="M4 17h16" />
+            </svg>
+          </span>
           <span id="patternName">—</span>
-          <!-- 押せることを示す印。文字だけだとタップ面に見えない -->
-          <span class="chev" aria-hidden="true">▾</span>
         </button>
 
         <!-- 3:2 と 2:3 の入れ替え。**鳴らし分けはまだ実装していない。**
