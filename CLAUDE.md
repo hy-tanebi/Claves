@@ -59,6 +59,20 @@ pnpm check:notation   # 譜面の見た目（実ブラウザ）
   `DEVELOPMENT_TEAM` が書き戻される。** コミット前に
   `git diff ios/App/App.xcodeproj/project.pbxproj` を見て、
   入っていたら消して `ios/Signing.xcconfig` 側に書く
+
+### Xcode の共有スキーム
+
+- **`ios/App/App.xcodeproj/xcshareddata/xcschemes/App.xcscheme` も、
+  コミット前に差分を見る対象。** `project.pbxproj` と同じ扱いにする
+- Xcode の Edit Scheme で診断設定を切り替えると、ここに書き込まれる。
+  **Thread Sanitizer を付けたままコミットすると、以後のシミュレータ実行が
+  10〜20倍遅くなる**（実機では無視されるので気づきにくい）。
+  2026-08-30 に実際に混入しかけた
+- 見るのは `enableThreadSanitizer` / `enableAddressSanitizer` /
+  `enableUBSanitizer` / `enableMallocScribble` など Sanitizer 系。
+  意図して有効にしたのでない限り消す
+- `xcuserdata/` は個人環境の産物なので**コミットしない**。
+  共有スキームは**コミットする**（`xcodebuild -scheme App` の挙動を固定するため）
 - Team ID 自体は**秘密情報ではない**（配布された全アプリから
   `codesign -dv --verbose=4` で読める）。署名には秘密鍵と証明書が要るので
   Team ID だけでは何もできない。**公開リポジトリに自分の識別子を置かないための整理**であって、
