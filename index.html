@@ -17,7 +17,21 @@
         <!-- リズム名がそのまま一覧を開くボタン。1画面レイアウトを崩さない -->
         <button id="patternPicker" class="picker" type="button" aria-haspopup="dialog">
           <span id="patternName">—</span>
+          <!-- 押せることを示す印。文字だけだとタップ面に見えない -->
           <span class="chev" aria-hidden="true">▾</span>
+        </button>
+
+        <!-- 3:2 と 2:3 の入れ替え。**鳴らし分けはまだ実装していない。**
+             場所を先に確保するため disabled のまま出す -->
+        <button
+          id="flip"
+          class="flip"
+          type="button"
+          disabled
+          aria-label="3:2 と 2:3 を入れ替える（準備中）"
+        >
+          <span class="flipIcon" aria-hidden="true">⇄</span>
+          <span>3:2</span>
         </button>
       </header>
 

@@ -363,6 +363,10 @@ function markCurrent(): void {
 
 els.picker.addEventListener("click", () => {
   els.dialog.showModal();
+  // **`showModal()` は最初のフォーカス可能な要素にフォーカスする。**
+  // 一覧では先頭の行がそれにあたり、常に先頭のリズムが選ばれて見えていた。
+  // いま選ばれている行へ移し、フォーカスと赤枠の位置を一致させる
+  listRows.get((switchingTo ?? pattern).id)?.focus();
 });
 els.close.addEventListener("click", () => els.dialog.close());
 // 背景（backdrop）を叩いたら閉じる。dialog 自身が click の対象になる
