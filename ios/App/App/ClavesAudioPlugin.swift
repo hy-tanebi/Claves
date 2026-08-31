@@ -28,6 +28,7 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(#selector(stop), returnType: .promise),
         CAPPluginMethod(#selector(applyPlan), returnType: .promise),
         CAPPluginMethod(#selector(setVolume), returnType: .promise),
+        CAPPluginMethod(#selector(setTimbre), returnType: .promise),
         CAPPluginMethod(#selector(getSnapshot), returnType: .promise),
     ]
 
@@ -37,6 +38,10 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     /// 再生ボタンから鳴らし直すために覚えておく
     private var lastPlan: TransportPlan?
     private var title = "Claves"
+
+    /// いま選ばれている音色。
+    /// **エンジンは再生のたびに作り直すので、ここが覚えていないと既定に戻る**
+    private var timbre: Timbre = .agogo
 
     // MARK: - キューの寄せ先
 
@@ -76,7 +81,7 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
             self.engine = nil
         }
 
-        let engine = ClavesAudioEngine(plan: plan)
+        let engine = ClavesAudioEngine(plan: plan, timbre: timbre)
         try engine.configureSession()
 
         // 割り込みやイヤホン抜去で止まったら JS に伝える。
@@ -174,6 +179,26 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     ///
     /// **ネイティブが時計を持つ以上、再生位置もネイティブに聞くしかない。**
     /// JS 側で別に数えると必ずずれる。
+    /// 音色を変える。**鳴っている最中でも効く。**
+    ///
+    /// 停止中に呼ばれることもあるので、エンジンが無くても受け取って覚えておく
+    /// （次に鳴らすときにその音色で始まる）。
+    @objc func setTimbre(_ call: CAPPluginCall) {
+        onControlQueue { [self] in
+            guard
+                let raw = call.getString("timbre"),
+                let value = Timbre(rawValue: raw)
+            else {
+                let known = Timbre.allCases.map(\.rawValue).joined(separator: " / ")
+                call.reject("知らない音色です。timbre は \(known) のいずれか")
+                return
+            }
+            timbre = value
+            engine?.setTimbre(value)
+            call.resolve()
+        }
+    }
+
     @objc func getSnapshot(_ call: CAPPluginCall) {
         onControlQueue { [self] in
             guard let engine else {

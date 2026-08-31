@@ -55,6 +55,7 @@ final class ClavesAudioEngine {
     /// **切替点は入っていない。** 境界はオーディオスレッドが自分の状態から決める
     private var pendingPlan: (plan: TransportPlan, bpmUnit: Int)?
     private var pendingVolume: Float?
+    private var pendingTimbre: Timbre?
 
     /// オーディオスレッドが書き出した再生位置。UI が読むのはこれだけ
     private var publishedTick: Double = 0
@@ -72,10 +73,17 @@ final class ClavesAudioEngine {
         return publishedTick
     }
 
-    init(plan: TransportPlan, sampleRate: Double = 48000, maxFrames: Int = 4096) {
+    init(
+        plan: TransportPlan, timbre: Timbre = .agogo,
+        sampleRate: Double = 48000, maxFrames: Int = 4096
+    ) {
         self.sampleRate = sampleRate
         self.renderer = TransportRenderer(plan: plan, sampleRate: sampleRate)
-        self.mixer = ClickMixer(sampleRate: sampleRate)
+        // **音色は作るときに決める。** あとから予約で渡すと、
+        // 最初の1バッファだけ前の音色で鳴ってしまう
+        var mixer = ClickMixer(sampleRate: sampleRate)
+        mixer.setTimbre(timbre)
+        self.mixer = mixer
         self.scratch = [Float](repeating: 0, count: maxFrames)
         self.hitBuffer = [ScheduledHit](repeating: .placeholder, count: Self.maxHitsPerBuffer)
     }
@@ -284,6 +292,15 @@ final class ClavesAudioEngine {
         os_unfair_lock_unlock(&lock)
     }
 
+    /// 音色を変える。**鳴っている最中でも切り替えられる。**
+    /// 表はすべて作り置きしてあるので、オーディオスレッド側は選び直すだけで済む。
+    /// すでに鳴っている音は元の音色のまま鳴り終わる（途中で表を替えると波形が飛ぶ）
+    func setTimbre(_ timbre: Timbre) {
+        os_unfair_lock_lock(&lock)
+        pendingTimbre = timbre
+        os_unfair_lock_unlock(&lock)
+    }
+
     // MARK: - レンダー
 
     private func render(frameCount: Int, into audioBufferList: UnsafeMutablePointer<AudioBufferList>)
@@ -300,6 +317,10 @@ final class ClavesAudioEngine {
             if let value = pendingVolume {
                 volume = value
                 pendingVolume = nil
+            }
+            if let value = pendingTimbre {
+                mixer.setTimbre(value)
+                pendingTimbre = nil
             }
             os_unfair_lock_unlock(&lock)
         }
