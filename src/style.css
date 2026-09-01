@@ -89,19 +89,29 @@ body {
   min-width: 0;
 }
 
-/* 名前が長いときは省略する。帯の高さと右のボタンの位置を崩さない */
+/* **2行まで許す。** 丸いアイコンと右のボタンに幅を取られるため、
+   1行に収めようとすると `6/8 Afro Groove 2` でも切れる。
+   文字を小さくして収める手もあるが、収録は10以上に増える予定なので、
+   折り返すほうが持つ。3行目からは省略して帯の高さを守る */
 #patternName {
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.15;
 }
 
 /* 一覧を開く印。**名前の前に置く。**
    後ろに小さな記号を添えるより、先に目が行って押せると分かる */
 .picker .menuIcon {
   flex: 0 0 auto;
+  width: 2.25rem;
+  height: 2.25rem;
   display: flex;
   align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgb(255 198 26 / 0.16);
   color: var(--gold);
 }
 

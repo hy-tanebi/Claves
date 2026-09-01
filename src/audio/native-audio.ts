@@ -1,5 +1,6 @@
 import { buildPlan } from "../domain/plan-builder";
 import type { Pattern } from "../domain/types";
+import type { Timbre } from "./bell";
 
 /**
  * Swift 側 `ClavesAudioPlugin` の呼び口。
@@ -14,6 +15,8 @@ export type ClavesAudioPlugin = {
   stop(): Promise<void>;
   applyPlan(options: { planJson: string }): Promise<void>;
   setVolume(options: { value: number }): Promise<void>;
+  /** 音色を変える。**知らない名前は reject される**（無音にせず理由を返す） */
+  setTimbre(options: { timbre: Timbre }): Promise<void>;
   /**
    * いま鳴らしている位置。譜面のハイライトに使う。
    *
@@ -68,6 +71,14 @@ export function createNativeAudio(plugin: ClavesAudioPlugin) {
 
     async setVolume(value: number): Promise<void> {
       await plugin.setVolume({ value });
+    },
+
+    /**
+     * 音色を変える。**鳴っている最中でも効く。**
+     * 停止中に呼んでも受け取られ、次に鳴らすときからその音色になる。
+     */
+    async setTimbre(timbre: Timbre): Promise<void> {
+      await plugin.setTimbre({ timbre });
     },
 
     /**

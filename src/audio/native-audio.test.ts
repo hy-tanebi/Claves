@@ -20,6 +20,7 @@ describe("createNativeAudio", () => {
       stop: async () => void calls.push({ method: "stop", args: undefined }),
       applyPlan: async (o) => void calls.push({ method: "applyPlan", args: o }),
       setVolume: async (o) => void calls.push({ method: "setVolume", args: o }),
+      setTimbre: async (o) => void calls.push({ method: "setTimbre", args: o }),
       getSnapshot: async () => ({ tick: 0, isPlaying: true }),
     addListener: async () => ({ remove: async () => {} }),
     };
@@ -76,6 +77,7 @@ describe("createNativeAudio", () => {
       stop: async () => {},
       applyPlan: async () => {},
       setVolume: async () => {},
+      setTimbre: async () => {},
       getSnapshot: async () => ({ tick: 288.5, isPlaying: true }),
     addListener: async () => ({ remove: async () => {} }),
     };
@@ -96,6 +98,7 @@ describe("createNativeAudio", () => {
       stop: async () => {},
       applyPlan: async () => {},
       setVolume: async () => {},
+      setTimbre: async () => {},
       getSnapshot: async () => ({ tick: 0, isPlaying: false }),
     addListener: async () => ({ remove: async () => {} }),
     };
@@ -120,6 +123,7 @@ describe("ネイティブ都合の停止", () => {
       stop: async () => {},
       applyPlan: async () => {},
       setVolume: async () => {},
+      setTimbre: async () => {},
       getSnapshot: async () => ({ tick: 0, isPlaying: false }),
       addListener: async (event, cb) => {
         listeners[event] = cb;
@@ -144,6 +148,7 @@ describe("ネイティブ都合の停止", () => {
       stop: async () => {},
       applyPlan: async () => {},
       setVolume: async () => {},
+      setTimbre: async () => {},
       getSnapshot: async () => ({ tick: 0, isPlaying: false }),
       addListener: async (event, cb) => {
         listeners[event] = cb;
@@ -168,6 +173,7 @@ describe("ネイティブ都合の停止", () => {
       stop: async () => {},
       applyPlan: async () => {},
       setVolume: async () => {},
+      setTimbre: async () => {},
       getSnapshot: async () => ({ tick: 0, isPlaying: false }),
       addListener: async () => ({ remove: async () => {} }),
     };

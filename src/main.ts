@@ -4,7 +4,7 @@ import { PATTERNS, pickPattern } from "./domain/registry";
 import { bpmFromTaps, pushTap } from "./domain/tap-tempo";
 import type { Pattern } from "./domain/types";
 import { Scheduler } from "./audio/scheduler";
-import { createBellBuffers, WebAudioClock } from "./audio/web-audio-clock";
+import { createClickBuffers, WebAudioClock } from "./audio/web-audio-clock";
 import { nativeAudio } from "./audio/native-plugin";
 import { noteIdAtTick } from "./domain/playhead";
 import { renderPattern } from "./notation/renderer";
@@ -156,7 +156,7 @@ async function ensureAudio(): Promise<WebAudioClock> {
   const created = new AudioContext();
   // iOS ではユーザー操作の中でしか開始できない
   await created.resume();
-  const built = new WebAudioClock(created, createBellBuffers(created));
+  const built = new WebAudioClock(created, createClickBuffers(created));
   built.setVolume(Number(els.volume.value) / 100);
   ctx = created;
   clock = built;

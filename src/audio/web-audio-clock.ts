@@ -1,4 +1,4 @@
-import { BELL_FUNDAMENTALS, bellSamples } from "./bell";
+import { clickSamples, DEFAULT_TIMBRE, TIMBRES, type Timbre } from "./bell";
 import type { Pitch } from "../domain/types";
 import type { AudioClock, ScheduleRequest, ScheduledSound } from "./clock";
 
@@ -12,12 +12,25 @@ import type { AudioClock, ScheduleRequest, ScheduledSound } from "./clock";
 export class WebAudioClock implements AudioClock {
   private readonly gain: GainNode;
 
+  /** いま鳴らす音色。**波形は音色ごとに作り置きしてある**ので切替は選び直すだけ */
+  private timbre: Timbre = DEFAULT_TIMBRE;
+
   constructor(
     private readonly ctx: AudioContext,
-    private readonly buffers: Record<Pitch, AudioBuffer>,
+    private readonly buffers: Record<Timbre, Record<Pitch, AudioBuffer>>,
   ) {
     this.gain = ctx.createGain();
     this.gain.connect(ctx.destination);
+  }
+
+  /**
+   * 音色を変える。
+   *
+   * **すでに予約済みの打点はそのまま鳴る。** 予約を取り消して鳴らし直すと
+   * 打点の位置がずれるため、切り替わるのは次に予約するぶんから。
+   */
+  setTimbre(timbre: Timbre): void {
+    this.timbre = timbre;
   }
 
   now(): number {
@@ -34,7 +47,7 @@ export class WebAudioClock implements AudioClock {
 
   schedule(req: ScheduleRequest): ScheduledSound {
     const src = this.ctx.createBufferSource();
-    src.buffer = this.buffers[req.pitch];
+    src.buffer = this.buffers[this.timbre][req.pitch];
     src.connect(this.gain);
     src.start(req.time);
 
@@ -55,22 +68,37 @@ export class WebAudioClock implements AudioClock {
 }
 
 /**
- * アゴゴ風の音を合成する（本番の録音音源に差し替えるまでの仮）。
+ * 打点の音を合成する（録音はしないと決めているので、合成が本番）。
  *
- * 金属打楽器らしさは倍音が整数比から外れていることで出る。
- * 立ち上がりを鋭くしてアタックを明確にし、タイミングが取りやすいようにする。
+ * 楽器の違いは倍音の並びと減衰の速さで出す。式は `bell.ts` にあり、
+ * Swift 側と `golden/click.json` で突き合わせている。
  */
-export function synthBell(ctx: BaseAudioContext, fundamental: number): AudioBuffer {
-  const data = bellSamples(fundamental, ctx.sampleRate);
+export function synthClick(
+  ctx: BaseAudioContext,
+  timbre: Timbre,
+  pitch: Pitch,
+): AudioBuffer {
+  const data = clickSamples(timbre, pitch, ctx.sampleRate);
   const buf = ctx.createBuffer(1, data.length, ctx.sampleRate);
   buf.getChannelData(0).set(data);
   return buf;
 }
 
-/** アゴゴの高音・低音を合成する */
-export function createBellBuffers(ctx: BaseAudioContext): Record<Pitch, AudioBuffer> {
-  return {
-    high: synthBell(ctx, BELL_FUNDAMENTALS.high),
-    low: synthBell(ctx, BELL_FUNDAMENTALS.low),
-  };
+/**
+ * **全音色ぶんを起動時に作る。**
+ *
+ * 切り替えのたびに合成すると、その場で数万サンプルぶんの三角関数を回すことになり、
+ * 押した瞬間に音が途切れる。音色は2種類しかないので先に作っておく。
+ */
+export function createClickBuffers(
+  ctx: BaseAudioContext,
+): Record<Timbre, Record<Pitch, AudioBuffer>> {
+  const out = {} as Record<Timbre, Record<Pitch, AudioBuffer>>;
+  for (const timbre of TIMBRES) {
+    out[timbre] = {
+      high: synthClick(ctx, timbre, "high"),
+      low: synthClick(ctx, timbre, "low"),
+    };
+  }
+  return out;
 }
