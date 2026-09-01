@@ -50,10 +50,10 @@ export const AFRO_GROOVE_6_8: Pattern = {
   source: {
     locator: {
       type: "primary",
-      person: "菅原勇人",
+      person: "菅原隼人",
       role: "BOAVISTA 主宰・奏者",
     },
-    transcribedBy: "菅原勇人",
+    transcribedBy: "菅原隼人",
     confirmedOn: "2026-08-22",
     arrangementNotes:
       "オーナー提供の譜面画像による。画像では2小節目の最後が4分休符だが、" +
