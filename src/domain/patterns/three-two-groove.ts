@@ -7,7 +7,8 @@ import type { Pattern } from "../types";
  * 由来がサンバヘギであることは source に残す。
  *
  * 打点の配置はソンクラーベ 3-2 と同一（8分音符換算で 0 / 3 / 6 / 10 / 12）。
- * 3-2 のみを収録し、2-3（反転）は持たない。
+ * **収録するのは 3-2 のみ。** 2-3 は小節の順番を入れ替えて画面側で導く
+ * （`src/domain/flip.ts`）。反転を別のリズムとして収録はしない。
  *
  * 記譜はサンバ系の正式である **2/2（アラブレーヴェ）× 2小節**。
  * 絶対 tick は 0 / 144 / 288 / 480 / 576、1周期 768 tick。
@@ -24,6 +25,9 @@ import type { Pattern } from "../types";
 export const THREE_TWO_GROOVE: Pattern = {
   id: "three-two-groove",
   name: "3-2 Groove",
+  // 打点がソンクラーベ 3-2 と同一であることは本人が確認済み（source 参照）。
+  // この印がある間だけ 3:2 ⇄ 2:3 の入れ替えができる
+  clave: "3-2",
   meter: { beats: 2, beatUnit: 2, beatGroups: [1, 1] },
   bpmUnit: 192,
   bars: [
@@ -53,7 +57,7 @@ export const THREE_TWO_GROOVE: Pattern = {
     transcribedBy: "菅原勇人",
     confirmedOn: "2026-08-19",
     arrangementNotes:
-      "骨格はソンクラーベ 3-2 と同一であることを本人が確認。3-2 のみ収録し反転は持たない。" +
+      "骨格はソンクラーベ 3-2 と同一であることを本人が確認。収録は 3-2 の形。" +
       "記譜は 2/2（アラブレーヴェ）。2つ目の打点は8分音符＋4分休符で書く。",
   },
 };
