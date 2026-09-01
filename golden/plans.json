@@ -106,6 +106,108 @@
       }
     },
     {
+      "name": "three-two-groove-2 @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 192,
+        "cycleTicks": 768,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          },
+          {
+            "tick": 480,
+            "pitch": "high"
+          },
+          {
+            "tick": 576,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "three-two-groove-2 @ 120bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 192,
+        "cycleTicks": 768,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          },
+          {
+            "tick": 480,
+            "pitch": "high"
+          },
+          {
+            "tick": 576,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "three-two-groove-2 @ 240bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 192,
+        "cycleTicks": 768,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          },
+          {
+            "tick": 480,
+            "pitch": "high"
+          },
+          {
+            "tick": 576,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
       "name": "afro-groove @ 40bpm",
       "plan": {
         "schemaVersion": 1,

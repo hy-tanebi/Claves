@@ -6,6 +6,8 @@ import { AFRO_GROOVE_2 } from "./patterns/afro-groove-2";
 import { AFRO_GROOVE_6_8 } from "./patterns/afro-groove-6-8";
 import { AFRO_GROOVE_6_8_2 } from "./patterns/afro-groove-6-8-2";
 import { IJEXA } from "./patterns/ijexa";
+import { THREE_TWO_GROOVE } from "./patterns/three-two-groove";
+import { THREE_TWO_GROOVE_2 } from "./patterns/three-two-groove-2";
 import { PATTERNS } from "./registry";
 import { totalTicks } from "./ticks";
 import { validatePattern } from "./validate";
@@ -203,5 +205,54 @@ describe("6/8 の名前", () => {
   it("6/8 のリズムは 6/8 Afro Groove で揃える", () => {
     expect(AFRO_GROOVE_6_8.name).toBe("6/8 Afro Groove 1");
     expect(AFRO_GROOVE_6_8_2.name).toBe("6/8 Afro Groove 2");
+  });
+});
+
+describe("3-2 Groove2", () => {
+  /**
+   * 口唱歌「カンンカ ンンンカ ンンカン カンンン」。
+   * 16マス＝8分音符換算で、打点は 0 / 3 / 7 / 10 / 12。
+   * 1マス 48 tick なので 0 / 144 / 336 / 480 / 576
+   */
+  it("打点はルンバクラーベ 3-2 の位置にある", () => {
+    expect(toPlaybackEvents(THREE_TWO_GROOVE_2).map((e) => e.tick)).toEqual([
+      0, 144, 336, 480, 576,
+    ]);
+  });
+
+  /**
+   * **既存の 3-2 Groove との違いは3つ目の打点だけ。**
+   * ソンクラーベ（6）とルンバクラーベ（7）の差で、
+   * ここが同じになったら2曲を分けている意味がなくなる
+   */
+  it("3-2 Groove とは3つ目の打点だけが違う", () => {
+    const son = toPlaybackEvents(THREE_TWO_GROOVE).map((e) => e.tick);
+    const rumba = toPlaybackEvents(THREE_TWO_GROOVE_2).map((e) => e.tick);
+
+    expect(son).toEqual([0, 144, 288, 480, 576]);
+    expect(rumba).toEqual([0, 144, 336, 480, 576]);
+
+    const differing = son.map((t, i) => t !== rumba[i]);
+    expect(differing).toEqual([false, false, true, false, false]);
+  });
+
+  it("1周期は 3-2 Groove と同じ 768 tick", () => {
+    expect(totalTicks(THREE_TWO_GROOVE_2)).toBe(768);
+  });
+
+  it("高低の打ち分けはしない（すべて高）", () => {
+    expect(toPlaybackEvents(THREE_TWO_GROOVE_2).every((e) => e.pitch === "high")).toBe(true);
+  });
+
+  it("BPM は2分音符で数える（カットタイム）", () => {
+    expect(THREE_TWO_GROOVE_2.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
+    expect(THREE_TWO_GROOVE_2.bpmUnit).toBe(192);
+  });
+
+  /** クラーベの 2 の側は、ソンでもルンバでも同じ形 */
+  it("小節2は 3-2 Groove と同じ形", () => {
+    const shape = (b: (typeof THREE_TWO_GROOVE.bars)[number]) =>
+      b.items.map((i) => `${i.kind}:${i.duration}:${i.dots ?? 0}`);
+    expect(shape(THREE_TWO_GROOVE_2.bars[1]!)).toEqual(shape(THREE_TWO_GROOVE.bars[1]!));
   });
 });
