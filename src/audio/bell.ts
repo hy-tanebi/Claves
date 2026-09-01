@@ -20,10 +20,17 @@ export type Timbre = "agogo" | "claves";
 export const TIMBRES: readonly Timbre[] = ["agogo", "claves"] as const;
 export const DEFAULT_TIMBRE: Timbre = "agogo";
 
-/** 画面に出す名前 */
+/**
+ * 画面に出す名前。
+ *
+ * **楽器名を出さない。** 鳴っているのは合成音で、アゴゴやクラベスの
+ * 録音ではない。楽器名を掲げると、アプリが根拠なく「これはアゴゴだ」と
+ * 主張することになる。id 側（`agogo` / `claves`）は合成パラメータの
+ * 由来を示すために残す。
+ */
 export const TIMBRE_LABELS: Record<Timbre, string> = {
-  agogo: "アゴゴ",
-  claves: "クラベス",
+  agogo: "Sound 1",
+  claves: "Sound 2",
 };
 
 export type Partial = { ratio: number; gain: number; decay: number };
