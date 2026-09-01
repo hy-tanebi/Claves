@@ -51,10 +51,10 @@ export const THREE_TWO_GROOVE: Pattern = {
   source: {
     locator: {
       type: "primary",
-      person: "菅原勇人",
+      person: "菅原隼人",
       role: "BOAVISTA 主宰・奏者",
     },
-    transcribedBy: "菅原勇人",
+    transcribedBy: "菅原隼人",
     confirmedOn: "2026-08-19",
     arrangementNotes:
       "骨格はソンクラーベ 3-2 と同一であることを本人が確認。収録は 3-2 の形。" +

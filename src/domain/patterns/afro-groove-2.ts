@@ -57,10 +57,10 @@ export const AFRO_GROOVE_2: Pattern = {
   source: {
     locator: {
       type: "primary",
-      person: "菅原勇人",
+      person: "菅原隼人",
       role: "BOAVISTA 主宰・奏者",
     },
-    transcribedBy: "菅原勇人",
+    transcribedBy: "菅原隼人",
     confirmedOn: "2026-08-22",
     arrangementNotes:
       "「●●・・●●・・ の 2/2」という指定による。8分音符8つで 2/2 の1小節ちょうど。" +
