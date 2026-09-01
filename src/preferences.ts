@@ -25,3 +25,28 @@ export function savePatternId(id: string): void {
     // 覚えられないだけで、動作には影響しない
   }
 }
+
+const TIMBRE_KEY = "claves.timbre";
+
+/**
+ * 最後に選んだ音色。覚えていなければ null。
+ *
+ * **値の妥当性はここで見ない。** 収録から外した音色の名前が残っていることが
+ * あるので、読む側（`pickTimbre`）が知らない名前を既定に落とす。
+ */
+export function loadTimbre(): string | null {
+  try {
+    const saved = localStorage.getItem(TIMBRE_KEY);
+    return saved === null || saved === "" ? null : saved;
+  } catch {
+    return null;
+  }
+}
+
+export function saveTimbre(timbre: string): void {
+  try {
+    localStorage.setItem(TIMBRE_KEY, timbre);
+  } catch {
+    // 覚えられないだけで、動作には影響しない
+  }
+}

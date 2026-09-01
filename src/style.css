@@ -121,37 +121,61 @@ body {
   border-radius: 0.4rem;
 }
 
-/* 3:2 と 2:3 の入れ替え。**鳴らし分けはまだ実装していない。**
-   場所を先に確保するため disabled のまま出す */
-.flip {
-  font: inherit;
-  font-size: 0.825rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--dim);
-  background: none;
-  border: 1px solid var(--sheet-line);
-  border-radius: 999px;
-  padding: 0.44rem 0.75rem;
+/* ---- タイトル下の操作行 ----
+   小節の入れ替えと音色。**押すたびに2つの値が入れ替わる。**
+   どちらも値が2つしかないので、リズム一覧のようなシートは開かない。
+   いまの値だけを出すので、押すまで何に変わるかは見えない。
+   そのぶん場所を取らず、音色が増えても形が崩れない */
+.controls {
   flex: 0 0 auto;
   display: flex;
+  gap: 0.625rem;
+}
+
+.ctl {
+  font: inherit;
+  font-size: 0.94rem;
+  font-weight: 650;
+  color: inherit;
+  background: var(--surface);
+  border: 0;
+  border-radius: 999px;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 2.875rem;
+  display: flex;
   align-items: center;
-  gap: 0.3rem;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 0.875rem;
   cursor: pointer;
   touch-action: manipulation;
 }
 
-.flip:disabled {
-  opacity: 0.55;
-  cursor: default;
+/* 名前が長い音色でも行を崩さない */
+.ctl > span:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.flipIcon {
-  font-size: 0.9rem;
+.ctlIcon {
+  color: var(--gold);
+  flex: 0 0 auto;
   line-height: 1;
 }
 
-.flip:focus-visible {
+.ctl:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* 押した瞬間の手応え。BPM のタップ面と同じ濃さに揃える */
+.ctl:active:not(:disabled) {
+  background: #1e1e1e;
+}
+
+.ctl:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }

@@ -9,7 +9,8 @@ import { nativeAudio } from "./audio/native-plugin";
 import { noteIdAtTick } from "./domain/playhead";
 import { renderPattern } from "./notation/renderer";
 import { whenMusicFontsReady } from "./notation/fonts";
-import { loadPatternId, savePatternId } from "./preferences";
+import { loadPatternId, loadTimbre, savePatternId, saveTimbre } from "./preferences";
+import { pickTimbre, TIMBRE_LABELS, type Timbre } from "./audio/bell";
 
 /** 25ms ごとに予約を補充する（設計上の先読み窓は 0.5 秒） */
 const PUMP_INTERVAL_MS = 25;
@@ -34,6 +35,8 @@ const els = {
   bpmValue: $<HTMLOutputElement>("bpmValue"),
   tap: $<HTMLButtonElement>("tap"),
   volume: $<HTMLInputElement>("volume"),
+  timbre: $<HTMLButtonElement>("timbre"),
+  timbreLabel: $<HTMLSpanElement>("timbreLabel"),
   play: $<HTMLButtonElement>("play"),
 };
 
@@ -56,6 +59,8 @@ let bpm = normalizeBpm(els.bpm.value) ?? 120;
 let noteElements = new Map<string, SVGElement>();
 /** タップテンポの打刻。performance.now() の値を積む */
 let taps: number[] = [];
+/** いま鳴らす音色。前回選んだものから始める */
+let timbre: Timbre = pickTimbre(loadTimbre());
 
 function drawScore(): void {
   els.name.textContent = pattern.name;
@@ -158,6 +163,7 @@ async function ensureAudio(): Promise<WebAudioClock> {
   await created.resume();
   const built = new WebAudioClock(created, createClickBuffers(created));
   built.setVolume(Number(els.volume.value) / 100);
+  built.setTimbre(timbre);
   ctx = created;
   clock = built;
   return built;
@@ -239,6 +245,25 @@ function setBpm(next: number): void {
     void nativeAudio.change(pattern, next);
   }
 }
+
+/**
+ * 音色を変える唯一の入口。
+ *
+ * **鳴っている最中でも切り替えられる。** 波形は全音色ぶん作り置きしてあるので、
+ * ブラウザ側もネイティブ側も選び直すだけで済む。
+ * すでに予約済みの打点は元の音色のまま鳴り終わる。
+ */
+function setTimbre(next: Timbre): void {
+  timbre = next;
+  els.timbreLabel.textContent = TIMBRE_LABELS[next];
+  clock?.setTimbre(next);
+  void nativeAudio?.setTimbre(next);
+  saveTimbre(next);
+}
+
+els.timbre.addEventListener("click", () => {
+  setTimbre(timbre === "agogo" ? "claves" : "agogo");
+});
 
 els.bpm.addEventListener("input", () => {
   const next = normalizeBpm(els.bpm.value);
@@ -402,6 +427,9 @@ if (nativeAudio) {
 // 初期化
 els.bpm.value = String(bpm);
 els.bpmValue.value = String(bpm);
+els.timbreLabel.textContent = TIMBRE_LABELS[timbre];
+// **停止中でもネイティブは覚えてくれる。** 次に鳴らすときからこの音色で始まる
+void nativeAudio?.setTimbre(timbre);
 
 // 音楽フォントの読み込みを待ってから描く。
 // 待たずに描くと VexFlow が代替フォントの幅で位置を計算し、

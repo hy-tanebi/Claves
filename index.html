@@ -36,19 +36,29 @@
           <span id="patternName">—</span>
         </button>
 
+      </header>
+
+      <!-- 小節の入れ替えと音色。**押すたびに2つの値が入れ替わる。**
+           どちらも値が2つしかないので、リズム一覧のようなシートは開かない -->
+      <div class="controls">
         <!-- 3:2 と 2:3 の入れ替え。**鳴らし分けはまだ実装していない。**
              場所を先に確保するため disabled のまま出す -->
         <button
           id="flip"
-          class="flip"
+          class="ctl"
           type="button"
           disabled
           aria-label="3:2 と 2:3 を入れ替える（準備中）"
         >
-          <span class="flipIcon" aria-hidden="true">⇄</span>
+          <span class="ctlIcon" aria-hidden="true">⇄</span>
           <span>3:2</span>
         </button>
-      </header>
+
+        <button id="timbre" class="ctl" type="button" aria-label="音色を切り替える">
+          <span class="ctlIcon" aria-hidden="true">♪</span>
+          <span id="timbreLabel">Sound 1</span>
+        </button>
+      </div>
 
       <section class="stage" aria-label="Score">
         <div id="score" class="score"></div>
