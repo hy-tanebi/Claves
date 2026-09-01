@@ -1,6 +1,7 @@
 import { normalizeBpm } from "./domain/bpm";
 import { toPlaybackEvents } from "./domain/derive";
 import { PATTERNS, pickPattern } from "./domain/registry";
+import { canFlip, flipPattern } from "./domain/flip";
 import { bpmFromTaps, pushTap } from "./domain/tap-tempo";
 import type { Pattern } from "./domain/types";
 import { Scheduler } from "./audio/scheduler";
@@ -35,6 +36,8 @@ const els = {
   bpmValue: $<HTMLOutputElement>("bpmValue"),
   tap: $<HTMLButtonElement>("tap"),
   volume: $<HTMLInputElement>("volume"),
+  flip: $<HTMLButtonElement>("flip"),
+  flipLabel: $<HTMLSpanElement>("flipLabel"),
   timbre: $<HTMLButtonElement>("timbre"),
   timbreLabel: $<HTMLSpanElement>("timbreLabel"),
   play: $<HTMLButtonElement>("play"),
@@ -46,8 +49,15 @@ let scheduler: Scheduler | null = null;
 let pumpTimer: number | null = null;
 let rafId: number | null = null;
 
-/** 画面に出ているリズム。切替の唯一の持ち主。前回選んだものから始める */
-let pattern: Pattern = pickPattern(loadPatternId());
+/**
+ * 一覧から選んだ収録リズム。**反転しても変わらない。**
+ * 反転の元はここから取る（反転済みをさらに反転すると id が二重に伸びる）
+ */
+let base: Pattern = pickPattern(loadPatternId());
+/** 3:2 を 2:3 に入れ替えているか。**リズムを変えたら解除する** */
+let flipped = false;
+/** 画面に出ているリズム。切替の唯一の持ち主。反転しているときは反転後の写し */
+let pattern: Pattern = base;
 /**
  * 再生中に切替を予約したリズム。**新しいリズムの音が実際に鳴った瞬間**に
  * 譜面を差し替えるため、それまで持っておく。
@@ -306,14 +316,14 @@ els.tap.addEventListener("blur", () => setPressed(false));
 
 /* ---- リズムの切替 ---- */
 
-function selectPattern(next: Pattern): void {
-  if (next.id === pattern.id) return;
-  // 拍子が変わるとタップ1打の意味が変わる。履歴は持ち越さない
-  taps = [];
-  // 実際に鳴り始めるのは次の拍境界だが、選んだ時点の意思を覚える。
-  // アプリは OS に落とされて再起動されるので、毎回1曲目に戻ると練習の邪魔になる
-  savePatternId(next.id);
-
+/**
+ * 鳴らすパターンを差し替える。
+ *
+ * **リズムの切替と 3:2 ⇄ 2:3 の入れ替えが、どちらもここを通る。**
+ * 差し替えの段取り（拍境界での予約と、譜面をいつ描き替えるか）は同じなので、
+ * 経路を分けると片方だけ直し忘れる。
+ */
+function applyPattern(next: Pattern): void {
   if (nativeAudio && els.play.dataset.playing === "true") {
     // 次の拍境界から新パターンの先頭で鳴り始める。
     // 譜面は tick が戻った瞬間（＝実際に鳴り始めた合図）に差し替える
@@ -338,6 +348,44 @@ function selectPattern(next: Pattern): void {
   drawScore();
   markCurrent();
 }
+
+function selectPattern(next: Pattern): void {
+  if (next.id === base.id) return;
+  // 拍子が変わるとタップ1打の意味が変わる。履歴は持ち越さない
+  taps = [];
+  // 実際に鳴り始めるのは次の拍境界だが、選んだ時点の意思を覚える。
+  // アプリは OS に落とされて再起動されるので、毎回1曲目に戻ると練習の邪魔になる
+  savePatternId(next.id);
+
+  base = next;
+  // **別の曲に反転状態を持ち越さない。** 3:2 で選んだ曲が
+  // いきなり 2:3 で鳴り出すと、何を聴いているのか分からなくなる
+  flipped = false;
+  syncFlipButton();
+  applyPattern(next);
+}
+
+/**
+ * 3:2 と 2:3 を入れ替える。
+ *
+ * **元は必ず `base` から取る。** 反転済みをさらに反転すると
+ * 打点の id が二重に伸びて、元のリズムと突き合わせられなくなる。
+ */
+function toggleFlip(): void {
+  if (!canFlip(base)) return;
+  flipped = !flipped;
+  syncFlipButton();
+  applyPattern(flipped ? flipPattern(base) : base);
+}
+
+/** ボタンの活性と表示を、いま選ばれているリズムに合わせる */
+function syncFlipButton(): void {
+  const usable = canFlip(base);
+  els.flip.disabled = !usable;
+  els.flipLabel.textContent = usable && flipped ? "2:3" : "3:2";
+}
+
+els.flip.addEventListener("click", toggleFlip);
 
 /**
  * 一覧の行。**パターンごとに1度だけ組む。**
@@ -428,6 +476,7 @@ if (nativeAudio) {
 els.bpm.value = String(bpm);
 els.bpmValue.value = String(bpm);
 els.timbreLabel.textContent = TIMBRE_LABELS[timbre];
+syncFlipButton();
 // **停止中でもネイティブは覚えてくれる。** 次に鳴らすときからこの音色で始まる
 void nativeAudio?.setTimbre(timbre);
 
