@@ -53,41 +53,97 @@ body {
 
 /* ---- 見出し ---- */
 
+/* リズム名は帯に載せる。文字を置くだけだと「押せる面」に見えない。
+   BPM 表示（.bpm）と同じ --surface の面にすることで、
+   画面の中で「押せるもの」の見え方を1つに揃える。
+   下辺の赤は --red の役割（いま選ばれているもの）をそのまま引き継ぐ。 */
 .head {
-  display: flex;
-  align-items: baseline;
+  flex: 0 0 auto;
+  min-height: 6.625rem;
+  background: var(--surface);
+  border-radius: 0.25rem;
   border-bottom: 3px solid var(--red);
-  padding-bottom: 0.5rem;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
 /* リズム名を兼ねた一覧ボタン。button の既定の見た目は消す */
 .picker {
   font: inherit;
-  font-size: 1.35rem;
+  font-size: 1.6rem;
   font-weight: 650;
   letter-spacing: 0.01em;
   color: inherit;
   background: none;
   border: 0;
-  padding: 0.15rem 0.35rem 0.15rem 0;
+  padding: 0;
   display: flex;
-  align-items: baseline;
-  gap: 0.35rem;
+  align-items: center;
+  gap: 0.55rem;
   cursor: pointer;
   touch-action: manipulation;
   text-align: left;
   min-width: 0;
 }
 
-.picker .chev {
+/* 名前が長いときは省略する。帯の高さと右のボタンの位置を崩さない */
+#patternName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 一覧を開く印。**名前の前に置く。**
+   後ろに小さな記号を添えるより、先に目が行って押せると分かる */
+.picker .menuIcon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
   color: var(--gold);
-  font-size: 0.75rem;
 }
 
 .picker:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
   border-radius: 0.4rem;
+}
+
+/* 3:2 と 2:3 の入れ替え。**鳴らし分けはまだ実装していない。**
+   場所を先に確保するため disabled のまま出す */
+.flip {
+  font: inherit;
+  font-size: 0.825rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+  background: none;
+  border: 1px solid var(--sheet-line);
+  border-radius: 999px;
+  padding: 0.44rem 0.75rem;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.flip:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.flipIcon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.flip:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 /* ---- リズム一覧（シート） ----
@@ -150,6 +206,19 @@ body {
   border-color: var(--red);
 }
 
+/* **`showModal()` は最初のフォーカス可能な要素に自動でフォーカスする。**
+   一覧では先頭の行がそれにあたり、UA 既定のフォーカスリング（青）が出て、
+   選択中の赤枠より目立っていた（常に先頭のリズムが選ばれて見える）。
+   タップでは何も出さず、キーボードで辿ったときだけ金の枠を出す。 */
+.sheetItem:focus {
+  outline: none;
+}
+
+.sheetItem:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
 /* 行の中の譜面。本体の譜面と同じく紙の色に黒で描く。
    暗い面に細い線を引くと輪郭が沈んで読めない */
 .rowScore {
@@ -183,9 +252,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 見本と同じく、画面を帯状に分ける。
-     余りを1箇所に溜めず、譜面・テンポ・再生ボタンで比例配分する */
-  flex: 5 1 0;
+  /* 画面を帯状に分け、余りを1箇所に溜めずに
+     譜面・テンポ・再生ボタンで比例配分する。
+     **配分は 5 から 4 へ減らした。** タイトルの帯に高さを渡したぶん、
+     譜面パネルから取る（譜面の組み方自体は変えていない） */
+  flex: 4 1 0;
   min-height: 8rem;
 }
 
