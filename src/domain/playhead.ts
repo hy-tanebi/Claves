@@ -15,16 +15,28 @@ import type { Pattern } from "./types";
  *
  * ので、どちらも受け取れるようにしてある。
  */
-export function noteIdAtTick(pattern: Pattern, tick: number): string {
+export function noteIdAtTick(pattern: Pattern, tick: number): string | null {
   const events = toPlaybackEvents(pattern);
   const cycle = totalTicks(pattern);
 
-  // 周期の中へ畳む。負の値でも先頭側に回り込ませる
+  // **まだ1つも鳴っていない区間は null を返す。**
+  //
+  // ネイティブは再生開始と切替でこの計画の tick 0 に合わせ直すので、
+  // 「最初の打点より前の絶対 tick」は **この計画がまだ鳴っていない**ことを意味する。
+  // 畳んでしまうとこの区別が消える。
+  //
+  // ここで前の周期の最後の打点を返すと、2:3（周期の頭が休符）で
+  // **始めた瞬間に2小節目の終わりが光る**（2026-09-02 に発覚）。
+  // 周期の頭に打点があるリズムでは `events[0].tick` が 0 なので、
+  // この分岐には入らない。
+  if (tick < events[0]!.tick) return null;
+
+  // 周期の中へ畳む
   const withinCycle = ((tick % cycle) + cycle) % cycle;
 
   // **周期の頭に打点があるとは限らない。**
   // 3:2 を 2:3 に入れ替えると、休符から始まる周期になる。
-  // 最初の打点より前は「前の周期の最後の打点」が鳴り続けている区間なので、
+  // 2周目以降のその区間は「前の周期の最後の打点」が鳴り続けているので、
   // そこを初期値にする。
   //
   // ここを `events[0]` にすると、まだ鳴っていない次の音符を先に光らせ、
