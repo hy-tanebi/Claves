@@ -22,8 +22,15 @@ export function noteIdAtTick(pattern: Pattern, tick: number): string {
   // 周期の中へ畳む。負の値でも先頭側に回り込ませる
   const withinCycle = ((tick % cycle) + cycle) % cycle;
 
-  // その時点で最後に鳴った打点。打点の間はその音符が鳴り続けている
-  let current = events[0]!;
+  // **周期の頭に打点があるとは限らない。**
+  // 3:2 を 2:3 に入れ替えると、休符から始まる周期になる。
+  // 最初の打点より前は「前の周期の最後の打点」が鳴り続けている区間なので、
+  // そこを初期値にする。
+  //
+  // ここを `events[0]` にすると、まだ鳴っていない次の音符を先に光らせ、
+  // 実際に鳴った瞬間には id が変わらないので光らない
+  // （2026-09-02 に反転で発覚）。
+  let current = events[events.length - 1]!;
   for (const event of events) {
     if (event.tick > withinCycle) break;
     current = event;
