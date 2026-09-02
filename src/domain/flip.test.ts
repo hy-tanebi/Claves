@@ -80,10 +80,20 @@ describe("3:2 と 2:3 の入れ替え", () => {
 });
 
 describe("入れ替えができるリズムの判定", () => {
-  it("3-2 Groove だけが入れ替えられる", () => {
+  /**
+   * **id を並べて固定しない。** 収録が増えるたびに書き換えることになり、
+   * 書き換えるついでに増やしてよい印になってしまう。
+   * 「`clave` が立っているものだけが入れ替えられる」という規則を固定する
+   */
+  it("clave を持つリズムだけが入れ替えられる", () => {
     for (const p of PATTERNS) {
-      expect(canFlip(p)).toBe(p.id === "three-two-groove");
+      expect(canFlip(p)).toBe(p.clave === "3-2" && p.bars.length === 2);
     }
+  });
+
+  /** 印が付いているリズムが1つも無くなったら、ボタンが死んでいることに気づけない */
+  it("入れ替えられるリズムが少なくとも1つある", () => {
+    expect(PATTERNS.filter(canFlip).length).toBeGreaterThan(0);
   });
 
   /**

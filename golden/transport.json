@@ -265,6 +265,267 @@
       ]
     },
     {
+      "name": "three-two-groove-2 @ 40bpm",
+      "kind": "steady",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 192,
+        "cycleTicks": 768,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          },
+          {
+            "tick": 480,
+            "pitch": "high"
+          },
+          {
+            "tick": 576,
+            "pitch": "high"
+          }
+        ]
+      },
+      "expected": [
+        {
+          "absTick": 0,
+          "seconds": 0,
+          "pitch": "high"
+        },
+        {
+          "absTick": 144,
+          "seconds": 1.125,
+          "pitch": "high"
+        },
+        {
+          "absTick": 336,
+          "seconds": 2.625,
+          "pitch": "high"
+        },
+        {
+          "absTick": 480,
+          "seconds": 3.75,
+          "pitch": "high"
+        },
+        {
+          "absTick": 576,
+          "seconds": 4.5,
+          "pitch": "high"
+        },
+        {
+          "absTick": 768,
+          "seconds": 6,
+          "pitch": "high"
+        },
+        {
+          "absTick": 912,
+          "seconds": 7.125,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1104,
+          "seconds": 8.625,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1248,
+          "seconds": 9.75,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1344,
+          "seconds": 10.5,
+          "pitch": "high"
+        }
+      ]
+    },
+    {
+      "name": "three-two-groove-2 @ 120bpm",
+      "kind": "steady",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 192,
+        "cycleTicks": 768,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          },
+          {
+            "tick": 480,
+            "pitch": "high"
+          },
+          {
+            "tick": 576,
+            "pitch": "high"
+          }
+        ]
+      },
+      "expected": [
+        {
+          "absTick": 0,
+          "seconds": 0,
+          "pitch": "high"
+        },
+        {
+          "absTick": 144,
+          "seconds": 0.375,
+          "pitch": "high"
+        },
+        {
+          "absTick": 336,
+          "seconds": 0.875,
+          "pitch": "high"
+        },
+        {
+          "absTick": 480,
+          "seconds": 1.25,
+          "pitch": "high"
+        },
+        {
+          "absTick": 576,
+          "seconds": 1.5,
+          "pitch": "high"
+        },
+        {
+          "absTick": 768,
+          "seconds": 2,
+          "pitch": "high"
+        },
+        {
+          "absTick": 912,
+          "seconds": 2.375,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1104,
+          "seconds": 2.875,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1248,
+          "seconds": 3.25,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1344,
+          "seconds": 3.5,
+          "pitch": "high"
+        }
+      ]
+    },
+    {
+      "name": "three-two-groove-2 @ 240bpm",
+      "kind": "steady",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 192,
+        "cycleTicks": 768,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          },
+          {
+            "tick": 480,
+            "pitch": "high"
+          },
+          {
+            "tick": 576,
+            "pitch": "high"
+          }
+        ]
+      },
+      "expected": [
+        {
+          "absTick": 0,
+          "seconds": 0,
+          "pitch": "high"
+        },
+        {
+          "absTick": 144,
+          "seconds": 0.1875,
+          "pitch": "high"
+        },
+        {
+          "absTick": 336,
+          "seconds": 0.4375,
+          "pitch": "high"
+        },
+        {
+          "absTick": 480,
+          "seconds": 0.625,
+          "pitch": "high"
+        },
+        {
+          "absTick": 576,
+          "seconds": 0.75,
+          "pitch": "high"
+        },
+        {
+          "absTick": 768,
+          "seconds": 1,
+          "pitch": "high"
+        },
+        {
+          "absTick": 912,
+          "seconds": 1.1875,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1104,
+          "seconds": 1.4375,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1248,
+          "seconds": 1.625,
+          "pitch": "high"
+        },
+        {
+          "absTick": 1344,
+          "seconds": 1.75,
+          "pitch": "high"
+        }
+      ]
+    },
+    {
       "name": "afro-groove @ 40bpm",
       "kind": "steady",
       "plan": {
