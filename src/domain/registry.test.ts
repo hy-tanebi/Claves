@@ -3,13 +3,14 @@ import { computeBeams } from "./beams";
 import { toPlaybackEvents } from "./derive";
 import { AFRO_GROOVE } from "./patterns/afro-groove";
 import { AFRO_GROOVE_2 } from "./patterns/afro-groove-2";
+import { AFRO_GROOVE_3 } from "./patterns/afro-groove-3";
 import { AFRO_GROOVE_6_8 } from "./patterns/afro-groove-6-8";
 import { AFRO_GROOVE_6_8_2 } from "./patterns/afro-groove-6-8-2";
 import { IJEXA } from "./patterns/ijexa";
 import { THREE_TWO_GROOVE } from "./patterns/three-two-groove";
 import { THREE_TWO_GROOVE_2 } from "./patterns/three-two-groove-2";
 import { PATTERNS } from "./registry";
-import { totalTicks } from "./ticks";
+import { ticksOf, totalTicks } from "./ticks";
 import { validatePattern } from "./validate";
 
 describe("収録リズム", () => {
@@ -254,5 +255,61 @@ describe("3-2 Groove2", () => {
     const shape = (b: (typeof THREE_TWO_GROOVE.bars)[number]) =>
       b.items.map((i) => `${i.kind}:${i.duration}:${i.dots ?? 0}`);
     expect(shape(THREE_TWO_GROOVE_2.bars[1]!)).toEqual(shape(THREE_TWO_GROOVE.bars[1]!));
+  });
+});
+
+describe("Afro Groove3", () => {
+  /**
+   * 口唱歌「ンカンカ ンカカン カンカカ ンカンカ」。
+   * 16マス＝8分音符換算で、打点は 1 / 3 / 5 / 6 / 8 / 10 / 11 / 13 / 15。
+   * 1マス 48 tick
+   */
+  it("打点が口唱歌のとおりに並ぶ", () => {
+    expect(toPlaybackEvents(AFRO_GROOVE_3).map((e) => e.tick)).toEqual([
+      48, 144, 240, 288, 384, 480, 528, 624, 720,
+    ]);
+  });
+
+  /**
+   * **収録で初めて、周期の頭が休符から始まるリズム。**
+   * ハイライトの扱いがここだけ変わるので、性質としてテストで固定する
+   */
+  it("周期の頭は休符（最初の打点は tick 48）", () => {
+    expect(toPlaybackEvents(AFRO_GROOVE_3)[0]!.tick).toBe(48);
+  });
+
+  it("1周期は 768 tick（2/2 × 2小節）", () => {
+    expect(totalTicks(AFRO_GROOVE_3)).toBe(768);
+  });
+
+  it("高低の打ち分けはしない（すべて高）", () => {
+    expect(toPlaybackEvents(AFRO_GROOVE_3).every((e) => e.pitch === "high")).toBe(true);
+  });
+
+  it("BPM は2分音符で数える（カットタイム）", () => {
+    expect(AFRO_GROOVE_3.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
+    expect(AFRO_GROOVE_3.bpmUnit).toBe(192);
+  });
+
+  /**
+   * **音価が拍（2分音符＝192 tick）をまたがないこと。**
+   * タイは v1 で使わないと決めているので、またぐ書き方をすると
+   * 拍の頭が読めない譜面になる
+   */
+  it("どの音価も拍の境目をまたがない", () => {
+    const beat = 192;
+    AFRO_GROOVE_3.bars.forEach((bar) => {
+      let at = 0;
+      bar.items.forEach((item) => {
+        const length = ticksOf(item);
+        expect(Math.floor(at / beat)).toBe(Math.floor((at + length - 1) / beat));
+        at += length;
+      });
+      expect(at).toBe(384);
+    });
+  });
+
+  it("入れ替えの印は立てない（クラーベの形ではない）", () => {
+    expect(AFRO_GROOVE_3.clave).toBeUndefined();
   });
 });

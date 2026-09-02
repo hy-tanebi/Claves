@@ -45,12 +45,19 @@ describe("noteIdAtTick", () => {
     expect(noteIdAtTick(pattern, 144.7)).toBe("sr2");
   });
 
-  /** 収録リズムはすべて周期の頭に打点があるので、null にはならない */
-  it("収録している全リズムで必ず音符が引ける", () => {
+  /**
+   * **周期の頭に打点があるとは限らない**（Afro Groove3 は休符から始まる）。
+   * 最初の打点より前は null、それ以降は必ず引ける
+   */
+  it("収録している全リズムで、最初の打点以降は必ず音符が引ける", () => {
     for (const p of PATTERNS) {
       const cycle = totalTicks(p);
-      expect(toPlaybackEvents(p)[0]!.tick).toBe(0);
-      for (let tick = 0; tick < cycle; tick += 7) {
+      const first = toPlaybackEvents(p)[0]!;
+
+      for (let tick = 0; tick < first.tick; tick += 1) {
+        expect(noteIdAtTick(p, tick)).toBeNull();
+      }
+      for (let tick = first.tick; tick < cycle; tick += 7) {
         expect(noteIdAtTick(p, tick)).toBeTruthy();
       }
     }
@@ -66,9 +73,19 @@ describe("noteIdAtTick", () => {
  * 見た目には「ハイライトが早い」ではなく「タイミングが合わない」と出る。
  */
 describe("周期の頭が休符のとき", () => {
-  const flippable = PATTERNS.filter(canFlip);
+  /**
+   * 対象は2種類ある。
+   * - 反転して頭が休符になるもの（3:2 → 2:3）
+   * - 収録の時点で休符から始まるもの（Afro Groove3）
+   *
+   * **どちらも同じ規則で扱われなければならない。**
+   */
+  const flippable = [
+    ...PATTERNS.filter(canFlip).map(flipPattern),
+    ...PATTERNS.filter((p) => toPlaybackEvents(p)[0]!.tick > 0),
+  ];
 
-  it("入れ替えられるリズムが少なくとも1つある", () => {
+  it("頭が休符の周期が少なくとも1つある", () => {
     expect(flippable.length).toBeGreaterThan(0);
   });
 
@@ -79,7 +96,7 @@ describe("周期の頭が休符のとき", () => {
    */
   it("1周目の最初の打点より前は、まだ鳴っていない（null）", () => {
     for (const p of flippable) {
-      const flipped = flipPattern(p);
+      const flipped = p;
       const first = toPlaybackEvents(flipped)[0]!;
 
       // 反転すると先頭に休符ができる（できていなければこのテストの前提が崩れる）
@@ -94,7 +111,7 @@ describe("周期の頭が休符のとき", () => {
   /** 2周目以降の同じ区間は、前の周期の最後の打点が鳴り続けている */
   it("2周目以降の最初の打点より前は、前の周期の最後の打点", () => {
     for (const p of flippable) {
-      const flipped = flipPattern(p);
+      const flipped = p;
       const events = toPlaybackEvents(flipped);
       const cycle = totalTicks(flipped);
       const first = events[0]!;
@@ -108,7 +125,7 @@ describe("周期の頭が休符のとき", () => {
 
   it("最初の打点に達した瞬間に、その音符へ変わる", () => {
     for (const p of flippable) {
-      const flipped = flipPattern(p);
+      const flipped = p;
       const first = toPlaybackEvents(flipped)[0]!;
 
       // 1周目：それまで null → 最初の打点で光る
@@ -120,7 +137,7 @@ describe("周期の頭が休符のとき", () => {
   /** 周期をまたいでも、打点の位置でだけ音符が変わること */
   it("音符が変わる位置は、打点の位置と1対1で対応する（2周目）", () => {
     for (const p of flippable) {
-      const flipped = flipPattern(p);
+      const flipped = p;
       const cycle = totalTicks(flipped);
       const hitTicks = new Set(toPlaybackEvents(flipped).map((e) => e.tick));
 
