@@ -21,6 +21,32 @@ const OUT = "screenshots";
 /** SVG テキストの判定枠はグリフの送り幅を含み、実際のインクより広い */
 const BBOX_TOLERANCE_PX = 6;
 
+/** 符頭がこれより小さいと読めない */
+const MIN_NOTEHEAD_PX = 6;
+
+/**
+ * 符頭の大きさの既知の例外。**足すときは必ずオーナーの判断を通すこと。**
+ *
+ * ここに書いたぶんだけ検査が緩む。**「落ちたままにする」のは禁じ手。**
+ * 赤いままの検査は「いつものやつ」になり、本当の退行を見逃す原因になる。
+ * 許容すると決めたなら、測った値をここに残して緑に戻す。
+ *
+ * 値は「これ以上小さくなったら落とす」線。実測値よりわずかに小さくしてあるので、
+ * **さらに縮んだら気づける。**
+ */
+const NOTEHEAD_ALLOWANCE = {
+  // Afro Groove3 は12要素（9打点＋3休符）で、他のリズム（8〜10要素）より密。
+  // 段の幅は全パターン共通の固定値なので、そのぶん縮む。
+  // 375pt（iPhone SE / mini）でだけ 6px を下回る。実測 5.7px。
+  // 譜面そのものは正しく描けている（符尾の離れ・見切れ・重なりは 0）。
+  // 2026-09-02 オーナー判断でこのまま出す。
+  "Afro Groove3": { 375: 5.6 },
+};
+
+function minNoteheadPx(name, width) {
+  return NOTEHEAD_ALLOWANCE[name]?.[width] ?? MIN_NOTEHEAD_PX;
+}
+
 mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch();
@@ -152,6 +178,7 @@ for (const width of WIDTHS) {
   await page.screenshot({ path: `${OUT}/app-${width}-${slug}.png` });
 
   const problems = [];
+  const notes = [];
   if (result.error) problems.push(result.error);
   if (result.clippedElements > 0)
     problems.push(`SVG の表示範囲から見切れている要素（${result.clippedElements}件）— viewBox の高さが足りない`);
@@ -160,14 +187,23 @@ for (const width of WIDTHS) {
   if (result.overlappingNotes > 0) problems.push(`音符が重なっている（${result.overlappingNotes}件）`);
   if (result.notesOutsideBar > 0) problems.push(`小節からはみ出した音符（${result.notesOutsideBar}件）`);
   if (result.horizontalScroll) problems.push("横スクロールが発生している");
-  if (result.noteheadPx !== null && result.noteheadPx < 6)
-    problems.push(`音符が小さすぎる（符頭 ${result.noteheadPx}px）`);
+  const floor = minNoteheadPx(names[pi], width);
+  if (result.noteheadPx !== null && result.noteheadPx < floor)
+    problems.push(
+      `音符が小さすぎる（符頭 ${result.noteheadPx}px、下限 ${floor}px）`,
+    );
+  // 例外に書いた組み合わせは、緩めていることを毎回言う。黙って緩めない
+  else if (floor !== MIN_NOTEHEAD_PX)
+    notes.push(
+      `符頭 ${result.noteheadPx}px（既知の例外として ${floor}px まで許容している）`,
+    );
   if (result.staffLinesPerBar !== 1)
     problems.push(`譜表が1本線になっていない（${result.staffLinesPerBar}本）`);
 
   const mark = problems.length === 0 ? "OK " : "NG ";
   console.log(`${mark}${width}px  ${names[pi]}  ${JSON.stringify(result)}`);
   for (const p of problems) console.log(`     - ${p}`);
+  for (const n of notes) console.log(`     * ${n}`);
   if (problems.length > 0) failed = true;
   }
 
