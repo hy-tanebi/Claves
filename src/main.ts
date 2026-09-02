@@ -151,8 +151,11 @@ function startNativeHighlightLoop(): void {
       }
       lastTick = snapshot.tick;
 
+      // **null は「この計画がまだ1つも鳴っていない」。**
+      // 2:3 のように周期の頭が休符だと、始めてから最初の打点までがこれにあたる。
+      // ここで光らせると、鳴っていない音符が先に光る
       const noteId = noteIdAtTick(pattern, snapshot.tick);
-      if (noteId !== lastNoteId) {
+      if (noteId !== null && noteId !== lastNoteId) {
         flash(noteId);
         lastNoteId = noteId;
       }

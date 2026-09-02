@@ -45,9 +45,11 @@ describe("noteIdAtTick", () => {
     expect(noteIdAtTick(pattern, 144.7)).toBe("sr2");
   });
 
+  /** 収録リズムはすべて周期の頭に打点があるので、null にはならない */
   it("収録している全リズムで必ず音符が引ける", () => {
     for (const p of PATTERNS) {
       const cycle = totalTicks(p);
+      expect(toPlaybackEvents(p)[0]!.tick).toBe(0);
       for (let tick = 0; tick < cycle; tick += 7) {
         expect(noteIdAtTick(p, tick)).toBeTruthy();
       }
@@ -70,17 +72,35 @@ describe("周期の頭が休符のとき", () => {
     expect(flippable.length).toBeGreaterThan(0);
   });
 
-  it("最初の打点より前は、前の周期の最後の打点が鳴っている", () => {
+  /**
+   * **再生を始めた直後は、まだ何も鳴っていない。**
+   * ここで前の周期の最後の打点を返すと、始めた瞬間に2小節目の終わりが光る
+   * （2026-09-02 オーナー報告）
+   */
+  it("1周目の最初の打点より前は、まだ鳴っていない（null）", () => {
     for (const p of flippable) {
       const flipped = flipPattern(p);
-      const events = toPlaybackEvents(flipped);
-      const first = events[0]!;
-      const last = events[events.length - 1]!;
+      const first = toPlaybackEvents(flipped)[0]!;
 
       // 反転すると先頭に休符ができる（できていなければこのテストの前提が崩れる）
       expect(first.tick).toBeGreaterThan(0);
 
       for (let tick = 0; tick < first.tick; tick += 1) {
+        expect(noteIdAtTick(flipped, tick)).toBeNull();
+      }
+    }
+  });
+
+  /** 2周目以降の同じ区間は、前の周期の最後の打点が鳴り続けている */
+  it("2周目以降の最初の打点より前は、前の周期の最後の打点", () => {
+    for (const p of flippable) {
+      const flipped = flipPattern(p);
+      const events = toPlaybackEvents(flipped);
+      const cycle = totalTicks(flipped);
+      const first = events[0]!;
+      const last = events[events.length - 1]!;
+
+      for (let tick = cycle; tick < cycle + first.tick; tick += 1) {
         expect(noteIdAtTick(flipped, tick)).toBe(last.noteId);
       }
     }
@@ -91,21 +111,22 @@ describe("周期の頭が休符のとき", () => {
       const flipped = flipPattern(p);
       const first = toPlaybackEvents(flipped)[0]!;
 
-      expect(noteIdAtTick(flipped, first.tick - 1)).not.toBe(first.noteId);
+      // 1周目：それまで null → 最初の打点で光る
+      expect(noteIdAtTick(flipped, first.tick - 1)).toBeNull();
       expect(noteIdAtTick(flipped, first.tick)).toBe(first.noteId);
     }
   });
 
   /** 周期をまたいでも、打点の位置でだけ音符が変わること */
-  it("音符が変わる位置は、打点の位置と1対1で対応する", () => {
+  it("音符が変わる位置は、打点の位置と1対1で対応する（2周目）", () => {
     for (const p of flippable) {
       const flipped = flipPattern(p);
       const cycle = totalTicks(flipped);
       const hitTicks = new Set(toPlaybackEvents(flipped).map((e) => e.tick));
 
-      for (let tick = 1; tick < cycle; tick += 1) {
+      for (let tick = cycle + 1; tick < cycle * 2; tick += 1) {
         const changed = noteIdAtTick(flipped, tick) !== noteIdAtTick(flipped, tick - 1);
-        expect(changed).toBe(hitTicks.has(tick));
+        expect(changed).toBe(hitTicks.has(tick - cycle));
       }
     }
   });
