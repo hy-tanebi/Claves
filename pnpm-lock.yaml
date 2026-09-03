@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@capacitor/cli':
-        specifier: ^8.5.0
-        version: 8.5.0
       '@capacitor/core':
         specifier: ^8.5.0
         version: 8.5.0
@@ -21,6 +18,9 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
     devDependencies:
+      '@capacitor/cli':
+        specifier: ^8.5.0
+        version: 8.5.0
       jsdom:
         specifier: ^30.0.1
         version: 30.0.1

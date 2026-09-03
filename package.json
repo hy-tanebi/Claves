@@ -13,6 +13,7 @@
     "gen:golden": "vitest run -u src/domain/transport.golden.test.ts src/domain/plans.golden.test.ts src/audio/click.golden.test.ts"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.0",
     "jsdom": "^30.0.1",
     "playwright": "1.56.0",
     "typescript": "^5.9.0",
@@ -20,7 +21,6 @@
     "vitest": "^3.2.0"
   },
   "dependencies": {
-    "@capacitor/cli": "^8.5.0",
     "@capacitor/core": "^8.5.0",
     "@capacitor/ios": "^8.5.0",
     "vexflow": "^5.0.0"
