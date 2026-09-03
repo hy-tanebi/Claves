@@ -3,6 +3,30 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!--
+      **外へ出さないための最後の砦。**
+
+      いまこのアプリは外部と一切通信しない。CSP は「侵入を防ぐ」ためではなく、
+      **将来なにかの拍子に外部通信が復活したときに、黙って通さない**ために置く。
+      具体的には、汚染された依存（npm サプライチェーン）が仕込まれても、
+      集めたものを外へ送れないようにする。
+
+      各指定の理由:
+        default-src 'none'  … 既定で全部止め、必要なものだけ開ける
+        script-src  'self'  … バンドルは自分の資産のみ。CDN からは読まない
+        style-src   'self'  … style.css のみ
+        img-src     'self' data:  … アイコンと、SVG 内の data URI
+        font-src    data:   … 音楽フォントは data:font/woff2 で埋め込んである
+        connect-src 'self'  … fetch / XHR / WebSocket を自分の生成元だけに閉じる。
+                              **外部への送信はこれで止まる。**
+                              'none' にすると開発サーバーの HMR が動かない
+        frame-src / worker-src / object-src 'none' … いずれも使わない
+        base-uri / form-action 'none' … 行き先のすり替えによる持ち出しを塞ぐ
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src data:; connect-src 'self'; media-src 'none'; frame-src 'none'; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
     <meta name="theme-color" content="#0a0a0a" />
     <!-- SVG を主に使い、対応していないブラウザと iOS 向けに PNG を置く -->
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
