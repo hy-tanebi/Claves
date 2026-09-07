@@ -7,9 +7,9 @@ import { AFRO_GROOVE_3 } from "./patterns/afro-groove-3";
 import { AFRO_GROOVE_6_8 } from "./patterns/afro-groove-6-8";
 import { AFRO_GROOVE_6_8_2 } from "./patterns/afro-groove-6-8-2";
 import { IJEXA } from "./patterns/ijexa";
-import { THREE_TWO_GROOVE } from "./patterns/three-two-groove";
-import { THREE_TWO_GROOVE_2 } from "./patterns/three-two-groove-2";
-import { THREE_TWO_GROOVE_3 } from "./patterns/three-two-groove-3";
+import { SON_CLAVE } from "./patterns/son-clave";
+import { RUMBA_CLAVE } from "./patterns/rumba-clave";
+import { BOSSA_CLAVE } from "./patterns/bossa-clave";
 import { PATTERNS } from "./registry";
 import { ticksOf, totalTicks } from "./ticks";
 import { validatePattern } from "./validate";
@@ -35,7 +35,7 @@ describe("収録リズム", () => {
 });
 
 describe("Afro Groove", () => {
-  it("3-2 Groove の1小節目を2回繰り返した形になっている", () => {
+  it("Son Clave の1小節目を2回繰り返した形になっている", () => {
     const [first, second] = AFRO_GROOVE.bars;
     // id だけが違い、音価と休符の並びは同じ
     const shape = (b: typeof first) =>
@@ -50,7 +50,7 @@ describe("Afro Groove", () => {
     ]);
   });
 
-  it("1周期は 3-2 Groove と同じ 768 tick", () => {
+  it("1周期は Son Clave と同じ 768 tick", () => {
     expect(totalTicks(AFRO_GROOVE)).toBe(768);
   });
 
@@ -210,26 +210,26 @@ describe("6/8 の名前", () => {
   });
 });
 
-describe("3-2 Groove2", () => {
+describe("Rumba Clave", () => {
   /**
    * 口唱歌「カンンカ ンンンカ ンンカン カンンン」。
    * 16マス＝8分音符換算で、打点は 0 / 3 / 7 / 10 / 12。
    * 1マス 48 tick なので 0 / 144 / 336 / 480 / 576
    */
   it("打点はルンバクラーベ 3-2 の位置にある", () => {
-    expect(toPlaybackEvents(THREE_TWO_GROOVE_2).map((e) => e.tick)).toEqual([
+    expect(toPlaybackEvents(RUMBA_CLAVE).map((e) => e.tick)).toEqual([
       0, 144, 336, 480, 576,
     ]);
   });
 
   /**
-   * **既存の 3-2 Groove との違いは3つ目の打点だけ。**
+   * **既存の Son Clave との違いは3つ目の打点だけ。**
    * ソンクラーベ（6）とルンバクラーベ（7）の差で、
    * ここが同じになったら2曲を分けている意味がなくなる
    */
-  it("3-2 Groove とは3つ目の打点だけが違う", () => {
-    const son = toPlaybackEvents(THREE_TWO_GROOVE).map((e) => e.tick);
-    const rumba = toPlaybackEvents(THREE_TWO_GROOVE_2).map((e) => e.tick);
+  it("Son Clave とは3つ目の打点だけが違う", () => {
+    const son = toPlaybackEvents(SON_CLAVE).map((e) => e.tick);
+    const rumba = toPlaybackEvents(RUMBA_CLAVE).map((e) => e.tick);
 
     expect(son).toEqual([0, 144, 288, 480, 576]);
     expect(rumba).toEqual([0, 144, 336, 480, 576]);
@@ -238,24 +238,24 @@ describe("3-2 Groove2", () => {
     expect(differing).toEqual([false, false, true, false, false]);
   });
 
-  it("1周期は 3-2 Groove と同じ 768 tick", () => {
-    expect(totalTicks(THREE_TWO_GROOVE_2)).toBe(768);
+  it("1周期は Son Clave と同じ 768 tick", () => {
+    expect(totalTicks(RUMBA_CLAVE)).toBe(768);
   });
 
   it("高低の打ち分けはしない（すべて高）", () => {
-    expect(toPlaybackEvents(THREE_TWO_GROOVE_2).every((e) => e.pitch === "high")).toBe(true);
+    expect(toPlaybackEvents(RUMBA_CLAVE).every((e) => e.pitch === "high")).toBe(true);
   });
 
   it("BPM は2分音符で数える（カットタイム）", () => {
-    expect(THREE_TWO_GROOVE_2.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
-    expect(THREE_TWO_GROOVE_2.bpmUnit).toBe(192);
+    expect(RUMBA_CLAVE.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
+    expect(RUMBA_CLAVE.bpmUnit).toBe(192);
   });
 
   /** クラーベの 2 の側は、ソンでもルンバでも同じ形 */
-  it("小節2は 3-2 Groove と同じ形", () => {
-    const shape = (b: (typeof THREE_TWO_GROOVE.bars)[number]) =>
+  it("小節2は Son Clave と同じ形", () => {
+    const shape = (b: (typeof SON_CLAVE.bars)[number]) =>
       b.items.map((i) => `${i.kind}:${i.duration}:${i.dots ?? 0}`);
-    expect(shape(THREE_TWO_GROOVE_2.bars[1]!)).toEqual(shape(THREE_TWO_GROOVE.bars[1]!));
+    expect(shape(RUMBA_CLAVE.bars[1]!)).toEqual(shape(SON_CLAVE.bars[1]!));
   });
 });
 
@@ -315,13 +315,13 @@ describe("Afro Groove3", () => {
   });
 });
 
-describe("3-2 Groove3", () => {
+describe("Bossa Clave", () => {
   /**
    * 口唱歌「カンンカ ンンカン ンンカン ンカンン」。
    * 16マス＝8分音符換算で、打点は 0 / 3 / 6 / 10 / 13。1マス 48 tick
    */
   it("打点が口唱歌のとおりに並ぶ", () => {
-    expect(toPlaybackEvents(THREE_TWO_GROOVE_3).map((e) => e.tick)).toEqual([
+    expect(toPlaybackEvents(BOSSA_CLAVE).map((e) => e.tick)).toEqual([
       0, 144, 288, 480, 624,
     ]);
   });
@@ -329,41 +329,41 @@ describe("3-2 Groove3", () => {
   /**
    * **ソンクラーベでもルンバクラーベでもない。**
    * 5つ目の打点が 13 にある（ソンもルンバも 12）。
-   * ここが 12 になったら、それは 3-2 Groove と同じものになる
+   * ここが 12 になったら、それは Son Clave と同じものになる
    */
   it("5つ目の打点がソン・ルンバのどちらとも違う", () => {
-    const son = toPlaybackEvents(THREE_TWO_GROOVE).map((e) => e.tick);
-    const rumba = toPlaybackEvents(THREE_TWO_GROOVE_2).map((e) => e.tick);
-    const mine = toPlaybackEvents(THREE_TWO_GROOVE_3).map((e) => e.tick);
+    const son = toPlaybackEvents(SON_CLAVE).map((e) => e.tick);
+    const rumba = toPlaybackEvents(RUMBA_CLAVE).map((e) => e.tick);
+    const mine = toPlaybackEvents(BOSSA_CLAVE).map((e) => e.tick);
 
     expect(mine[4]).toBe(624);
     expect(son[4]).toBe(576);
     expect(rumba[4]).toBe(576);
   });
 
-  /** 違うのは後半だけ。前半は 3-2 Groove と同じ */
-  it("小節1は 3-2 Groove と同じ形", () => {
-    const shape = (b: (typeof THREE_TWO_GROOVE.bars)[number]) =>
+  /** 違うのは後半だけ。前半は Son Clave と同じ */
+  it("小節1は Son Clave と同じ形", () => {
+    const shape = (b: (typeof SON_CLAVE.bars)[number]) =>
       b.items.map((i) => `${i.kind}:${i.duration}:${i.dots ?? 0}`);
-    expect(shape(THREE_TWO_GROOVE_3.bars[0]!)).toEqual(shape(THREE_TWO_GROOVE.bars[0]!));
+    expect(shape(BOSSA_CLAVE.bars[0]!)).toEqual(shape(SON_CLAVE.bars[0]!));
   });
 
   it("1周期は 768 tick（2/2 × 2小節）", () => {
-    expect(totalTicks(THREE_TWO_GROOVE_3)).toBe(768);
+    expect(totalTicks(BOSSA_CLAVE)).toBe(768);
   });
 
   it("高低の打ち分けはしない（すべて高）", () => {
-    expect(toPlaybackEvents(THREE_TWO_GROOVE_3).every((e) => e.pitch === "high")).toBe(true);
+    expect(toPlaybackEvents(BOSSA_CLAVE).every((e) => e.pitch === "high")).toBe(true);
   });
 
   it("BPM は2分音符で数える（カットタイム）", () => {
-    expect(THREE_TWO_GROOVE_3.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
-    expect(THREE_TWO_GROOVE_3.bpmUnit).toBe(192);
+    expect(BOSSA_CLAVE.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
+    expect(BOSSA_CLAVE.bpmUnit).toBe(192);
   });
 
   it("どの音価も拍の境目をまたがない", () => {
     const beat = 192;
-    THREE_TWO_GROOVE_3.bars.forEach((bar) => {
+    BOSSA_CLAVE.bars.forEach((bar) => {
       let at = 0;
       bar.items.forEach((item) => {
         const length = ticksOf(item);
@@ -375,6 +375,6 @@ describe("3-2 Groove3", () => {
   });
 
   it("入れ替えができる", () => {
-    expect(THREE_TWO_GROOVE_3.clave).toBe("3-2");
+    expect(BOSSA_CLAVE.clave).toBe("3-2");
   });
 });

@@ -11,7 +11,7 @@ import { PPQ } from "./constants";
  * 契約に関わる項目はテストで固定する。
  */
 describe("buildPlan", () => {
-  const threeTwo = PATTERNS.find((p) => p.id === "three-two-groove")!;
+  const threeTwo = PATTERNS.find((p) => p.id === "son-clave")!;
 
   it("契約に関わる項目を埋める", () => {
     const plan = buildPlan(threeTwo, 120, { originTick: 0, originSeconds: 0 });
@@ -56,7 +56,7 @@ describe("buildPlan", () => {
   it("周期長はパターン全体の長さ", () => {
     const plan = buildPlan(threeTwo, 120, { originTick: 0, originSeconds: 0 });
 
-    // 3-2 Groove は 2/2 が2小節。1小節 384 tick なので 768
+    // Son Clave は 2/2 が2小節。1小節 384 tick なので 768
     expect(plan.cycleTicks).toBe(768);
   });
 });

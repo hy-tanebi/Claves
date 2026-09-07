@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { canFlip, flipPattern } from "./flip";
 import { PATTERNS } from "./registry";
-import { THREE_TWO_GROOVE } from "./patterns/three-two-groove";
+import { SON_CLAVE } from "./patterns/son-clave";
 import { toPlaybackEvents } from "./derive";
 import { validatePattern } from "./validate";
 import { totalTicks } from "./ticks";
@@ -11,15 +11,15 @@ const noteIds = (p: ReturnType<typeof flipPattern>): string[] =>
 
 describe("3:2 と 2:3 の入れ替え", () => {
   it("小節の順番が入れ替わる", () => {
-    const flipped = flipPattern(THREE_TWO_GROOVE);
+    const flipped = flipPattern(SON_CLAVE);
 
     expect(flipped.bars).toHaveLength(2);
     // 小節の中身（音価と休符の並び）は、元の後半・前半の順になる
     const shape = (bar: (typeof flipped.bars)[number]) =>
       bar.items.map((i) => `${i.kind}:${i.duration}${i.dots ? "." : ""}`).join(",");
 
-    expect(shape(flipped.bars[0]!)).toBe(shape(THREE_TWO_GROOVE.bars[1]!));
-    expect(shape(flipped.bars[1]!)).toBe(shape(THREE_TWO_GROOVE.bars[0]!));
+    expect(shape(flipped.bars[0]!)).toBe(shape(SON_CLAVE.bars[1]!));
+    expect(shape(flipped.bars[1]!)).toBe(shape(SON_CLAVE.bars[0]!));
   });
 
   /**
@@ -28,8 +28,8 @@ describe("3:2 と 2:3 の入れ替え", () => {
    * 譜面が音より早く切り替わる（2026-08-22 に直した不具合の再発）。
    */
   it("打点の id が元のリズムと1つも重ならない", () => {
-    const original = new Set(noteIds(THREE_TWO_GROOVE));
-    const flipped = noteIds(flipPattern(THREE_TWO_GROOVE));
+    const original = new Set(noteIds(SON_CLAVE));
+    const flipped = noteIds(flipPattern(SON_CLAVE));
 
     expect(flipped).toHaveLength(original.size);
     for (const id of flipped) {
@@ -38,44 +38,44 @@ describe("3:2 と 2:3 の入れ替え", () => {
   });
 
   it("打点の id が反転したパターンの中で重複しない", () => {
-    const ids = noteIds(flipPattern(THREE_TWO_GROOVE));
+    const ids = noteIds(flipPattern(SON_CLAVE));
     expect(new Set(ids).size).toBe(ids.length);
   });
 
   /** 収録リズムのどれとも衝突しないこと（一覧から選んだ曲と混ざらない） */
   it("打点の id が他の収録リズムとも重ならない", () => {
     const others = new Set(PATTERNS.flatMap(noteIds));
-    for (const id of noteIds(flipPattern(THREE_TWO_GROOVE))) {
+    for (const id of noteIds(flipPattern(SON_CLAVE))) {
       expect(others.has(id)).toBe(false);
     }
   });
 
   /** 同じリズムを別の半分から始めているだけ。収録が増えるわけではない */
   it("リズムの id と名前は変わらない", () => {
-    const flipped = flipPattern(THREE_TWO_GROOVE);
-    expect(flipped.id).toBe(THREE_TWO_GROOVE.id);
-    expect(flipped.name).toBe(THREE_TWO_GROOVE.name);
+    const flipped = flipPattern(SON_CLAVE);
+    expect(flipped.id).toBe(SON_CLAVE.id);
+    expect(flipped.name).toBe(SON_CLAVE.name);
   });
 
   it("1周期の長さが変わらない", () => {
-    expect(totalTicks(flipPattern(THREE_TWO_GROOVE))).toBe(totalTicks(THREE_TWO_GROOVE));
+    expect(totalTicks(flipPattern(SON_CLAVE))).toBe(totalTicks(SON_CLAVE));
   });
 
   it("打点の数が変わらない", () => {
-    expect(toPlaybackEvents(flipPattern(THREE_TWO_GROOVE))).toHaveLength(
-      toPlaybackEvents(THREE_TWO_GROOVE).length,
+    expect(toPlaybackEvents(flipPattern(SON_CLAVE))).toHaveLength(
+      toPlaybackEvents(SON_CLAVE).length,
     );
   });
 
   /** 反転したものも、収録リズムと同じ検査を通らなければならない */
   it("バリデータが誤りを出さない", () => {
-    expect(validatePattern(flipPattern(THREE_TWO_GROOVE))).toEqual([]);
+    expect(validatePattern(flipPattern(SON_CLAVE))).toEqual([]);
   });
 
   it("2回入れ替えると元に戻る（打点の並び）", () => {
-    const twice = flipPattern(flipPattern(THREE_TWO_GROOVE));
-    const ticks = (p: typeof THREE_TWO_GROOVE) => toPlaybackEvents(p).map((e) => e.tick);
-    expect(ticks(twice)).toEqual(ticks(THREE_TWO_GROOVE));
+    const twice = flipPattern(flipPattern(SON_CLAVE));
+    const ticks = (p: typeof SON_CLAVE) => toPlaybackEvents(p).map((e) => e.tick);
+    expect(ticks(twice)).toEqual(ticks(SON_CLAVE));
   });
 });
 

@@ -13,8 +13,8 @@ import { totalTicks } from "./ticks";
  * **そこから譜面のどこを光らせるかを決めるのがここ。**
  */
 describe("noteIdAtTick", () => {
-  const pattern = PATTERNS.find((p) => p.id === "three-two-groove")!;
-  // 3-2 Groove の打点は 0 / 144 / 288 / 480 / 576（周期 768）
+  const pattern = PATTERNS.find((p) => p.id === "son-clave")!;
+  // Son Clave の打点は 0 / 144 / 288 / 480 / 576（周期 768）
 
   it("打点ちょうどではその音符", () => {
     expect(noteIdAtTick(pattern, 0)).toBe("sr1");

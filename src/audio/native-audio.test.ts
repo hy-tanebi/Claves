@@ -11,7 +11,7 @@ import { PATTERNS } from "../domain/registry";
  * **ネイティブが黙って弾いて無音になる**ので、形をテストで固定する。
  */
 describe("createNativeAudio", () => {
-  const pattern = PATTERNS.find((p) => p.id === "three-two-groove")!;
+  const pattern = PATTERNS.find((p) => p.id === "son-clave")!;
 
   function spyPlugin() {
     const calls: Array<{ method: string; args: unknown }> = [];
@@ -110,7 +110,7 @@ describe("createNativeAudio", () => {
 });
 
 describe("ネイティブ都合の停止", () => {
-  const pattern = PATTERNS.find((p) => p.id === "three-two-groove")!;
+  const pattern = PATTERNS.find((p) => p.id === "son-clave")!;
 
   /**
    * 割り込みやイヤホン抜去でネイティブが止めたとき、
