@@ -7,9 +7,10 @@ import { toPlaybackEvents } from "./derive";
 const cycleSeconds = (bpm: number) => totalTicks(SON_CLAVE) * secPerTick(SON_CLAVE, bpm);
 
 describe("Son Clave のテンポ", () => {
-  it("2/2 なので BPM は2分音符で数える（カットタイム）", () => {
-    // 4分音符で数えると倍遅くなる。見本の the Clave も "in cut time"
-    expect(SON_CLAVE.bpmUnit).toBe(192);
+  it("2/4 なので BPM は4分音符で数える", () => {
+    // 記譜を 2/2（8分グリッド）から 2/4（16分グリッド）へ移したとき、
+    // bpmUnit を 192 のままにすると倍速く鳴る。**拍子を変えたら1拍の長さも変える**
+    expect(SON_CLAVE.bpmUnit).toBe(96);
   });
 
   it("BPM 100 で1周期 2.4 秒", () => {

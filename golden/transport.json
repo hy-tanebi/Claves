@@ -9,8 +9,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -20,19 +20,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
             "tick": 288,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
             "pitch": "high"
           }
         ]
@@ -44,47 +44,47 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 1.125,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 2.25,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 3.75,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 4.5,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 6,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 7.125,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 8.25,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 9.75,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 10.5,
           "pitch": "high"
         }
@@ -96,8 +96,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -107,19 +107,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
             "tick": 288,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
             "pitch": "high"
           }
         ]
@@ -131,47 +131,47 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 0.75,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 1.25,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 1.5,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 2,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 2.375,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 2.75,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 3.25,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 3.5,
           "pitch": "high"
         }
@@ -183,8 +183,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -194,19 +194,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
             "tick": 288,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
             "pitch": "high"
           }
         ]
@@ -218,47 +218,47 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.1875,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 0.625,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 0.75,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 1,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 1.1875,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 1.375,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 1.625,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 1.75,
           "pitch": "high"
         }
@@ -270,8 +270,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -281,19 +281,19 @@
             "pitch": "high"
           },
           {
-            "tick": 144,
+            "tick": 72,
             "pitch": "high"
           },
           {
-            "tick": 336,
+            "tick": 168,
             "pitch": "high"
           },
           {
-            "tick": 480,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 576,
+            "tick": 288,
             "pitch": "high"
           }
         ]
@@ -305,47 +305,47 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 1.125,
           "pitch": "high"
         },
         {
-          "absTick": 336,
+          "absTick": 168,
           "seconds": 2.625,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 3.75,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 4.5,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 6,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 7.125,
           "pitch": "high"
         },
         {
-          "absTick": 1104,
+          "absTick": 552,
           "seconds": 8.625,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 9.75,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 10.5,
           "pitch": "high"
         }
@@ -357,8 +357,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -368,19 +368,19 @@
             "pitch": "high"
           },
           {
-            "tick": 144,
+            "tick": 72,
             "pitch": "high"
           },
           {
-            "tick": 336,
+            "tick": 168,
             "pitch": "high"
           },
           {
-            "tick": 480,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 576,
+            "tick": 288,
             "pitch": "high"
           }
         ]
@@ -392,47 +392,47 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 336,
+          "absTick": 168,
           "seconds": 0.875,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 1.25,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 1.5,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 2,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 2.375,
           "pitch": "high"
         },
         {
-          "absTick": 1104,
+          "absTick": 552,
           "seconds": 2.875,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 3.25,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 3.5,
           "pitch": "high"
         }
@@ -444,8 +444,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -455,19 +455,19 @@
             "pitch": "high"
           },
           {
-            "tick": 144,
+            "tick": 72,
             "pitch": "high"
           },
           {
-            "tick": 336,
+            "tick": 168,
             "pitch": "high"
           },
           {
-            "tick": 480,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 576,
+            "tick": 288,
             "pitch": "high"
           }
         ]
@@ -479,47 +479,47 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.1875,
           "pitch": "high"
         },
         {
-          "absTick": 336,
+          "absTick": 168,
           "seconds": 0.4375,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 0.625,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 0.75,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 1,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 1.1875,
           "pitch": "high"
         },
         {
-          "absTick": 1104,
+          "absTick": 552,
           "seconds": 1.4375,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 1.625,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 1.75,
           "pitch": "high"
         }
@@ -531,8 +531,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -542,19 +542,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -566,47 +566,47 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 1.125,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 2.25,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 3.75,
           "pitch": "high"
         },
         {
-          "absTick": 624,
+          "absTick": 312,
           "seconds": 4.875,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 6,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 7.125,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 8.25,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 9.75,
           "pitch": "high"
         },
         {
-          "absTick": 1392,
+          "absTick": 696,
           "seconds": 10.875,
           "pitch": "high"
         }
@@ -618,8 +618,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -629,19 +629,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -653,47 +653,47 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 0.75,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 1.25,
           "pitch": "high"
         },
         {
-          "absTick": 624,
+          "absTick": 312,
           "seconds": 1.625,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 2,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 2.375,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 2.75,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 3.25,
           "pitch": "high"
         },
         {
-          "absTick": 1392,
+          "absTick": 696,
           "seconds": 3.625,
           "pitch": "high"
         }
@@ -705,8 +705,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -716,19 +716,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -740,47 +740,47 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.1875,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 0.625,
           "pitch": "high"
         },
         {
-          "absTick": 624,
+          "absTick": 312,
           "seconds": 0.8125,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 1,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 1.1875,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 1.375,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 1.625,
           "pitch": "high"
         },
         {
-          "absTick": 1392,
+          "absTick": 696,
           "seconds": 1.8125,
           "pitch": "high"
         }
@@ -792,8 +792,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -803,23 +803,23 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 192,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "high"
           }
         ]
@@ -831,57 +831,57 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 1.125,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 2.25,
           "pitch": "high"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 3,
           "pitch": "high"
         },
         {
-          "absTick": 528,
+          "absTick": 264,
           "seconds": 4.125,
           "pitch": "high"
         },
         {
-          "absTick": 672,
+          "absTick": 336,
           "seconds": 5.25,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 6,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 7.125,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 8.25,
           "pitch": "high"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 9,
           "pitch": "high"
         },
         {
-          "absTick": 1296,
+          "absTick": 648,
           "seconds": 10.125,
           "pitch": "high"
         },
         {
-          "absTick": 1440,
+          "absTick": 720,
           "seconds": 11.25,
           "pitch": "high"
         }
@@ -893,8 +893,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -904,23 +904,23 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 192,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "high"
           }
         ]
@@ -932,57 +932,57 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 0.75,
           "pitch": "high"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 1,
           "pitch": "high"
         },
         {
-          "absTick": 528,
+          "absTick": 264,
           "seconds": 1.375,
           "pitch": "high"
         },
         {
-          "absTick": 672,
+          "absTick": 336,
           "seconds": 1.75,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 2,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 2.375,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 2.75,
           "pitch": "high"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 3,
           "pitch": "high"
         },
         {
-          "absTick": 1296,
+          "absTick": 648,
           "seconds": 3.375,
           "pitch": "high"
         },
         {
-          "absTick": 1440,
+          "absTick": 720,
           "seconds": 3.75,
           "pitch": "high"
         }
@@ -994,8 +994,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -1005,23 +1005,23 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 192,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "high"
           }
         ]
@@ -1033,57 +1033,57 @@
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.1875,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 0.5,
           "pitch": "high"
         },
         {
-          "absTick": 528,
+          "absTick": 264,
           "seconds": 0.6875,
           "pitch": "high"
         },
         {
-          "absTick": 672,
+          "absTick": 336,
           "seconds": 0.875,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 1,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 1.1875,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 1.375,
           "pitch": "high"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 1.5,
           "pitch": "high"
         },
         {
-          "absTick": 1296,
+          "absTick": 648,
           "seconds": 1.6875,
           "pitch": "high"
         },
         {
-          "absTick": 1440,
+          "absTick": 720,
           "seconds": 1.875,
           "pitch": "high"
         }
@@ -1095,8 +1095,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -1106,7 +1106,15 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
             "pitch": "high"
           },
           {
@@ -1114,23 +1122,15 @@
             "pitch": "high"
           },
           {
-            "tick": 240,
+            "tick": 216,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 288,
             "pitch": "high"
           },
           {
-            "tick": 432,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -1142,77 +1142,77 @@
           "pitch": "high"
         },
         {
-          "absTick": 48,
+          "absTick": 24,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 192,
+          "absTick": 96,
           "seconds": 1.5,
           "pitch": "high"
         },
         {
-          "absTick": 240,
+          "absTick": 120,
           "seconds": 1.875,
           "pitch": "high"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 3,
           "pitch": "high"
         },
         {
-          "absTick": 432,
+          "absTick": 216,
           "seconds": 3.375,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 4.5,
           "pitch": "high"
         },
         {
-          "absTick": 624,
+          "absTick": 312,
           "seconds": 4.875,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 6,
           "pitch": "high"
         },
         {
-          "absTick": 816,
+          "absTick": 408,
           "seconds": 6.375,
           "pitch": "high"
         },
         {
-          "absTick": 960,
+          "absTick": 480,
           "seconds": 7.5,
           "pitch": "high"
         },
         {
-          "absTick": 1008,
+          "absTick": 504,
           "seconds": 7.875,
           "pitch": "high"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 9,
           "pitch": "high"
         },
         {
-          "absTick": 1200,
+          "absTick": 600,
           "seconds": 9.375,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 10.5,
           "pitch": "high"
         },
         {
-          "absTick": 1392,
+          "absTick": 696,
           "seconds": 10.875,
           "pitch": "high"
         }
@@ -1224,8 +1224,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -1235,7 +1235,15 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
             "pitch": "high"
           },
           {
@@ -1243,23 +1251,15 @@
             "pitch": "high"
           },
           {
-            "tick": 240,
+            "tick": 216,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 288,
             "pitch": "high"
           },
           {
-            "tick": 432,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -1271,77 +1271,77 @@
           "pitch": "high"
         },
         {
-          "absTick": 48,
+          "absTick": 24,
           "seconds": 0.125,
           "pitch": "high"
         },
         {
-          "absTick": 192,
+          "absTick": 96,
           "seconds": 0.5,
           "pitch": "high"
         },
         {
-          "absTick": 240,
+          "absTick": 120,
           "seconds": 0.625,
           "pitch": "high"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 1,
           "pitch": "high"
         },
         {
-          "absTick": 432,
+          "absTick": 216,
           "seconds": 1.125,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 1.5,
           "pitch": "high"
         },
         {
-          "absTick": 624,
+          "absTick": 312,
           "seconds": 1.625,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 2,
           "pitch": "high"
         },
         {
-          "absTick": 816,
+          "absTick": 408,
           "seconds": 2.125,
           "pitch": "high"
         },
         {
-          "absTick": 960,
+          "absTick": 480,
           "seconds": 2.5,
           "pitch": "high"
         },
         {
-          "absTick": 1008,
+          "absTick": 504,
           "seconds": 2.625,
           "pitch": "high"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 3,
           "pitch": "high"
         },
         {
-          "absTick": 1200,
+          "absTick": 600,
           "seconds": 3.125,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 3.5,
           "pitch": "high"
         },
         {
-          "absTick": 1392,
+          "absTick": 696,
           "seconds": 3.625,
           "pitch": "high"
         }
@@ -1353,8 +1353,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -1364,7 +1364,15 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
             "pitch": "high"
           },
           {
@@ -1372,23 +1380,15 @@
             "pitch": "high"
           },
           {
-            "tick": 240,
+            "tick": 216,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 288,
             "pitch": "high"
           },
           {
-            "tick": 432,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -1400,77 +1400,77 @@
           "pitch": "high"
         },
         {
-          "absTick": 48,
+          "absTick": 24,
           "seconds": 0.0625,
           "pitch": "high"
         },
         {
-          "absTick": 192,
+          "absTick": 96,
           "seconds": 0.25,
           "pitch": "high"
         },
         {
-          "absTick": 240,
+          "absTick": 120,
           "seconds": 0.3125,
           "pitch": "high"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 0.5,
           "pitch": "high"
         },
         {
-          "absTick": 432,
+          "absTick": 216,
           "seconds": 0.5625,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 0.75,
           "pitch": "high"
         },
         {
-          "absTick": 624,
+          "absTick": 312,
           "seconds": 0.8125,
           "pitch": "high"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 1,
           "pitch": "high"
         },
         {
-          "absTick": 816,
+          "absTick": 408,
           "seconds": 1.0625,
           "pitch": "high"
         },
         {
-          "absTick": 960,
+          "absTick": 480,
           "seconds": 1.25,
           "pitch": "high"
         },
         {
-          "absTick": 1008,
+          "absTick": 504,
           "seconds": 1.3125,
           "pitch": "high"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 1.5,
           "pitch": "high"
         },
         {
-          "absTick": 1200,
+          "absTick": 600,
           "seconds": 1.5625,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 1.75,
           "pitch": "high"
         },
         {
-          "absTick": 1392,
+          "absTick": 696,
           "seconds": 1.8125,
           "pitch": "high"
         }
@@ -1482,14 +1482,22 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
         "events": [
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
             "pitch": "high"
           },
           {
@@ -1497,123 +1505,115 @@
             "pitch": "high"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 312,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
-            "pitch": "high"
-          },
-          {
-            "tick": 720,
+            "tick": 360,
             "pitch": "high"
           }
         ]
       },
       "expected": [
         {
-          "absTick": 48,
+          "absTick": 24,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 1.125,
           "pitch": "high"
         },
         {
-          "absTick": 240,
+          "absTick": 120,
           "seconds": 1.875,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 2.25,
           "pitch": "high"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 3,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 3.75,
           "pitch": "high"
         },
         {
-          "absTick": 528,
+          "absTick": 264,
           "seconds": 4.125,
           "pitch": "high"
         },
         {
-          "absTick": 624,
+          "absTick": 312,
           "seconds": 4.875,
           "pitch": "high"
         },
         {
-          "absTick": 720,
+          "absTick": 360,
           "seconds": 5.625,
           "pitch": "high"
         },
         {
-          "absTick": 816,
+          "absTick": 408,
           "seconds": 6.375,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 7.125,
           "pitch": "high"
         },
         {
-          "absTick": 1008,
+          "absTick": 504,
           "seconds": 7.875,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 8.25,
           "pitch": "high"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 9,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 9.75,
           "pitch": "high"
         },
         {
-          "absTick": 1296,
+          "absTick": 648,
           "seconds": 10.125,
           "pitch": "high"
         },
         {
-          "absTick": 1392,
+          "absTick": 696,
           "seconds": 10.875,
           "pitch": "high"
         },
         {
-          "absTick": 1488,
+          "absTick": 744,
           "seconds": 11.625,
           "pitch": "high"
         }
@@ -1625,14 +1625,22 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
         "events": [
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
             "pitch": "high"
           },
           {
@@ -1640,123 +1648,115 @@
             "pitch": "high"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 312,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
-            "pitch": "high"
-          },
-          {
-            "tick": 720,
+            "tick": 360,
             "pitch": "high"
           }
         ]
       },
       "expected": [
         {
-          "absTick": 48,
+          "absTick": 24,
           "seconds": 0.125,
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 240,
+          "absTick": 120,
           "seconds": 0.625,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 0.75,
           "pitch": "high"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 1,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 1.25,
           "pitch": "high"
         },
         {
-          "absTick": 528,
+          "absTick": 264,
           "seconds": 1.375,
           "pitch": "high"
         },
         {
-          "absTick": 624,
+          "absTick": 312,
           "seconds": 1.625,
           "pitch": "high"
         },
         {
-          "absTick": 720,
+          "absTick": 360,
           "seconds": 1.875,
           "pitch": "high"
         },
         {
-          "absTick": 816,
+          "absTick": 408,
           "seconds": 2.125,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 2.375,
           "pitch": "high"
         },
         {
-          "absTick": 1008,
+          "absTick": 504,
           "seconds": 2.625,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 2.75,
           "pitch": "high"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 3,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 3.25,
           "pitch": "high"
         },
         {
-          "absTick": 1296,
+          "absTick": 648,
           "seconds": 3.375,
           "pitch": "high"
         },
         {
-          "absTick": 1392,
+          "absTick": 696,
           "seconds": 3.625,
           "pitch": "high"
         },
         {
-          "absTick": 1488,
+          "absTick": 744,
           "seconds": 3.875,
           "pitch": "high"
         }
@@ -1768,14 +1768,22 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
         "events": [
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
             "pitch": "high"
           },
           {
@@ -1783,123 +1791,115 @@
             "pitch": "high"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 312,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
-            "pitch": "high"
-          },
-          {
-            "tick": 720,
+            "tick": 360,
             "pitch": "high"
           }
         ]
       },
       "expected": [
         {
-          "absTick": 48,
+          "absTick": 24,
           "seconds": 0.0625,
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.1875,
           "pitch": "high"
         },
         {
-          "absTick": 240,
+          "absTick": 120,
           "seconds": 0.3125,
           "pitch": "high"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 0.5,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 0.625,
           "pitch": "high"
         },
         {
-          "absTick": 528,
+          "absTick": 264,
           "seconds": 0.6875,
           "pitch": "high"
         },
         {
-          "absTick": 624,
+          "absTick": 312,
           "seconds": 0.8125,
           "pitch": "high"
         },
         {
-          "absTick": 720,
+          "absTick": 360,
           "seconds": 0.9375,
           "pitch": "high"
         },
         {
-          "absTick": 816,
+          "absTick": 408,
           "seconds": 1.0625,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 1.1875,
           "pitch": "high"
         },
         {
-          "absTick": 1008,
+          "absTick": 504,
           "seconds": 1.3125,
           "pitch": "high"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 1.375,
           "pitch": "high"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 1.5,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 1.625,
           "pitch": "high"
         },
         {
-          "absTick": 1296,
+          "absTick": 648,
           "seconds": 1.6875,
           "pitch": "high"
         },
         {
-          "absTick": 1392,
+          "absTick": 696,
           "seconds": 1.8125,
           "pitch": "high"
         },
         {
-          "absTick": 1488,
+          "absTick": 744,
           "seconds": 1.9375,
           "pitch": "high"
         }
@@ -2559,8 +2559,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -2570,35 +2570,35 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
             "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "low"
+          },
+          {
+            "tick": 120,
+            "pitch": "low"
           },
           {
             "tick": 144,
             "pitch": "low"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
-            "pitch": "low"
+            "pitch": "high"
           },
           {
             "tick": 288,
             "pitch": "low"
           },
           {
-            "tick": 384,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "low"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "low"
           }
         ]
@@ -2610,87 +2610,87 @@
           "pitch": "high"
         },
         {
-          "absTick": 48,
+          "absTick": 24,
           "seconds": 0.375,
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 1.125,
           "pitch": "low"
         },
         {
-          "absTick": 240,
+          "absTick": 120,
           "seconds": 1.875,
           "pitch": "low"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 2.25,
           "pitch": "low"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 3,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 3.75,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 4.5,
           "pitch": "low"
         },
         {
-          "absTick": 672,
+          "absTick": 336,
           "seconds": 5.25,
           "pitch": "low"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 6,
           "pitch": "high"
         },
         {
-          "absTick": 816,
+          "absTick": 408,
           "seconds": 6.375,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 7.125,
           "pitch": "low"
         },
         {
-          "absTick": 1008,
+          "absTick": 504,
           "seconds": 7.875,
           "pitch": "low"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 8.25,
           "pitch": "low"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 9,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 9.75,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 10.5,
           "pitch": "low"
         },
         {
-          "absTick": 1440,
+          "absTick": 720,
           "seconds": 11.25,
           "pitch": "low"
         }
@@ -2702,8 +2702,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -2713,35 +2713,35 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
             "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "low"
+          },
+          {
+            "tick": 120,
+            "pitch": "low"
           },
           {
             "tick": 144,
             "pitch": "low"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
-            "pitch": "low"
+            "pitch": "high"
           },
           {
             "tick": 288,
             "pitch": "low"
           },
           {
-            "tick": 384,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "low"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "low"
           }
         ]
@@ -2753,87 +2753,87 @@
           "pitch": "high"
         },
         {
-          "absTick": 48,
+          "absTick": 24,
           "seconds": 0.125,
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.375,
           "pitch": "low"
         },
         {
-          "absTick": 240,
+          "absTick": 120,
           "seconds": 0.625,
           "pitch": "low"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 0.75,
           "pitch": "low"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 1,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 1.25,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 1.5,
           "pitch": "low"
         },
         {
-          "absTick": 672,
+          "absTick": 336,
           "seconds": 1.75,
           "pitch": "low"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 2,
           "pitch": "high"
         },
         {
-          "absTick": 816,
+          "absTick": 408,
           "seconds": 2.125,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 2.375,
           "pitch": "low"
         },
         {
-          "absTick": 1008,
+          "absTick": 504,
           "seconds": 2.625,
           "pitch": "low"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 2.75,
           "pitch": "low"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 3,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 3.25,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 3.5,
           "pitch": "low"
         },
         {
-          "absTick": 1440,
+          "absTick": 720,
           "seconds": 3.75,
           "pitch": "low"
         }
@@ -2845,8 +2845,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -2856,35 +2856,35 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
             "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "low"
+          },
+          {
+            "tick": 120,
+            "pitch": "low"
           },
           {
             "tick": 144,
             "pitch": "low"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
-            "pitch": "low"
+            "pitch": "high"
           },
           {
             "tick": 288,
             "pitch": "low"
           },
           {
-            "tick": 384,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "low"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "low"
           }
         ]
@@ -2896,103 +2896,103 @@
           "pitch": "high"
         },
         {
-          "absTick": 48,
+          "absTick": 24,
           "seconds": 0.0625,
           "pitch": "high"
         },
         {
-          "absTick": 144,
+          "absTick": 72,
           "seconds": 0.1875,
           "pitch": "low"
         },
         {
-          "absTick": 240,
+          "absTick": 120,
           "seconds": 0.3125,
           "pitch": "low"
         },
         {
-          "absTick": 288,
+          "absTick": 144,
           "seconds": 0.375,
           "pitch": "low"
         },
         {
-          "absTick": 384,
+          "absTick": 192,
           "seconds": 0.5,
           "pitch": "high"
         },
         {
-          "absTick": 480,
+          "absTick": 240,
           "seconds": 0.625,
           "pitch": "high"
         },
         {
-          "absTick": 576,
+          "absTick": 288,
           "seconds": 0.75,
           "pitch": "low"
         },
         {
-          "absTick": 672,
+          "absTick": 336,
           "seconds": 0.875,
           "pitch": "low"
         },
         {
-          "absTick": 768,
+          "absTick": 384,
           "seconds": 1,
           "pitch": "high"
         },
         {
-          "absTick": 816,
+          "absTick": 408,
           "seconds": 1.0625,
           "pitch": "high"
         },
         {
-          "absTick": 912,
+          "absTick": 456,
           "seconds": 1.1875,
           "pitch": "low"
         },
         {
-          "absTick": 1008,
+          "absTick": 504,
           "seconds": 1.3125,
           "pitch": "low"
         },
         {
-          "absTick": 1056,
+          "absTick": 528,
           "seconds": 1.375,
           "pitch": "low"
         },
         {
-          "absTick": 1152,
+          "absTick": 576,
           "seconds": 1.5,
           "pitch": "high"
         },
         {
-          "absTick": 1248,
+          "absTick": 624,
           "seconds": 1.625,
           "pitch": "high"
         },
         {
-          "absTick": 1344,
+          "absTick": 672,
           "seconds": 1.75,
           "pitch": "low"
         },
         {
-          "absTick": 1440,
+          "absTick": 720,
           "seconds": 1.875,
           "pitch": "low"
         }
       ]
     },
     {
-      "name": "son-clave → ijexa を tick 384 で切り替える",
+      "name": "son-clave → ijexa を tick 192 で切り替える",
       "kind": "switch",
-      "applyAtTick": 384,
+      "applyAtTick": 192,
       "applyAtSeconds": 1,
       "before": {
         "plan": {
           "schemaVersion": 1,
           "ppq": 96,
-          "bpmUnit": 192,
-          "cycleTicks": 768,
+          "bpmUnit": 96,
+          "cycleTicks": 384,
           "bpm": 120,
           "originTick": 0,
           "originSeconds": 0,
@@ -3002,19 +3002,19 @@
               "pitch": "high"
             },
             {
+              "tick": 72,
+              "pitch": "high"
+            },
+            {
               "tick": 144,
               "pitch": "high"
             },
             {
+              "tick": 240,
+              "pitch": "high"
+            },
+            {
               "tick": 288,
-              "pitch": "high"
-            },
-            {
-              "tick": 480,
-              "pitch": "high"
-            },
-            {
-              "tick": 576,
               "pitch": "high"
             }
           ]
@@ -3026,12 +3026,12 @@
             "pitch": "high"
           },
           {
-            "absTick": 144,
+            "absTick": 72,
             "seconds": 0.375,
             "pitch": "high"
           },
           {
-            "absTick": 288,
+            "absTick": 144,
             "seconds": 0.75,
             "pitch": "high"
           }
@@ -3041,8 +3041,8 @@
         "plan": {
           "schemaVersion": 1,
           "ppq": 96,
-          "bpmUnit": 192,
-          "cycleTicks": 768,
+          "bpmUnit": 96,
+          "cycleTicks": 384,
           "bpm": 180,
           "originTick": 0,
           "originSeconds": 1,
@@ -3052,35 +3052,35 @@
               "pitch": "high"
             },
             {
-              "tick": 48,
+              "tick": 24,
               "pitch": "high"
+            },
+            {
+              "tick": 72,
+              "pitch": "low"
+            },
+            {
+              "tick": 120,
+              "pitch": "low"
             },
             {
               "tick": 144,
               "pitch": "low"
             },
             {
+              "tick": 192,
+              "pitch": "high"
+            },
+            {
               "tick": 240,
-              "pitch": "low"
+              "pitch": "high"
             },
             {
               "tick": 288,
               "pitch": "low"
             },
             {
-              "tick": 384,
-              "pitch": "high"
-            },
-            {
-              "tick": 480,
-              "pitch": "high"
-            },
-            {
-              "tick": 576,
-              "pitch": "low"
-            },
-            {
-              "tick": 672,
+              "tick": 336,
               "pitch": "low"
             }
           ]
@@ -3092,37 +3092,37 @@
             "pitch": "high"
           },
           {
-            "absTick": 48,
+            "absTick": 24,
             "seconds": 1.083333333,
             "pitch": "high"
           },
           {
-            "absTick": 144,
+            "absTick": 72,
             "seconds": 1.25,
             "pitch": "low"
           },
           {
-            "absTick": 240,
+            "absTick": 120,
             "seconds": 1.416666667,
             "pitch": "low"
           },
           {
-            "absTick": 288,
+            "absTick": 144,
             "seconds": 1.5,
             "pitch": "low"
           },
           {
-            "absTick": 384,
+            "absTick": 192,
             "seconds": 1.666666667,
             "pitch": "high"
           },
           {
-            "absTick": 480,
+            "absTick": 240,
             "seconds": 1.833333333,
             "pitch": "high"
           },
           {
-            "absTick": 576,
+            "absTick": 288,
             "seconds": 2,
             "pitch": "low"
           }

@@ -99,21 +99,21 @@ describe("renderPattern", () => {
     expect(renderPattern(container, SON_CLAVE).systemCount).toBe(1);
   });
 
-  it("音符と休符の並びが見本どおり（♩. ♪ 𝄽 ♩ / 𝄽 ♩ ♩ 𝄽）", () => {
+  it("音符と休符の並びが見本どおり（♪. 𝅘𝅥𝅯 𝄾 ♪ / 𝄾 ♪ ♪ 𝄾）", () => {
     const shape = (bar: (typeof SON_CLAVE)["bars"][number]) =>
       bar.items.map((i) => `${i.kind === "rest" ? "r" : "n"}${i.duration}${i.dots ? "." : ""}`);
-    expect(shape(SON_CLAVE.bars[0]!)).toEqual(["nq.", "n8", "rq", "nq"]);
-    expect(shape(SON_CLAVE.bars[1]!)).toEqual(["rq", "nq", "nq", "rq"]);
+    expect(shape(SON_CLAVE.bars[0]!)).toEqual(["n8.", "n16", "r8", "n8"]);
+    expect(shape(SON_CLAVE.bars[1]!)).toEqual(["r8", "n8", "n8", "r8"]);
   });
 
-  it("2/2 × 2小節で記譜されている", () => {
-    expect(SON_CLAVE.meter).toMatchObject({ beats: 2, beatUnit: 2 });
+  it("2/4 × 2小節で記譜されている", () => {
+    expect(SON_CLAVE.meter).toMatchObject({ beats: 2, beatUnit: 4 });
     expect(SON_CLAVE.bars).toHaveLength(2);
   });
 
-  it("打点はソンクラーベ 3-2（8分換算で 0/3/6/10/12）", () => {
-    const eighths = toPlaybackEvents(SON_CLAVE).map((e) => e.tick / 48);
-    expect(eighths).toEqual([0, 3, 6, 10, 12]);
+  it("打点はソンクラーベ 3-2（16分換算で 0/3/6/10/12）", () => {
+    const sixteenths = toPlaybackEvents(SON_CLAVE).map((e) => e.tick / 24);
+    expect(sixteenths).toEqual([0, 3, 6, 10, 12]);
   });
 
   it("譜面が論理幅の内側に収まる（はみ出さない）", () => {

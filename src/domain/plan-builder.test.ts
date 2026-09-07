@@ -56,7 +56,7 @@ describe("buildPlan", () => {
   it("周期長はパターン全体の長さ", () => {
     const plan = buildPlan(threeTwo, 120, { originTick: 0, originSeconds: 0 });
 
-    // Son Clave は 2/2 が2小節。1小節 384 tick なので 768
-    expect(plan.cycleTicks).toBe(768);
+    // Son Clave は 2/4 が2小節。1小節 192 tick なので 384
+    expect(plan.cycleTicks).toBe(384);
   });
 });

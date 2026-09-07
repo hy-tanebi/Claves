@@ -15,7 +15,7 @@ export type TransportPlan = {
   schemaVersion: 1;
   /** 4分音符の tick 数。このアプリでは常に 96 */
   ppq: 96;
-  /** BPM の1拍が何 tick か。2/2 は 192、4/4 は 96、6/8 は 144 */
+  /** BPM の1拍が何 tick か。2/4・4/4 は 96、2/2 は 192、6/8 は 144 */
   bpmUnit: number;
   /** 1周期の tick 数 */
   cycleTicks: number;
