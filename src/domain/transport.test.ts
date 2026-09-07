@@ -7,7 +7,7 @@ import {
   type TransportPlan,
 } from "./transport";
 
-/** 3-2 Groove 相当。2/2・bpmUnit 192・1周期 768 tick */
+/** Son Clave 相当。2/2・bpmUnit 192・1周期 768 tick */
 const plan = (over: Partial<TransportPlan> = {}): TransportPlan => ({
   schemaVersion: 1,
   ppq: 96,

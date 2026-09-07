@@ -4,7 +4,7 @@
   "generatedBy": "pnpm gen:golden",
   "plans": [
     {
-      "name": "three-two-groove @ 40bpm",
+      "name": "son-clave @ 40bpm",
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
@@ -38,7 +38,7 @@
       }
     },
     {
-      "name": "three-two-groove @ 120bpm",
+      "name": "son-clave @ 120bpm",
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
@@ -72,7 +72,7 @@
       }
     },
     {
-      "name": "three-two-groove @ 240bpm",
+      "name": "son-clave @ 240bpm",
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
@@ -106,7 +106,7 @@
       }
     },
     {
-      "name": "three-two-groove-2 @ 40bpm",
+      "name": "rumba-clave @ 40bpm",
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
@@ -140,7 +140,7 @@
       }
     },
     {
-      "name": "three-two-groove-2 @ 120bpm",
+      "name": "rumba-clave @ 120bpm",
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
@@ -174,7 +174,7 @@
       }
     },
     {
-      "name": "three-two-groove-2 @ 240bpm",
+      "name": "rumba-clave @ 240bpm",
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
@@ -208,7 +208,7 @@
       }
     },
     {
-      "name": "three-two-groove-3 @ 40bpm",
+      "name": "bossa-clave @ 40bpm",
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
@@ -242,7 +242,7 @@
       }
     },
     {
-      "name": "three-two-groove-3 @ 120bpm",
+      "name": "bossa-clave @ 120bpm",
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
@@ -276,7 +276,7 @@
       }
     },
     {
-      "name": "three-two-groove-3 @ 240bpm",
+      "name": "bossa-clave @ 240bpm",
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,

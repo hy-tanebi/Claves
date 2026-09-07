@@ -4,7 +4,7 @@
   "generatedBy": "pnpm gen:golden",
   "scenarios": [
     {
-      "name": "three-two-groove @ 40bpm",
+      "name": "son-clave @ 40bpm",
       "kind": "steady",
       "plan": {
         "schemaVersion": 1,
@@ -91,7 +91,7 @@
       ]
     },
     {
-      "name": "three-two-groove @ 120bpm",
+      "name": "son-clave @ 120bpm",
       "kind": "steady",
       "plan": {
         "schemaVersion": 1,
@@ -178,7 +178,7 @@
       ]
     },
     {
-      "name": "three-two-groove @ 240bpm",
+      "name": "son-clave @ 240bpm",
       "kind": "steady",
       "plan": {
         "schemaVersion": 1,
@@ -265,7 +265,7 @@
       ]
     },
     {
-      "name": "three-two-groove-2 @ 40bpm",
+      "name": "rumba-clave @ 40bpm",
       "kind": "steady",
       "plan": {
         "schemaVersion": 1,
@@ -352,7 +352,7 @@
       ]
     },
     {
-      "name": "three-two-groove-2 @ 120bpm",
+      "name": "rumba-clave @ 120bpm",
       "kind": "steady",
       "plan": {
         "schemaVersion": 1,
@@ -439,7 +439,7 @@
       ]
     },
     {
-      "name": "three-two-groove-2 @ 240bpm",
+      "name": "rumba-clave @ 240bpm",
       "kind": "steady",
       "plan": {
         "schemaVersion": 1,
@@ -526,7 +526,7 @@
       ]
     },
     {
-      "name": "three-two-groove-3 @ 40bpm",
+      "name": "bossa-clave @ 40bpm",
       "kind": "steady",
       "plan": {
         "schemaVersion": 1,
@@ -613,7 +613,7 @@
       ]
     },
     {
-      "name": "three-two-groove-3 @ 120bpm",
+      "name": "bossa-clave @ 120bpm",
       "kind": "steady",
       "plan": {
         "schemaVersion": 1,
@@ -700,7 +700,7 @@
       ]
     },
     {
-      "name": "three-two-groove-3 @ 240bpm",
+      "name": "bossa-clave @ 240bpm",
       "kind": "steady",
       "plan": {
         "schemaVersion": 1,
@@ -2983,7 +2983,7 @@
       ]
     },
     {
-      "name": "three-two-groove → ijexa を tick 384 で切り替える",
+      "name": "son-clave → ijexa を tick 384 で切り替える",
       "kind": "switch",
       "applyAtTick": 384,
       "applyAtSeconds": 1,

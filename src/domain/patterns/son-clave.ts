@@ -1,7 +1,7 @@
 import type { Pattern } from "../types";
 
 /**
- * 3-2 Groove。**サンバヘギの骨格タイムライン。**
+ * Son Clave。**サンバヘギの骨格タイムライン。**
  *
  * 表示名は打点の形（ソンクラーベ 3-2）から取っている。
  * 由来がサンバヘギであることは source に残す。
@@ -22,9 +22,9 @@ import type { Pattern } from "../types";
  * 2つ目の打点は8分音符で書き、次の打点までを4分休符で埋める。
  * 打楽器の一撃を長く伸ばして書かないため、この形になる。
  */
-export const THREE_TWO_GROOVE: Pattern = {
-  id: "three-two-groove",
-  name: "3-2 Groove",
+export const SON_CLAVE: Pattern = {
+  id: "son-clave",
+  name: "Son Clave",
   // 打点がソンクラーベ 3-2 と同一であることは本人が確認済み（source 参照）。
   // この印がある間だけ 3:2 ⇄ 2:3 の入れ替えができる
   clave: "3-2",
