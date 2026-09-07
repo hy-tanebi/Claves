@@ -18,12 +18,12 @@ describe("noteIdAtTick", () => {
 
   it("打点ちょうどではその音符", () => {
     expect(noteIdAtTick(pattern, 0)).toBe("sr1");
-    expect(noteIdAtTick(pattern, 144)).toBe("sr2");
+    expect(noteIdAtTick(pattern, 72)).toBe("sr2");
   });
 
   it("打点の間では直前の音符が鳴り続けている", () => {
-    expect(noteIdAtTick(pattern, 100)).toBe("sr1");
-    expect(noteIdAtTick(pattern, 287)).toBe("sr2");
+    expect(noteIdAtTick(pattern, 50)).toBe("sr1");
+    expect(noteIdAtTick(pattern, 143)).toBe("sr2");
   });
 
   /// ネイティブから来る tick は周期をまたいで増え続ける
@@ -31,18 +31,18 @@ describe("noteIdAtTick", () => {
     const cycle = totalTicks(pattern);
 
     expect(noteIdAtTick(pattern, cycle)).toBe(noteIdAtTick(pattern, 0));
-    expect(noteIdAtTick(pattern, cycle * 3 + 144)).toBe(noteIdAtTick(pattern, 144));
+    expect(noteIdAtTick(pattern, cycle * 3 + 72)).toBe(noteIdAtTick(pattern, 72));
   });
 
   /// 最後の打点より後ろは、周期の終わりまでその音符が続く
   it("最後の打点より後ろは最後の音符", () => {
     const cycle = totalTicks(pattern);
-    expect(noteIdAtTick(pattern, cycle - 1)).toBe(noteIdAtTick(pattern, 576));
+    expect(noteIdAtTick(pattern, cycle - 1)).toBe(noteIdAtTick(pattern, 288));
   });
 
   /// ネイティブは小数の tick を返す（サンプル位置からの換算なので）
   it("小数の tick でも引ける", () => {
-    expect(noteIdAtTick(pattern, 144.7)).toBe("sr2");
+    expect(noteIdAtTick(pattern, 72.7)).toBe("sr2");
   });
 
   /**

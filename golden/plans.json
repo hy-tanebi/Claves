@@ -8,8 +8,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -19,19 +19,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
             "tick": 288,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
             "pitch": "high"
           }
         ]
@@ -42,8 +42,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -53,19 +53,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
             "tick": 288,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
             "pitch": "high"
           }
         ]
@@ -76,8 +76,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -87,19 +87,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
             "tick": 288,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
             "pitch": "high"
           }
         ]
@@ -110,8 +110,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -121,19 +121,19 @@
             "pitch": "high"
           },
           {
-            "tick": 144,
+            "tick": 72,
             "pitch": "high"
           },
           {
-            "tick": 336,
+            "tick": 168,
             "pitch": "high"
           },
           {
-            "tick": 480,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 576,
+            "tick": 288,
             "pitch": "high"
           }
         ]
@@ -144,8 +144,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -155,19 +155,19 @@
             "pitch": "high"
           },
           {
-            "tick": 144,
+            "tick": 72,
             "pitch": "high"
           },
           {
-            "tick": 336,
+            "tick": 168,
             "pitch": "high"
           },
           {
-            "tick": 480,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 576,
+            "tick": 288,
             "pitch": "high"
           }
         ]
@@ -178,8 +178,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -189,19 +189,19 @@
             "pitch": "high"
           },
           {
-            "tick": 144,
+            "tick": 72,
             "pitch": "high"
           },
           {
-            "tick": 336,
+            "tick": 168,
             "pitch": "high"
           },
           {
-            "tick": 480,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 576,
+            "tick": 288,
             "pitch": "high"
           }
         ]
@@ -212,8 +212,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -223,19 +223,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -246,8 +246,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -257,19 +257,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -280,8 +280,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -291,19 +291,19 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -314,8 +314,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -325,23 +325,23 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 192,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "high"
           }
         ]
@@ -352,8 +352,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -363,23 +363,23 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 192,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "high"
           }
         ]
@@ -390,8 +390,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -401,23 +401,23 @@
             "pitch": "high"
           },
           {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
             "tick": 144,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 192,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "high"
           }
         ]
@@ -428,8 +428,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -439,7 +439,15 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
             "pitch": "high"
           },
           {
@@ -447,23 +455,15 @@
             "pitch": "high"
           },
           {
-            "tick": 240,
+            "tick": 216,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 288,
             "pitch": "high"
           },
           {
-            "tick": 432,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -474,8 +474,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -485,7 +485,15 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
             "pitch": "high"
           },
           {
@@ -493,23 +501,15 @@
             "pitch": "high"
           },
           {
-            "tick": 240,
+            "tick": 216,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 288,
             "pitch": "high"
           },
           {
-            "tick": 432,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
+            "tick": 312,
             "pitch": "high"
           }
         ]
@@ -520,8 +520,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -531,7 +531,61 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 216,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          },
+          {
+            "tick": 312,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-3 @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
             "pitch": "high"
           },
           {
@@ -543,69 +597,15 @@
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 432,
+            "tick": 312,
             "pitch": "high"
           },
           {
-            "tick": 576,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
-            "pitch": "high"
-          }
-        ]
-      }
-    },
-    {
-      "name": "afro-groove-3 @ 40bpm",
-      "plan": {
-        "schemaVersion": 1,
-        "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
-        "bpm": 40,
-        "originTick": 0,
-        "originSeconds": 0,
-        "events": [
-          {
-            "tick": 48,
-            "pitch": "high"
-          },
-          {
-            "tick": 144,
-            "pitch": "high"
-          },
-          {
-            "tick": 240,
-            "pitch": "high"
-          },
-          {
-            "tick": 288,
-            "pitch": "high"
-          },
-          {
-            "tick": 384,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
-            "pitch": "high"
-          },
-          {
-            "tick": 720,
+            "tick": 360,
             "pitch": "high"
           }
         ]
@@ -616,14 +616,22 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
         "events": [
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
             "pitch": "high"
           },
           {
@@ -631,31 +639,23 @@
             "pitch": "high"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 312,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
-            "pitch": "high"
-          },
-          {
-            "tick": 720,
+            "tick": 360,
             "pitch": "high"
           }
         ]
@@ -666,14 +666,22 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
         "events": [
           {
-            "tick": 48,
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
             "pitch": "high"
           },
           {
@@ -681,31 +689,23 @@
             "pitch": "high"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
             "pitch": "high"
           },
           {
-            "tick": 288,
+            "tick": 264,
             "pitch": "high"
           },
           {
-            "tick": 384,
+            "tick": 312,
             "pitch": "high"
           },
           {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 528,
-            "pitch": "high"
-          },
-          {
-            "tick": 624,
-            "pitch": "high"
-          },
-          {
-            "tick": 720,
+            "tick": 360,
             "pitch": "high"
           }
         ]
@@ -956,8 +956,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 40,
         "originTick": 0,
         "originSeconds": 0,
@@ -967,35 +967,35 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
             "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "low"
+          },
+          {
+            "tick": 120,
+            "pitch": "low"
           },
           {
             "tick": 144,
             "pitch": "low"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
-            "pitch": "low"
+            "pitch": "high"
           },
           {
             "tick": 288,
             "pitch": "low"
           },
           {
-            "tick": 384,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "low"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "low"
           }
         ]
@@ -1006,8 +1006,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 120,
         "originTick": 0,
         "originSeconds": 0,
@@ -1017,35 +1017,35 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
             "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "low"
+          },
+          {
+            "tick": 120,
+            "pitch": "low"
           },
           {
             "tick": 144,
             "pitch": "low"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
-            "pitch": "low"
+            "pitch": "high"
           },
           {
             "tick": 288,
             "pitch": "low"
           },
           {
-            "tick": 384,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "low"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "low"
           }
         ]
@@ -1056,8 +1056,8 @@
       "plan": {
         "schemaVersion": 1,
         "ppq": 96,
-        "bpmUnit": 192,
-        "cycleTicks": 768,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
         "bpm": 240,
         "originTick": 0,
         "originSeconds": 0,
@@ -1067,35 +1067,35 @@
             "pitch": "high"
           },
           {
-            "tick": 48,
+            "tick": 24,
             "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "low"
+          },
+          {
+            "tick": 120,
+            "pitch": "low"
           },
           {
             "tick": 144,
             "pitch": "low"
           },
           {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
             "tick": 240,
-            "pitch": "low"
+            "pitch": "high"
           },
           {
             "tick": 288,
             "pitch": "low"
           },
           {
-            "tick": 384,
-            "pitch": "high"
-          },
-          {
-            "tick": 480,
-            "pitch": "high"
-          },
-          {
-            "tick": 576,
-            "pitch": "low"
-          },
-          {
-            "tick": 672,
+            "tick": 336,
             "pitch": "low"
           }
         ]

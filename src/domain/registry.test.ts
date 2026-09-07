@@ -44,19 +44,19 @@ describe("Afro Groove", () => {
     expect(AFRO_GROOVE.bars).toHaveLength(2);
   });
 
-  it("打点が 0 / 144 / 288 / 384 / 528 / 672 に並ぶ", () => {
+  it("打点が 0 / 72 / 144 / 192 / 264 / 336 に並ぶ", () => {
     expect(toPlaybackEvents(AFRO_GROOVE).map((e) => e.tick)).toEqual([
-      0, 144, 288, 384, 528, 672,
+      0, 72, 144, 192, 264, 336,
     ]);
   });
 
-  it("1周期は Son Clave と同じ 768 tick", () => {
-    expect(totalTicks(AFRO_GROOVE)).toBe(768);
+  it("1周期は Son Clave と同じ 384 tick", () => {
+    expect(totalTicks(AFRO_GROOVE)).toBe(384);
   });
 
-  it("BPM は2分音符で数える（カットタイム）", () => {
-    expect(AFRO_GROOVE.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
-    expect(AFRO_GROOVE.bpmUnit).toBe(192);
+  it("BPM は4分音符で数える（2/4）", () => {
+    expect(AFRO_GROOVE.meter).toEqual({ beats: 2, beatUnit: 4, beatGroups: [1, 1] });
+    expect(AFRO_GROOVE.bpmUnit).toBe(96);
   });
 });
 
@@ -93,15 +93,15 @@ describe("Afro Groove (6/8)", () => {
 
 describe("Afro Groove2", () => {
   it("「カカンカカン」を2セット並べる", () => {
-    // カ(8分=48) カン(音+間=144) で「カカン」が半小節 192 tick。
-    // 「カカンカカン」で1小節 384 tick。それが2小節で1周期
+    // カ(16分=24) カン(音+間=72) で「カカン」が1拍 96 tick。
+    // 「カカンカカン」で1小節 192 tick。それが2小節で1周期
     expect(toPlaybackEvents(AFRO_GROOVE_2).map((e) => e.tick)).toEqual([
-      0, 48, 192, 240, 384, 432, 576, 624,
+      0, 24, 96, 120, 192, 216, 288, 312,
     ]);
   });
 
-  it("1周期は 768 tick（2/2 の2小節）", () => {
-    expect(totalTicks(AFRO_GROOVE_2)).toBe(768);
+  it("1周期は 384 tick（2/4 の2小節）", () => {
+    expect(totalTicks(AFRO_GROOVE_2)).toBe(384);
     expect(AFRO_GROOVE_2.bars).toHaveLength(2);
   });
 
@@ -112,9 +112,9 @@ describe("Afro Groove2", () => {
     expect(shape(second)).toEqual(shape(first));
   });
 
-  it("BPM は2分音符で数える（カットタイム）", () => {
-    expect(AFRO_GROOVE_2.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
-    expect(AFRO_GROOVE_2.bpmUnit).toBe(192);
+  it("BPM は4分音符で数える（2/4）", () => {
+    expect(AFRO_GROOVE_2.meter).toEqual({ beats: 2, beatUnit: 4, beatGroups: [1, 1] });
+    expect(AFRO_GROOVE_2.bpmUnit).toBe(96);
   });
 
   it("隣り合う8分音符どうしが拍ごとに連桁される", () => {
@@ -135,10 +135,10 @@ it("打点の id はパターンをまたいでも重複しない", () => {
 });
 
 describe("IJEXA", () => {
-  it("カ＝8分・カン＝4分 として打点が並ぶ", () => {
-    // 8分音符換算で 0 / 1 / 3 / 5 / 6（小節1）、8 / 10 / 12 / 14（小節2）
+  it("カ＝16分・カン＝8分 として打点が並ぶ", () => {
+    // 16分音符換算で 0 / 1 / 3 / 5 / 6（小節1）、8 / 10 / 12 / 14（小節2）
     expect(toPlaybackEvents(IJEXA).map((e) => e.tick)).toEqual([
-      0, 48, 144, 240, 288, 384, 480, 576, 672,
+      0, 24, 72, 120, 144, 192, 240, 288, 336,
     ]);
   });
 
@@ -160,21 +160,21 @@ describe("IJEXA", () => {
     // 小節1は前半が高・後半が低、小節2も前半が高・後半が低
     const byBar = [0, 1].map((bi) =>
       toPlaybackEvents(IJEXA)
-        .filter((e) => Math.floor(e.tick / 384) === bi)
+        .filter((e) => Math.floor(e.tick / 192) === bi)
         .map((e) => e.pitch),
     );
     expect(byBar[0]).toEqual(["high", "high", "low", "low", "low"]);
     expect(byBar[1]).toEqual(["high", "high", "low", "low"]);
   });
 
-  it("1周期は 768 tick（2/2 × 2小節）", () => {
-    expect(totalTicks(IJEXA)).toBe(768);
+  it("1周期は 384 tick（2/4 × 2小節）", () => {
+    expect(totalTicks(IJEXA)).toBe(384);
     expect(IJEXA.bars).toHaveLength(2);
   });
 
-  it("BPM は2分音符で数える（カットタイム）", () => {
-    expect(IJEXA.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
-    expect(IJEXA.bpmUnit).toBe(192);
+  it("BPM は4分音符で数える（2/4）", () => {
+    expect(IJEXA.meter).toEqual({ beats: 2, beatUnit: 4, beatGroups: [1, 1] });
+    expect(IJEXA.bpmUnit).toBe(96);
   });
 });
 
@@ -214,11 +214,11 @@ describe("Rumba Clave", () => {
   /**
    * 口唱歌「カンンカ ンンンカ ンンカン カンンン」。
    * 16マス＝8分音符換算で、打点は 0 / 3 / 7 / 10 / 12。
-   * 1マス 48 tick なので 0 / 144 / 336 / 480 / 576
+   * 1マス 24 tick なので 0 / 72 / 168 / 240 / 288
    */
   it("打点はルンバクラーベ 3-2 の位置にある", () => {
     expect(toPlaybackEvents(RUMBA_CLAVE).map((e) => e.tick)).toEqual([
-      0, 144, 336, 480, 576,
+      0, 72, 168, 240, 288,
     ]);
   });
 
@@ -231,24 +231,24 @@ describe("Rumba Clave", () => {
     const son = toPlaybackEvents(SON_CLAVE).map((e) => e.tick);
     const rumba = toPlaybackEvents(RUMBA_CLAVE).map((e) => e.tick);
 
-    expect(son).toEqual([0, 144, 288, 480, 576]);
-    expect(rumba).toEqual([0, 144, 336, 480, 576]);
+    expect(son).toEqual([0, 72, 144, 240, 288]);
+    expect(rumba).toEqual([0, 72, 168, 240, 288]);
 
     const differing = son.map((t, i) => t !== rumba[i]);
     expect(differing).toEqual([false, false, true, false, false]);
   });
 
-  it("1周期は Son Clave と同じ 768 tick", () => {
-    expect(totalTicks(RUMBA_CLAVE)).toBe(768);
+  it("1周期は Son Clave と同じ 384 tick", () => {
+    expect(totalTicks(RUMBA_CLAVE)).toBe(384);
   });
 
   it("高低の打ち分けはしない（すべて高）", () => {
     expect(toPlaybackEvents(RUMBA_CLAVE).every((e) => e.pitch === "high")).toBe(true);
   });
 
-  it("BPM は2分音符で数える（カットタイム）", () => {
-    expect(RUMBA_CLAVE.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
-    expect(RUMBA_CLAVE.bpmUnit).toBe(192);
+  it("BPM は4分音符で数える（2/4）", () => {
+    expect(RUMBA_CLAVE.meter).toEqual({ beats: 2, beatUnit: 4, beatGroups: [1, 1] });
+    expect(RUMBA_CLAVE.bpmUnit).toBe(96);
   });
 
   /** クラーベの 2 の側は、ソンでもルンバでも同じ形 */
@@ -263,11 +263,11 @@ describe("Afro Groove3", () => {
   /**
    * 口唱歌「ンカンカ ンカカン カンカカ ンカンカ」。
    * 16マス＝8分音符換算で、打点は 1 / 3 / 5 / 6 / 8 / 10 / 11 / 13 / 15。
-   * 1マス 48 tick
+   * 1マス 24 tick
    */
   it("打点が口唱歌のとおりに並ぶ", () => {
     expect(toPlaybackEvents(AFRO_GROOVE_3).map((e) => e.tick)).toEqual([
-      48, 144, 240, 288, 384, 480, 528, 624, 720,
+      24, 72, 120, 144, 192, 240, 264, 312, 360,
     ]);
   });
 
@@ -275,21 +275,21 @@ describe("Afro Groove3", () => {
    * **収録で初めて、周期の頭が休符から始まるリズム。**
    * ハイライトの扱いがここだけ変わるので、性質としてテストで固定する
    */
-  it("周期の頭は休符（最初の打点は tick 48）", () => {
-    expect(toPlaybackEvents(AFRO_GROOVE_3)[0]!.tick).toBe(48);
+  it("周期の頭は休符（最初の打点は tick 24）", () => {
+    expect(toPlaybackEvents(AFRO_GROOVE_3)[0]!.tick).toBe(24);
   });
 
-  it("1周期は 768 tick（2/2 × 2小節）", () => {
-    expect(totalTicks(AFRO_GROOVE_3)).toBe(768);
+  it("1周期は 384 tick（2/4 × 2小節）", () => {
+    expect(totalTicks(AFRO_GROOVE_3)).toBe(384);
   });
 
   it("高低の打ち分けはしない（すべて高）", () => {
     expect(toPlaybackEvents(AFRO_GROOVE_3).every((e) => e.pitch === "high")).toBe(true);
   });
 
-  it("BPM は2分音符で数える（カットタイム）", () => {
-    expect(AFRO_GROOVE_3.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
-    expect(AFRO_GROOVE_3.bpmUnit).toBe(192);
+  it("BPM は4分音符で数える（2/4）", () => {
+    expect(AFRO_GROOVE_3.meter).toEqual({ beats: 2, beatUnit: 4, beatGroups: [1, 1] });
+    expect(AFRO_GROOVE_3.bpmUnit).toBe(96);
   });
 
   /**
@@ -298,7 +298,7 @@ describe("Afro Groove3", () => {
    * 拍の頭が読めない譜面になる
    */
   it("どの音価も拍の境目をまたがない", () => {
-    const beat = 192;
+    const beat = 96;
     AFRO_GROOVE_3.bars.forEach((bar) => {
       let at = 0;
       bar.items.forEach((item) => {
@@ -306,7 +306,7 @@ describe("Afro Groove3", () => {
         expect(Math.floor(at / beat)).toBe(Math.floor((at + length - 1) / beat));
         at += length;
       });
-      expect(at).toBe(384);
+      expect(at).toBe(192);
     });
   });
 
@@ -322,7 +322,7 @@ describe("Bossa Clave", () => {
    */
   it("打点が口唱歌のとおりに並ぶ", () => {
     expect(toPlaybackEvents(BOSSA_CLAVE).map((e) => e.tick)).toEqual([
-      0, 144, 288, 480, 624,
+      0, 72, 144, 240, 312,
     ]);
   });
 
@@ -336,9 +336,9 @@ describe("Bossa Clave", () => {
     const rumba = toPlaybackEvents(RUMBA_CLAVE).map((e) => e.tick);
     const mine = toPlaybackEvents(BOSSA_CLAVE).map((e) => e.tick);
 
-    expect(mine[4]).toBe(624);
-    expect(son[4]).toBe(576);
-    expect(rumba[4]).toBe(576);
+    expect(mine[4]).toBe(312);
+    expect(son[4]).toBe(288);
+    expect(rumba[4]).toBe(288);
   });
 
   /** 違うのは後半だけ。前半は Son Clave と同じ */
@@ -348,21 +348,21 @@ describe("Bossa Clave", () => {
     expect(shape(BOSSA_CLAVE.bars[0]!)).toEqual(shape(SON_CLAVE.bars[0]!));
   });
 
-  it("1周期は 768 tick（2/2 × 2小節）", () => {
-    expect(totalTicks(BOSSA_CLAVE)).toBe(768);
+  it("1周期は 384 tick（2/4 × 2小節）", () => {
+    expect(totalTicks(BOSSA_CLAVE)).toBe(384);
   });
 
   it("高低の打ち分けはしない（すべて高）", () => {
     expect(toPlaybackEvents(BOSSA_CLAVE).every((e) => e.pitch === "high")).toBe(true);
   });
 
-  it("BPM は2分音符で数える（カットタイム）", () => {
-    expect(BOSSA_CLAVE.meter).toEqual({ beats: 2, beatUnit: 2, beatGroups: [1, 1] });
-    expect(BOSSA_CLAVE.bpmUnit).toBe(192);
+  it("BPM は4分音符で数える（2/4）", () => {
+    expect(BOSSA_CLAVE.meter).toEqual({ beats: 2, beatUnit: 4, beatGroups: [1, 1] });
+    expect(BOSSA_CLAVE.bpmUnit).toBe(96);
   });
 
   it("どの音価も拍の境目をまたがない", () => {
-    const beat = 192;
+    const beat = 96;
     BOSSA_CLAVE.bars.forEach((bar) => {
       let at = 0;
       bar.items.forEach((item) => {
@@ -370,7 +370,7 @@ describe("Bossa Clave", () => {
         expect(Math.floor(at / beat)).toBe(Math.floor((at + length - 1) / beat));
         at += length;
       });
-      expect(at).toBe(384);
+      expect(at).toBe(192);
     });
   });
 
