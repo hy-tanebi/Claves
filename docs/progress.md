@@ -4,7 +4,7 @@
 
 ---
 
-## 現在地（2026-08-27）
+## 現在地（2026-09-14）
 
 **iPhone の実機で動く。** ネイティブ（Swift）が再生クロックを持ち、JS は計画を渡すだけ。
 バックグラウンド再生・ロック画面操作・割り込み対応まで実機で確認済み。
@@ -29,6 +29,23 @@
 2. **Privacy Policy / Support ページ**（Cloudflare Pages に静的ページ）。
    収集ゼロなので「何も収集しない」の一言で足りる
 3. **Apple Developer Program（$99/年）に登録** → App Store Connect でアプリ登録 → 申請
+
+**リリース準備として機械側でできることは 9/14 に済ませた**
+（`ITSAppUsesNonExemptEncryption`、Privacy/Support ページの草案、依存更新。更新履歴 9/14 参照）。
+
+### 提出前チェックリスト（アプリ名が決まったら上から順に）
+
+- [ ] `Info.plist` の `CFBundleDisplayName` と `capacitor.config.ts` の `appName` を正式名に
+- [ ] `docs/site/index.html` の "Claves"・`CONTACT_EMAIL`・最終更新日を置き換え、Cloudflare Pages に置く。
+      その URL を App Store Connect の「サポート URL」「プライバシーポリシー URL」に
+- [ ] **`pnpm build && pnpm exec cap sync ios` を Archive の直前に必ず実行する。**
+      `ios/App/App/public/` は git 管理外で、`cap sync` した時点の `dist/` がそのまま出荷される。
+      忘れると古い画面が App Store に出る
+- [ ] `git diff ios/App/App.xcodeproj/` を見て `DEVELOPMENT_TEAM` と Sanitizer が入っていないことを確認
+- [ ] Xcode: Product → Archive → Distribute App（App Store Connect）
+- [ ] App Store Connect: App Privacy は「データを収集しない」を選ぶ（`PrivacyInfo.xcprivacy` と一致させる）。
+      輸出規制の質問は `ITSAppUsesNonExemptEncryption = false` で出なくなっている
+- [ ] 投げ銭 IAP を入れるなら **v1.0 には入れず 1.1 で**。初回審査を軽くする
 
 実機に入れ直す手順（すでに設定済み。ケーブルで繋いで Xcode の ▶︎ を押すだけ）:
 
@@ -242,8 +259,9 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
       かつ本アプリは機能の絞り方をそれに倣っているため、名前まで似ると
       copycat 判定に寄る。リポジトリ名 `Claves` はストア表示名とは別物なので変えない
 - [x] アイコン・配色（見本の the Clave の配色を使わない）
-- [ ] Privacy Policy / Support ページ（Cloudflare Pages に静的ページ）。
-      収集ゼロなので文面は「何も収集しない」の一言で足りる
+- [x] Privacy Policy / Support ページの**草案**（`docs/site/index.html`、日英）。
+      アプリ名と連絡先を入れて Cloudflare Pages に置くのはオーナー作業
+- [x] `ITSAppUsesNonExemptEncryption = false`（提出のたびの輸出規制の質問を無くす）
 - [ ] App Store 申請
 - [ ] 課金は **無料 ＋ 任意の投げ銭**（IAP）。機能制限はしない（2026-08-23 オーナー判断）。
       Stripe は使えない・使う必要もない（Apple が集金するのでサーバー不要）
@@ -258,6 +276,36 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 ---
 
 ## 更新履歴
+
+### 2026-09-14
+
+**リリース前のセキュリティ確認と、機械側でできる提出準備。** ブランチ `feature/release-prep`。
+
+セキュリティ確認の結論: **出荷を止める問題なし。** 読んだ範囲は CSP・Capacitor 設定・
+`Info.plist`・`PrivacyInfo`・JS→ネイティブ境界（`PlanDecoder`/`PlanValidator`）・
+`setVolume`・`preferences.ts`・`main.ts` の DOM 生成・xcconfig/pbxproj/共有スキーム・
+git 全履歴の Team ID 混入・`pnpm audit`。攻撃面は「自分の WebView から自分の
+ネイティブ層へ」しかなく、そこは境界で縛ってある。
+
+やったこと:
+
+- `Info.plist` に `ITSAppUsesNonExemptEncryption = false`
+- `docs/site/index.html` — Support / Privacy Policy の草案（日英）。
+  アプリ内購入の条項は投げ銭・アンロックどちらでも通る書き方にしてある
+- 依存更新: Capacitor 8.5.0 → 8.5.1（`Package.swift` も `cap sync` で追従）。
+  `pnpm audit` 14件 → 3件。**消えたのは `@capacitor/cli > plist > @xmldom/xmldom`**（high 9件）。
+  8.5.2 は `minimumReleaseAge` で止まっており、cooldown が効いていることも確認できた
+- 上の提出前チェックリストを追加
+
+**残る3件（moderate）はすべて devDependencies で、出荷物には入らない。**
+`vitest` の path traversal（GHSA-82fw-gwwq-j7x9）は開発サーバーの話で、直すには
+vitest 4/5 へのメジャー更新が要る。`uuid` は `xcode` パッケージ経由で、
+該当する呼び方（`buf` 引数）をしていない。**どちらもリリース後に別ブランチで。**
+そのとき vite 8・TypeScript 7 も一緒に上げる。
+
+**投げ銭 IAP は未実装。** オーナーから「4つ目以降のリズムを課金にする」案が出た。
+CLAUDE.md に記録した 8/23 の判断（機能を制限する課金はしない）と逆になるので、
+方針を変えるなら CLAUDE.md の「このプロジェクトの性格」も書き換える。
 
 ### 2026-09-07
 
