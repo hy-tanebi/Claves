@@ -37,7 +37,7 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     /// ロック画面に出す名前と、直前に鳴らした計画。
     /// 再生ボタンから鳴らし直すために覚えておく
     private var lastPlan: TransportPlan?
-    private var title = "Claves"
+    private var title = "Clavenome"
 
     /// いま選ばれている音色。
     /// **エンジンは再生のたびに作り直すので、ここが覚えていないと既定に戻る**
@@ -219,7 +219,7 @@ public class ClavesAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     static let maxTitleLength = 128
 
     private static func clampedTitle(_ title: String?) -> String {
-        guard let title, !title.isEmpty else { return "Claves" }
+        guard let title, !title.isEmpty else { return "Clavenome" }
         return String(title.prefix(maxTitleLength))
     }
 

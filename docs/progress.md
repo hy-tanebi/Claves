@@ -8,35 +8,35 @@
 
 **iPhone の実機で動く。** ネイティブ（Swift）が再生クロックを持ち、JS は計画を渡すだけ。
 バックグラウンド再生・ロック画面操作・割り込み対応まで実機で確認済み。
-**アプリとしては完成。残るのはリリース準備（アプリ名・プライバシーポリシー・申請）。**
+**アプリとしては完成。残るのはリリース準備（Privacy ページの公開・Developer Program 登録・申請）。**
 
 - リポジトリ: https://github.com/hy-tanebi/Claves （private）
 - デフォルトブランチ: `dev`。`main` は初期セットアップのみ（リリース時まで触らない）
 - JS 280 件 / Swift 72 件 PASS、型エラー 0 件
 - `check:notation` 9リズム × 375・390・430px = 27通り 欠陥 0
-- Bundle ID: `com.tanebicreative.claves`（**App Store 提出後は変更不可**）
-- アプリ表示名: `Claves`（仮。正式名称が決まったら `Info.plist` を書き換える）
+- Bundle ID: `com.tanebicreative.clavenome`（**App Store 提出後は変更不可**）
+- アプリ名: **Clavenome**（2026-09-15 確定）。ストア名は `Clavenome – Rhythm Metronome`、
+  サブタイトル案 `Brazilian Rhythm Patterns`。ホーム画面は `Clavenome`
 
 ### 次にやること（このセッションで最初に見る）
 
 **D（iOS アプリにする）は P0〜P4 すべて完了。次は E（リリース準備）。**
 
-残っているのは3つ。**どれもオーナーの判断が要る:**
+残っているのは2つ。**どちらもオーナーの操作が要る:**
 
-1. **アプリ名を決める。** ストア表示名に "clave" を入れない
-   （`the Clave` が現役なので copycat 判定に寄る。詳細は下の E を参照）。
-   リポジトリ名 `Claves` はストア表示名とは別物なので変えなくてよい
-2. **Privacy Policy / Support ページ**（Cloudflare Pages に静的ページ）。
-   収集ゼロなので「何も収集しない」の一言で足りる
-3. **Apple Developer Program（$99/年）に登録** → App Store Connect でアプリ登録 → 申請
+1. **Privacy Policy / Support ページを公開する。** 草案は `docs/site/index.html`。
+   `CONTACT_EMAIL` を入れて Cloudflare Pages に置く
+2. **Apple Developer Program（$99/年）に個人名義で登録** → App Store Connect でアプリ登録 → 申請
+
+アプリ名は **Clavenome** で確定した（2026-09-15）。リポジトリ名 `Claves` は変えない
 
 **リリース準備として機械側でできることは 9/14 に済ませた**
 （`ITSAppUsesNonExemptEncryption`、Privacy/Support ページの草案、依存更新。更新履歴 9/14 参照）。
 
 ### 提出前チェックリスト（アプリ名が決まったら上から順に）
 
-- [ ] `Info.plist` の `CFBundleDisplayName` と `capacitor.config.ts` の `appName` を正式名に
-- [ ] `docs/site/index.html` の "Claves"・`CONTACT_EMAIL`・最終更新日を置き換え、Cloudflare Pages に置く。
+- [x] `Info.plist` の `CFBundleDisplayName` と `capacitor.config.ts` の `appName` を正式名に（Clavenome）
+- [ ] `docs/site/index.html` の `CONTACT_EMAIL`・最終更新日を置き換え、Cloudflare Pages に置く。
       その URL を App Store Connect の「サポート URL」「プライバシーポリシー URL」に
 - [ ] **`pnpm build && pnpm exec cap sync ios` を Archive の直前に必ず実行する。**
       `ios/App/App/public/` は git 管理外で、`cap sync` した時点の `dist/` がそのまま出荷される。
@@ -96,7 +96,7 @@ cd ios/App && xcodebuild -project App.xcodeproj -scheme App \
   -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17' \
   CODE_SIGNING_ALLOWED=NO build
 xcrun simctl install booted <上で出た App.app のパス>
-xcrun simctl launch booted com.tanebicreative.claves
+xcrun simctl launch booted com.tanebicreative.clavenome
 xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数秒おいてから撮る
 ```
 
@@ -185,7 +185,6 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 
 - **音源が合成音。** 録音はしないと決定済み（このまま出す）。
   Sound 1（アゴゴを手本）と Sound 2（クラベスを手本）の2種類
-- **アプリ名が未定**（配色とアイコンは確定）
 
 ---
 
@@ -251,7 +250,7 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 
 **E. リリース準備**
 
-- [ ] アプリ名。**ストア表示名に "clave" を入れない**（説明文では自由に使ってよい）
+- [x] アプリ名 → **Clavenome**（2026-09-15）。下の注意書きは決定前の検討記録
 
       Apple のガイドラインに「clave」を禁じる規定はない。効くのは 4.1(c)
       「他の開発者の product name をアプリ名に使わない」と 4.1(a)
@@ -302,6 +301,21 @@ git 全履歴の Team ID 混入・`pnpm audit`。攻撃面は「自分の WebVie
 vitest 4/5 へのメジャー更新が要る。`uuid` は `xcode` パッケージ経由で、
 該当する呼び方（`buf` 引数）をしていない。**どちらもリリース後に別ブランチで。**
 そのとき vite 8・TypeScript 7 も一緒に上げる。
+
+### 2026-09-15
+
+**アプリ名を Clavenome に、Bundle ID を `com.tanebicreative.clavenome` に確定。**
+
+「clave を含む造語」という路線でオーナーが選んだ。以前の「ストア名に clave を入れない」は
+`the Clave` との copycat 判定を避けるための保守的な線だったが、Clavenome は
+別の単語として成立しており、clave 自体は楽器名の一般語なので実害は低いと判断した。
+`The Clave ...` のような形にはしない。
+
+Bundle ID は Apple 側に未登録だったので、名前に揃えて変えた。
+**App Store Connect でアプリを作った時点で固定される。以後は変えない。**
+
+Developer Program は**個人名義**で登録する（個人事業の屋号は Apple の Organization 要件を
+満たさない。DBA・商号は不可と明記されている）。販売元は本名、それ以外は屋号で統一する。
 
 **投げ銭 IAP は未実装。** オーナーから「4つ目以降のリズムを課金にする」案が出た。
 CLAUDE.md に記録した 8/23 の判断（機能を制限する課金はしない）と逆になるので、
