@@ -317,6 +317,27 @@ Bundle ID は Apple 側に未登録だったので、名前に揃えて変えた
 Developer Program は**個人名義**で登録する（個人事業の屋号は Apple の Organization 要件を
 満たさない。DBA・商号は不可と明記されている）。販売元は本名、それ以外は屋号で統一する。
 
+### 2026-09-16
+
+**起動画面をアイコン＋アプリ名にし、2.5 秒見せるようにした。** 実機で確認済み。
+
+iOS の起動画面（`LaunchScreen.storyboard`）は最初の1枚を描くまでしか出ないため、
+`MainViewController` が同じ見た目のビューを WebView にかぶせて `splashDuration`（2.5 秒）
+後にフェードで消す。**見た目を変えるときは storyboard と Swift の両方を揃える。**
+画像は `LaunchIcon.imageset`（AppIcon と同じ PNG）。
+
+**iOS 26.5 のシミュレータでは起動画面が黒く出て検証できない**（Capacitor 既定の画面でも
+同じだったので、こちらの問題ではない）。起動画面の確認は実機で行う。
+
+実機へは Xcode を開かなくても入れられる:
+
+```bash
+cd ios/App && xcodebuild -project App.xcodeproj -scheme App -configuration Debug \
+  -destination 'id=<xcrun devicectl list devices で出る Identifier>' -allowProvisioningUpdates build
+xcrun devicectl device install app --device <Identifier> <Build/Products/Debug-iphoneos/App.app>
+xcrun devicectl device process launch --device <Identifier> --terminate-existing com.tanebicreative.clavenome
+```
+
 **投げ銭 IAP は未実装。** オーナーから「4つ目以降のリズムを課金にする」案が出た。
 CLAUDE.md に記録した 8/23 の判断（機能を制限する課金はしない）と逆になるので、
 方針を変えるなら CLAUDE.md の「このプロジェクトの性格」も書き換える。
