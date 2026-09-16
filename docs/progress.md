@@ -22,11 +22,13 @@
 
 **D（iOS アプリにする）は P0〜P4 すべて完了。次は E（リリース準備）。**
 
-残っているのは2つ。**どちらもオーナーの操作が要る:**
+残っているのは1つ。**オーナーの操作が要る:**
 
-1. **Privacy Policy / Support ページを公開する。** 草案は `docs/site/index.html`。
-   `CONTACT_EMAIL` を入れて Cloudflare Pages に置く
-2. **Apple Developer Program（$99/年）に個人名義で登録** → App Store Connect でアプリ登録 → 申請
+1. **Apple Developer Program（$99/年）に個人名義で登録** → App Store Connect でアプリ登録 → 申請
+
+Privacy Policy / Support ページは公開済み: **https://tanebi-net.com/clavenome**（2026-09-16、
+corporate-app 側で作成）。App Store Connect の「サポート URL」「プライバシーポリシー URL」の
+両方にこれを入れる。文面の原本は `docs/site/index.html`。
 
 アプリ名は **Clavenome** で確定した（2026-09-15）。リポジトリ名 `Claves` は変えない
 
@@ -36,8 +38,7 @@
 ### 提出前チェックリスト（アプリ名が決まったら上から順に）
 
 - [x] `Info.plist` の `CFBundleDisplayName` と `capacitor.config.ts` の `appName` を正式名に（Clavenome）
-- [ ] `docs/site/index.html` の `CONTACT_EMAIL`・最終更新日を置き換え、Cloudflare Pages に置く。
-      その URL を App Store Connect の「サポート URL」「プライバシーポリシー URL」に
+- [x] Privacy / Support ページ → https://tanebi-net.com/clavenome （両方の URL 欄にこれ）
 - [ ] **`pnpm build && pnpm exec cap sync ios` を Archive の直前に必ず実行する。**
       `ios/App/App/public/` は git 管理外で、`cap sync` した時点の `dist/` がそのまま出荷される。
       忘れると古い画面が App Store に出る
