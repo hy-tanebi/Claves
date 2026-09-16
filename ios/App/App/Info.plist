@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Claves</string>
+	<string>Clavenome</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -22,6 +22,15 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!--
+	  輸出規制（暗号化）の申告。**このアプリは通信も暗号化も行わない**
+	  （HTTPS すら使わない。CSP で外部通信を塞いでいる）ので免除対象。
+	  これを書いておかないと App Store Connect にビルドを上げるたびに
+	  「暗号化を使っているか」を手で答えることになる。
+	  暗号化を伴う機能（ネットワーク通信など）を足したら見直す。
+	-->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

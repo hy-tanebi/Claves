@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.tanebicreative.claves',
-  appName: 'Claves',
+  appId: 'com.tanebicreative.clavenome',
+  appName: 'Clavenome',
   webDir: 'dist'
 };
 

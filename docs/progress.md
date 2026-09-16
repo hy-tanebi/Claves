@@ -4,31 +4,49 @@
 
 ---
 
-## 現在地（2026-08-27）
+## 現在地（2026-09-14）
 
 **iPhone の実機で動く。** ネイティブ（Swift）が再生クロックを持ち、JS は計画を渡すだけ。
 バックグラウンド再生・ロック画面操作・割り込み対応まで実機で確認済み。
-**アプリとしては完成。残るのはリリース準備（アプリ名・プライバシーポリシー・申請）。**
+**アプリとしては完成。残るのはリリース準備（Privacy ページの公開・Developer Program 登録・申請）。**
 
 - リポジトリ: https://github.com/hy-tanebi/Claves （private）
 - デフォルトブランチ: `dev`。`main` は初期セットアップのみ（リリース時まで触らない）
 - JS 280 件 / Swift 72 件 PASS、型エラー 0 件
 - `check:notation` 9リズム × 375・390・430px = 27通り 欠陥 0
-- Bundle ID: `com.tanebicreative.claves`（**App Store 提出後は変更不可**）
-- アプリ表示名: `Claves`（仮。正式名称が決まったら `Info.plist` を書き換える）
+- Bundle ID: `com.tanebicreative.clavenome`（**App Store 提出後は変更不可**）
+- アプリ名: **Clavenome**（2026-09-15 確定）。ストア名は `Clavenome – Rhythm Metronome`、
+  サブタイトル案 `Brazilian Rhythm Patterns`。ホーム画面は `Clavenome`
 
 ### 次にやること（このセッションで最初に見る）
 
 **D（iOS アプリにする）は P0〜P4 すべて完了。次は E（リリース準備）。**
 
-残っているのは3つ。**どれもオーナーの判断が要る:**
+残っているのは1つ。**オーナーの操作が要る:**
 
-1. **アプリ名を決める。** ストア表示名に "clave" を入れない
-   （`the Clave` が現役なので copycat 判定に寄る。詳細は下の E を参照）。
-   リポジトリ名 `Claves` はストア表示名とは別物なので変えなくてよい
-2. **Privacy Policy / Support ページ**（Cloudflare Pages に静的ページ）。
-   収集ゼロなので「何も収集しない」の一言で足りる
-3. **Apple Developer Program（$99/年）に登録** → App Store Connect でアプリ登録 → 申請
+1. **Apple Developer Program（$99/年）に個人名義で登録** → App Store Connect でアプリ登録 → 申請
+
+Privacy Policy / Support ページは公開済み: **https://tanebi-net.com/clavenome**（2026-09-16、
+corporate-app 側で作成）。App Store Connect の「サポート URL」「プライバシーポリシー URL」の
+両方にこれを入れる。文面の原本は `docs/site/index.html`。
+
+アプリ名は **Clavenome** で確定した（2026-09-15）。リポジトリ名 `Claves` は変えない
+
+**リリース準備として機械側でできることは 9/14 に済ませた**
+（`ITSAppUsesNonExemptEncryption`、Privacy/Support ページの草案、依存更新。更新履歴 9/14 参照）。
+
+### 提出前チェックリスト（アプリ名が決まったら上から順に）
+
+- [x] `Info.plist` の `CFBundleDisplayName` と `capacitor.config.ts` の `appName` を正式名に（Clavenome）
+- [x] Privacy / Support ページ → https://tanebi-net.com/clavenome （両方の URL 欄にこれ）
+- [ ] **`pnpm build && pnpm exec cap sync ios` を Archive の直前に必ず実行する。**
+      `ios/App/App/public/` は git 管理外で、`cap sync` した時点の `dist/` がそのまま出荷される。
+      忘れると古い画面が App Store に出る
+- [ ] `git diff ios/App/App.xcodeproj/` を見て `DEVELOPMENT_TEAM` と Sanitizer が入っていないことを確認
+- [ ] Xcode: Product → Archive → Distribute App（App Store Connect）
+- [ ] App Store Connect: App Privacy は「データを収集しない」を選ぶ（`PrivacyInfo.xcprivacy` と一致させる）。
+      輸出規制の質問は `ITSAppUsesNonExemptEncryption = false` で出なくなっている
+- [ ] 投げ銭 IAP を入れるなら **v1.0 には入れず 1.1 で**。初回審査を軽くする
 
 実機に入れ直す手順（すでに設定済み。ケーブルで繋いで Xcode の ▶︎ を押すだけ）:
 
@@ -79,7 +97,7 @@ cd ios/App && xcodebuild -project App.xcodeproj -scheme App \
   -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17' \
   CODE_SIGNING_ALLOWED=NO build
 xcrun simctl install booted <上で出た App.app のパス>
-xcrun simctl launch booted com.tanebicreative.claves
+xcrun simctl launch booted com.tanebicreative.clavenome
 xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数秒おいてから撮る
 ```
 
@@ -168,7 +186,6 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 
 - **音源が合成音。** 録音はしないと決定済み（このまま出す）。
   Sound 1（アゴゴを手本）と Sound 2（クラベスを手本）の2種類
-- **アプリ名が未定**（配色とアイコンは確定）
 
 ---
 
@@ -234,7 +251,7 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 
 **E. リリース準備**
 
-- [ ] アプリ名。**ストア表示名に "clave" を入れない**（説明文では自由に使ってよい）
+- [x] アプリ名 → **Clavenome**（2026-09-15）。下の注意書きは決定前の検討記録
 
       Apple のガイドラインに「clave」を禁じる規定はない。効くのは 4.1(c)
       「他の開発者の product name をアプリ名に使わない」と 4.1(a)
@@ -242,8 +259,9 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
       かつ本アプリは機能の絞り方をそれに倣っているため、名前まで似ると
       copycat 判定に寄る。リポジトリ名 `Claves` はストア表示名とは別物なので変えない
 - [x] アイコン・配色（見本の the Clave の配色を使わない）
-- [ ] Privacy Policy / Support ページ（Cloudflare Pages に静的ページ）。
-      収集ゼロなので文面は「何も収集しない」の一言で足りる
+- [x] Privacy Policy / Support ページの**草案**（`docs/site/index.html`、日英）。
+      アプリ名と連絡先を入れて Cloudflare Pages に置くのはオーナー作業
+- [x] `ITSAppUsesNonExemptEncryption = false`（提出のたびの輸出規制の質問を無くす）
 - [ ] App Store 申請
 - [ ] 課金は **無料 ＋ 任意の投げ銭**（IAP）。機能制限はしない（2026-08-23 オーナー判断）。
       Stripe は使えない・使う必要もない（Apple が集金するのでサーバー不要）
@@ -258,6 +276,72 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 ---
 
 ## 更新履歴
+
+### 2026-09-14
+
+**リリース前のセキュリティ確認と、機械側でできる提出準備。** ブランチ `feature/release-prep`。
+
+セキュリティ確認の結論: **出荷を止める問題なし。** 読んだ範囲は CSP・Capacitor 設定・
+`Info.plist`・`PrivacyInfo`・JS→ネイティブ境界（`PlanDecoder`/`PlanValidator`）・
+`setVolume`・`preferences.ts`・`main.ts` の DOM 生成・xcconfig/pbxproj/共有スキーム・
+git 全履歴の Team ID 混入・`pnpm audit`。攻撃面は「自分の WebView から自分の
+ネイティブ層へ」しかなく、そこは境界で縛ってある。
+
+やったこと:
+
+- `Info.plist` に `ITSAppUsesNonExemptEncryption = false`
+- `docs/site/index.html` — Support / Privacy Policy の草案（日英）。
+  アプリ内購入の条項は投げ銭・アンロックどちらでも通る書き方にしてある
+- 依存更新: Capacitor 8.5.0 → 8.5.1（`Package.swift` も `cap sync` で追従）。
+  `pnpm audit` 14件 → 3件。**消えたのは `@capacitor/cli > plist > @xmldom/xmldom`**（high 9件）。
+  8.5.2 は `minimumReleaseAge` で止まっており、cooldown が効いていることも確認できた
+- 上の提出前チェックリストを追加
+
+**残る3件（moderate）はすべて devDependencies で、出荷物には入らない。**
+`vitest` の path traversal（GHSA-82fw-gwwq-j7x9）は開発サーバーの話で、直すには
+vitest 4/5 へのメジャー更新が要る。`uuid` は `xcode` パッケージ経由で、
+該当する呼び方（`buf` 引数）をしていない。**どちらもリリース後に別ブランチで。**
+そのとき vite 8・TypeScript 7 も一緒に上げる。
+
+### 2026-09-15
+
+**アプリ名を Clavenome に、Bundle ID を `com.tanebicreative.clavenome` に確定。**
+
+「clave を含む造語」という路線でオーナーが選んだ。以前の「ストア名に clave を入れない」は
+`the Clave` との copycat 判定を避けるための保守的な線だったが、Clavenome は
+別の単語として成立しており、clave 自体は楽器名の一般語なので実害は低いと判断した。
+`The Clave ...` のような形にはしない。
+
+Bundle ID は Apple 側に未登録だったので、名前に揃えて変えた。
+**App Store Connect でアプリを作った時点で固定される。以後は変えない。**
+
+Developer Program は**個人名義**で登録する（個人事業の屋号は Apple の Organization 要件を
+満たさない。DBA・商号は不可と明記されている）。販売元は本名、それ以外は屋号で統一する。
+
+### 2026-09-16
+
+**起動画面をアイコン＋アプリ名にし、2.5 秒見せるようにした。** 実機で確認済み。
+
+iOS の起動画面（`LaunchScreen.storyboard`）は最初の1枚を描くまでしか出ないため、
+`MainViewController` が同じ見た目のビューを WebView にかぶせて `splashDuration`（2.5 秒）
+後にフェードで消す。**見た目を変えるときは storyboard と Swift の両方を揃える。**
+画像は `LaunchIcon.imageset`（AppIcon と同じ PNG）。
+
+**iOS 26.5 のシミュレータでは起動画面が黒く出て検証できない**（Capacitor 既定の画面でも
+同じだったので、こちらの問題ではない）。起動画面の確認は実機で行う。
+
+実機へは Xcode を開かなくても入れられる:
+
+```bash
+cd ios/App && xcodebuild -project App.xcodeproj -scheme App -configuration Debug \
+  -destination 'id=<xcrun devicectl list devices で出る Identifier>' -allowProvisioningUpdates build
+xcrun devicectl device install app --device <Identifier> <Build/Products/Debug-iphoneos/App.app>
+xcrun devicectl device process launch --device <Identifier> --terminate-existing com.tanebicreative.clavenome
+```
+
+**投げ銭 IAP は未実装。** オーナーから「4つ目以降のリズムを課金にする」案が出た。
+CLAUDE.md に記録した 8/23 の判断（機能を制限する課金はしない）と逆になるので、
+方針を変えるなら CLAUDE.md の「このプロジェクトの性格」も書き換える。
 
 ### 2026-09-07
 
