@@ -3,59 +3,124 @@
 App Store Connect の各欄にそのまま貼る。**文字数上限を超えると保存できない**ので、
 変えるときは各欄の上限を守る。
 
-## 名前（30文字）
+## 名前（30文字・全言語共通）
 
 ```
 Clavenome
 ```
 
-## サブタイトル（30文字）
+## プロモーション用テキスト
+
+**空欄にする。** 審査なしで随時変えられる欄なので、リズム追加の告知などに使いたくなったら入れる。
+
+## ローカリゼーション
+
+日本語をプライマリにし、英語（U.S.）とポルトガル語（ブラジル）を足す。
+**言語ごとに別々の欄**があり、ユーザーには端末の言語に合った版だけが出る。
+英語版のキーワードは日本の App Store の検索にも効く（日本の Store は English (US) も索引する）。
+スクリーンショットは日本語のものを全言語で使い回す。
+
+### 日本語（プライマリ）
+
+サブタイトル（30文字）
 
 ```
-Brazilian Rhythm Metronome
+クラーベ メトロノーム
 ```
 
-## プロモーション用テキスト（170文字・審査なしで随時変更可）
+説明（4000文字）
 
 ```
-ソン・ルンバ・ボサのクラーベと、サンバヘギ／アフロ系のリズムパターンを鳴らす練習用メトロノーム。譜面を見ながら、テンポを変えて、ロック画面からも止められます。
+Clavenome は、ラテンミュージックのリズムパターンを鳴らす練習用メトロノームです。
+
+収録リズムは、ソン・ルンバ・ボサの各クラーベ、アフロ系のグルーヴ3種、6/8 のアフロ2種、IJEXA の計9種。クラーベは 3:2 と 2:3 を切り替えられます。
+
+鳴っているリズムを譜面で表示し、いま鳴っている音を光らせます。
+
+テンポは 40〜240 BPM。スライダーのほか、タップでも合わせられます。
+
+音色はアゴゴ風とクラベス風の2種類。
+
+画面をロックしても鳴り続け、ロック画面から止められます。
+
+通信は一切行わず、アカウントも広告もありません。
+
+特にアフロブラジルのリズムを練習する人のために作りました。
+他にも自分自身のアイディアで拡張してより良い練習方法を見出してくれたら嬉しいです。
 ```
 
-## 説明（4000文字）
+キーワード（100文字・カンマ区切り）
 
 ```
-Clavenome は、ブラジルのリズムパターンを鳴らす練習用メトロノームです。
-
-ただ拍を刻むのではなく、クラーベやアフロ系のリズムの「骨格」をそのまま鳴らします。
-譜面と再生位置を見ながら、自分の演奏を重ねて練習できます。
-
-■ 収録リズム
-・Son Clave / Rumba Clave / Bossa Clave（3:2 と 2:3 の切り替えつき）
-・Afro Groove 1〜3
-・6/8 Afro Groove 1〜2
-・IJEXA
-
-■ 機能
-・1本線の譜面表示と、再生位置のハイライト
-・BPM 40〜240 のスライダーと、タップテンポ
-・音色は2種類（アゴゴ風・クラベス風）
-・バックグラウンド再生。画面を消しても、他のアプリを開いても鳴り続けます
-・ロック画面とコントロールセンターから再生・停止
-・イヤホンを抜くと自動で止まります
-
-■ 設計
-・完全オフライン。通信を一切行いません
-・アカウント登録なし、広告なし、トラッキングなし
-・すべての機能を無料で使えます
-
-サンバヘギ／サンバアフロを練習する人のために作りました。
-リズムは今後も追加していきます。
+メトロノーム,クラーベ,サンバ,ラテン,リズム,打楽器,パーカッション,アフロ,ブラジル,サンバヘギ,練習,拍子
 ```
 
-## キーワード（100文字・カンマ区切り）
+### 英語（U.S.）
+
+サブタイトル
 
 ```
-metronome,clave,samba,rhythm,brazil,percussion,afro,メトロノーム,クラーベ,サンバ,打楽器
+Clave Rhythm Metronome
+```
+
+説明
+
+```
+Clavenome is a practice metronome that plays Latin rhythm patterns.
+
+It comes with nine patterns: the son, rumba and bossa claves, three Afro grooves, two 6/8 Afro grooves, and Ijexá. Claves can be flipped between 3:2 and 2:3.
+
+The pattern is shown as notation, and the note being played lights up as it sounds.
+
+Tempo runs from 40 to 240 BPM, set with a slider or by tapping.
+
+Two sounds are included: an agogô-style bell and a claves-style click.
+
+Playback keeps going when the screen is locked, and you can stop it from the lock screen.
+
+No network access, no account, no ads.
+
+Made especially for people practicing Afro-Brazilian rhythms. I hope you'll take it further with your own ideas and find practice methods that work better for you.
+```
+
+キーワード
+
+```
+metronome,clave,samba,latin,rhythm,percussion,afro,brazil,brazilian,drum,practice,groove,timbal,surdo
+```
+
+### ポルトガル語（ブラジル）
+
+サブタイトル
+
+```
+Metrônomo de Clave
+```
+
+説明
+
+```
+Clavenome é um metrônomo de estudo que toca padrões rítmicos da música latina.
+
+São nove padrões: as claves de son, rumba e bossa, três grooves afro, dois grooves afro em 6/8 e o Ijexá. As claves podem ser invertidas entre 3:2 e 2:3.
+
+O padrão aparece em partitura, e a nota que está tocando acende na hora.
+
+O andamento vai de 40 a 240 BPM, ajustado pelo controle deslizante ou por toque.
+
+Dois timbres: um sino tipo agogô e um clique tipo claves.
+
+Continua tocando com a tela bloqueada, e dá para parar pela tela de bloqueio.
+
+Sem internet, sem conta, sem anúncios.
+
+Feito especialmente para quem estuda ritmos afro-brasileiros. Espero que você leve isso adiante com suas próprias ideias e encontre formas de estudo ainda melhores.
+```
+
+キーワード
+
+```
+metrônomo,clave,samba,ritmo,percussão,afro,batucada,samba reggae,ijexá,agogô,estudo,levada
 ```
 
 ## URL
