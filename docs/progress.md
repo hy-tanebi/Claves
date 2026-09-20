@@ -4,49 +4,61 @@
 
 ---
 
-## 現在地（2026-09-14）
+## 現在地（2026-09-20）
 
-**iPhone の実機で動く。** ネイティブ（Swift）が再生クロックを持ち、JS は計画を渡すだけ。
-バックグラウンド再生・ロック画面操作・割り込み対応まで実機で確認済み。
-**アプリとしては完成。残るのはリリース準備（Privacy ページの公開・Developer Program 登録・申請）。**
+**App Store の審査に提出済み（1.0 (1)）。** Apple の審査結果待ち。通常 24〜48時間。
+承認され次第、自動リリース設定なので App Store に並ぶ。
 
 - リポジトリ: https://github.com/hy-tanebi/Claves （private）
 - デフォルトブランチ: `dev`。`main` は初期セットアップのみ（リリース時まで触らない）
 - JS 280 件 / Swift 72 件 PASS、型エラー 0 件
 - `check:notation` 9リズム × 375・390・430px = 27通り 欠陥 0
-- Bundle ID: `com.tanebicreative.clavenome`（**App Store 提出後は変更不可**）
-- アプリ名: **Clavenome**（2026-09-15 確定）。ストア名は `Clavenome – Rhythm Metronome`、
-  サブタイトル案 `Brazilian Rhythm Patterns`。ホーム画面は `Clavenome`
+- Bundle ID: `com.tanebicreative.clavenome`（App Store 側で確定済み。以後変更不可）
+- Apple Developer Program: 個人名義で登録済み（2026-09-19 承認）
+- App Store Connect の Apple ID: `6813747522`
 
 ### 次にやること（このセッションで最初に見る）
 
-**D（iOS アプリにする）は P0〜P4 すべて完了。次は E（リリース準備）。**
+**D（iOS アプリにする）・E（リリース準備）ともに完了。次は Apple の審査結果を待つだけ。**
 
-残っているのは1つ。**オーナーの操作が要る:**
+- [ ] 審査結果のメールを確認する（Ready for Sale / Rejected）
+  - 承認 → 自動リリースなので何もしなくてよい。念のため App Store でアプリを確認する
+  - 却下 → Resolution Center の理由を見て対応する
+- [ ] リリース後、`docs/site/index.html`（Privacy/Support の原本）と実際に公開した
+      `https://tanebi-net.com/clavenome` の内容が一致しているか確認する
+- [ ] **1.1 で投げ銭 IAP を実装する**（2026-09-19 オーナー判断。理由は下の「掲載文」節と
+      更新履歴 9/19 参照）。実装前に Paid Apps Agreement（税務・銀行情報）を
+      App Store Connect で済ませておく
 
-1. **Apple Developer Program（$99/年）に個人名義で登録** → App Store Connect でアプリ登録 → 申請
+### 掲載文・提出設定
 
-Privacy Policy / Support ページは公開済み: **https://tanebi-net.com/clavenome**（2026-09-16、
-corporate-app 側で作成）。App Store Connect の「サポート URL」「プライバシーポリシー URL」の
-両方にこれを入れる。文面の原本は `docs/site/index.html`。
+`docs/store-listing.md` に、実際に App Store Connect へ入力した値をすべて記録してある
+（日本語・英語・ポルトガル語3言語ぶんの名前・サブタイトル・説明・キーワード、URL、
+カテゴリ、年齢制限、価格など）。次のバージョンで書き換えるときはここを更新する。
 
-アプリ名は **Clavenome** で確定した（2026-09-15）。リポジトリ名 `Claves` は変えない
+**英語（U.S.）ロケールだけ名前を `Clavenome - Clave Metronome` にしている。**
+`Clavenome` 単体では「すでに使用されている」と Apple に弾かれたため
+（公開済みアプリには存在しない。未公開の予約か、日本語版との衝突誤判定と思われる）。
+日本語・ポルトガル語は `Clavenome` のまま。ホーム画面のアイコン名（`Info.plist` の
+`CFBundleDisplayName`）はどの言語でも `Clavenome` で、ストア名とは別物。
 
-**リリース準備として機械側でできることは 9/14 に済ませた**
-（`ITSAppUsesNonExemptEncryption`、Privacy/Support ページの草案、依存更新。更新履歴 9/14 参照）。
+**投げ銭 IAP は 1.0 に含めない。** 広告は入れない方針で確定（通信・外部 SDK ゼロという
+設計と正面から矛盾するため）。投げ銭（消耗型 IAP）は Apple 標準の StoreKit で完結し、
+通信も外部 SDK も要らないため、この設計を壊さずに足せる唯一の集金手段として 1.1 で入れる。
 
-### 提出前チェックリスト（アプリ名が決まったら上から順に）
+### 提出前チェックリスト（すべて完了・次回リリース時の参考に残す）
 
 - [x] `Info.plist` の `CFBundleDisplayName` と `capacitor.config.ts` の `appName` を正式名に（Clavenome）
 - [x] Privacy / Support ページ → https://tanebi-net.com/clavenome （両方の URL 欄にこれ）
-- [ ] **`pnpm build && pnpm exec cap sync ios` を Archive の直前に必ず実行する。**
-      `ios/App/App/public/` は git 管理外で、`cap sync` した時点の `dist/` がそのまま出荷される。
-      忘れると古い画面が App Store に出る
-- [ ] `git diff ios/App/App.xcodeproj/` を見て `DEVELOPMENT_TEAM` と Sanitizer が入っていないことを確認
-- [ ] Xcode: Product → Archive → Distribute App（App Store Connect）
-- [ ] App Store Connect: App Privacy は「データを収集しない」を選ぶ（`PrivacyInfo.xcprivacy` と一致させる）。
-      輸出規制の質問は `ITSAppUsesNonExemptEncryption = false` で出なくなっている
-- [ ] 投げ銭 IAP を入れるなら **v1.0 には入れず 1.1 で**。初回審査を軽くする
+- [x] `pnpm build && pnpm exec cap sync ios` を Archive の直前に実行した
+      （`ios/App/App/public/` は git 管理外で、`cap sync` した時点の `dist/` がそのまま出荷される）
+- [x] `git diff ios/App/App.xcodeproj/` を見て `DEVELOPMENT_TEAM` と Sanitizer が入っていないことを確認した
+- [x] Xcode: Product → Archive → Distribute App（App Store Connect）でアップロード完了
+- [x] App Store Connect: App Privacy は「データを収集しない」を選んで公開した
+- [x] 投げ銭 IAP は v1.0 に入れず、1.1 で実装する（上記）
+- [x] スクリーンショット（6.5インチ・6.7インチ、各4枚）を `screenshots/store/` に用意して登録
+- [x] カテゴリ（プライマリ: ミュージック）、年齢制限（4+）、価格（無料・全地域配信）を設定
+- [x] 審査に提出（2026-09-20）
 
 実機に入れ直す手順（すでに設定済み。ケーブルで繋いで Xcode の ▶︎ を押すだけ）:
 
@@ -276,6 +288,48 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 ---
 
 ## 更新履歴
+
+### 2026-09-19〜20
+
+**Apple Developer Program に登録し、App Store の審査に提出した。**
+
+- 9/19: Apple Developer Program に個人名義で登録・承認。個人事業の屋号は
+  Apple の Organization 要件（DBA・商号は不可）を満たさないため個人登録にした
+  （本人は本名、アプリの表示は屋号で統一）
+- 9/19: 広告は入れないことを確定。CSP・`PrivacyInfo.xcprivacy`・「データを収集しない」の
+  申告と正面から矛盾し、広告 SDK は外部通信・外部コードを持ち込むため。
+  代わりに**投げ銭 IAP を 1.1 で実装する**と決めた（StoreKit は Apple 標準で
+  通信も外部 SDK も要らず、この設計を壊さない）
+- 9/19: 「1.0 から投げ銭を入れておくべきでは」の検討 → **1.0 は投げ銭なしで出し、
+  1.1 で足す**方針を維持。理由: 初回審査に IAP の検査項目が増え、Paid Apps
+  Agreement（税務・銀行情報）の提出も先に要る。後から追加しても
+  ユーザーには「最初からあった」ように見え、実質的な不利益はない
+- 9/20: App Store Connect でアプリを作成。Bundle ID `com.tanebicreative.clavenome`
+  がここで確定した
+- 9/20: `pnpm build && cap sync ios` → Archive → App Store Connect へアップロード。
+  アップロード後、`ios/App/App/Base.lproj/LaunchScreen.storyboard` と
+  `MainViewController.swift`（起動画面をアイコン＋アプリ名にして 2.5 秒見せる、
+  9/16 実装分）を含めて実機動作を再確認済み
+- 9/20: 掲載文を日本語・英語（U.S.）・ポルトガル語（ブラジル）の3言語で用意。
+  the Clave の説明文の構成（1行で何か → 機能を1文ずつ → 誰向けか）に倣いつつ
+  文面は独自にした。**サブタイトルは「クラーベ」を明示**（`クラーベ メトロノーム` /
+  `Clave Rhythm Metronome` / `Metrônomo de Clave`）。clave は楽器名の一般語であり、
+  造語であるアプリ名（Clavenome）自体が the Clave とは別物であることを踏まえ、
+  4.1 Copycats の実害は低いと判断した
+- 9/20: 英語ロケールでアプリ名 `Clavenome` が「すでに使用されている」と拒否された
+  （米・日・英・ブラジルの App Store 検索では公開アプリが存在しないことを確認済み。
+  未公開の予約か、日本語版との衝突誤判定と思われる）。
+  英語だけ `Clavenome - Clave Metronome` に変更して解消。日本語・ポルトガル語は
+  `Clavenome` のまま。ホーム画面のアイコン名はどの言語でも `Clavenome`（`Info.plist`
+  の `CFBundleDisplayName` はストア名と別管理）
+- 9/20: 提出前チェックで App Store Connect に3件抜けを検出・修正
+  （英語・ポルトガル語ロケールのサポート URL 未入力、プライバシーポリシー URL 未入力、
+  年齢制限の質問未回答）。カテゴリはプライマリ「ミュージック」、Game Center は不要なので外した
+- 9/20: **1.0 (1) を審査に提出。** 自動リリース設定
+
+**メンバー構成について。** BOAVISTA にブラジル人メンバーはいないと本人から指摘があった。
+ポルトガル語文面の確認先として推測で提案したのは不適切だったため、
+今後メンバーの属性を推測して提案に使わないと決めた（メモリに記録済み）。
 
 ### 2026-09-14
 
