@@ -86,7 +86,7 @@ Made especially for people practicing Afro-Brazilian rhythms. I hope you'll take
 キーワード
 
 ```
-metronome,clave,samba,latin,rhythm,percussion,afro,brazil,brazilian,drum,practice,groove,timbal,surdo
+metronome,clave,samba,latin,rhythm,percussion,afro,brazil,brazilian,practice,groove,timbal,surdo
 ```
 
 ### ポルトガル語（ブラジル）
