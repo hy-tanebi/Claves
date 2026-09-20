@@ -52,7 +52,7 @@ Clavenome は、ラテンミュージックのリズムパターンを鳴らす�
 キーワード（100文字・カンマ区切り）
 
 ```
-メトロノーム,クラーベ,サンバ,ラテン,サルサ,ソン,ルンバ,リズム,打楽器,パーカッション,アフロ,ブラジル,キューバ,サンバヘギ,コンガ,アタバキ,チンバウ,ドラム,
+メトロノーム,クラーベ,サンバ,ラテン,サルサ,ソン,ルンバ,リズム,打楽器,パーカッション,アフロ,ブラジル,キューバ,サンバヘギ,コンガ,アタバキ,チンバウ,ドラム
 ```
 
 ### 英語（U.S.）
@@ -86,7 +86,7 @@ Made especially for people practicing Afro-Brazilian rhythms. I hope you'll take
 キーワード
 
 ```
-metronome,clave,samba,latin,rhythm,percussion,afro,brazil,brazilian,practice,groove,timbal,surdo
+metronome,clave,samba,latin,salsa,son,rumba,rhythm,percussion,afro,brazil,cuba,conga,atabaque,timbal
 ```
 
 ### ポルトガル語（ブラジル）
@@ -120,7 +120,7 @@ Feito especialmente para quem estuda ritmos afro-brasileiros. Espero que você l
 キーワード
 
 ```
-metrônomo,clave,samba,ritmo,percussão,afro,batucada,samba reggae,ijexá,agogô,estudo,levada
+metrônomo,clave,samba,latino,salsa,son,rumba,ritmo,percussão,afro,brasil,cuba,conga,atabaque,timbal
 ```
 
 ## URL
