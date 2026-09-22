@@ -149,7 +149,38 @@ metrônomo,clave,samba,latino,salsa,son,rumba,ritmo,percussão,afro,brasil,cuba,
 | 価格                | 無料                                                                                               |
 | App のプライバシー  | データを収集しない                                                                                 |
 | App Review の連絡先 | 氏名・電話・メール（審査員が連絡する先。公開されない）                                             |
-| App Review のメモ   | 「オフラインで動作します。バックグラウンド再生は PLAY を押してから画面をロックしてご確認ください」 |
+| App Review のメモ   | 下の「App Review のメモ（全文）」を参照。9/22 に 2.1 Information Needed への回答を追記した   |
+
+## App Review のメモ（全文）
+
+9/20 の提出時は1行目だけだった。9/21 に Apple から Guideline 2.1（Information Needed）で
+6項目の情報提供を求められ、メッセージで返信したうえで、指示どおり同じ内容をメモ欄にも載せた
+（9/22）。1 の録画はメモ欄に添付できないので、メッセージに添付した旨だけ書いてある。
+
+```
+This app works entirely offline. To verify background playback, tap PLAY and then lock the screen.
+
+--- Information provided on Sep 21, 2026 in response to Guideline 2.1 (Information Needed) ---
+
+1. Screen recording
+A screen recording was attached to the App Review message thread on Sep 21, 2026. It was captured on an iPhone XR running iOS 18.7 (the latest iOS available for this device). It starts from launching the app and shows: playing a rhythm, changing tempo with the slider and tap tempo, switching rhythms, flipping a clave between 3:2 and 2:3, switching sounds, and background playback while another app is in the foreground.
+The app has no account, no login, no user-generated content, and no paid content.
+
+2. Purpose and target audience
+Clavenome is a practice metronome for percussionists and drummers who play Latin and Afro-Brazilian music. Instead of a plain click, it plays rhythm patterns (son, rumba and bossa claves, Afro grooves in 2/4 and 6/8, and Ijexá) and shows them as notation with the current note highlighted. Practicing with the actual pattern, rather than a click, is how these styles are learned. Existing clave metronomes offer only a few patterns; Clavenome covers more of the patterns that these players need.
+
+3. Setup and access
+No setup is required. Launch the app and tap PLAY. Tap the rhythm name at the top to choose another pattern. There are no login credentials or sample files.
+
+4. External services
+None. The app works entirely offline. It does not connect to any server, and uses no analytics, advertising, authentication, payment, or AI services.
+
+5. Regional differences
+None. The app functions identically in all regions. The App Store listing is localized in Japanese, English, and Brazilian Portuguese; the app itself has no region-specific features or content.
+
+6. Regulated industry / third-party material
+Not applicable. The app is not in a regulated industry. The rhythm patterns are traditional and in the public domain. The notation is rendered by the open-source library VexFlow (MIT license), and all sounds are synthesized by the app itself; no recordings or third-party material are included.
+```
 
 ## スクリーンショット
 
