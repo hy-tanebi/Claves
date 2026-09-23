@@ -12,7 +12,7 @@ App Review のメモ欄にも載せて「App Review に再提出」を押した�
 
 - リポジトリ: https://github.com/hy-tanebi/Claves （private）
 - デフォルトブランチ: `dev`。`main` は初期セットアップのみ（リリース時まで触らない）
-- JS 288 件 / Swift 72 件 PASS、型エラー 0 件、E2E 16 件 PASS
+- JS 288 件 / Swift 72 件 PASS、型エラー 0 件、E2E 17 件 PASS
 - 作業中のブランチ: `feature/tempo-step-buttons`（テンポ ±1 ボタン。実装済み・未 push。1.1 に載せる）
 - `check:notation` 9リズム × 375・390・430px = 27通り 欠陥 0
 - Bundle ID: `com.tanebicreative.clavenome`（App Store 側で確定済み。以後変更不可）
@@ -304,7 +304,8 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
   BPM の左に −、右に + を置いた。押した瞬間に 1、押し続けると 400ms 後から 80ms ごとに動く。
   加速はしない（大きく動かすのはスライダーの役目）
 - 上限 240・下限 40 でボタンを無効にする。± とスライダーを操作したら TAP の記録を捨てる
-- 押せる面の角丸を 5px に揃えた（`--radius-tap`）。3:2 / 音色はピル形から四角になった
+- 押せる面の角丸を 5px に揃えた（`--radius-tap`）。3:2 / 音色はピル形から四角になった。
+  一覧の行の中の譜面も 5px に揃えた（8px のままだと、選択枠より中身が丸く浮く）
 - デザインはキャンバスで決めた: https://claude.ai/artifact/CSL2ZW1jQt6oSuk4Q3x2HG
 - **E2E を入れた**（`e2e/`、`pnpm test:e2e`）。新しい依存は入れず、既存の playwright を
   node:test から使う。単体（Vitest）で部品を、E2E で `main.ts` の配線を守る二層にした

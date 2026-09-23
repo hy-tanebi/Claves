@@ -258,10 +258,11 @@ body {
 }
 
 /* 行の中の譜面。本体の譜面と同じく紙の色に黒で描く。
-   暗い面に細い線を引くと輪郭が沈んで読めない */
+   暗い面に細い線を引くと輪郭が沈んで読めない。
+   角は行（.sheetItem）と揃える。行より丸いと、選択枠の中で中身だけ丸く浮く */
 .rowScore {
   background: var(--panel);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-tap);
   padding: 0.15rem 0.25rem;
 }
 
