@@ -13,7 +13,8 @@ App Review のメモ欄にも載せて「App Review に再提出」を押した�
 - リポジトリ: https://github.com/hy-tanebi/Claves （private）
 - デフォルトブランチ: `dev`。`main` は初期セットアップのみ（リリース時まで触らない）
 - JS 288 件 / Swift 72 件 PASS、型エラー 0 件、E2E 36 件 PASS（Chromium・WebKit 各 18 件）
-- 作業中のブランチ: `feature/tempo-step-buttons`（テンポ ±1 ボタン。実装済み・未 push。1.1 に載せる）
+- `dev` には 1.1 向けのテンポ ±1 ボタンが入っている（2026-09-23 マージ）。`main` は 1.0 のまま
+- 審査に出した 1.0 (1) のコードはタグ `v1.0-build1`（`bb82f22`）
 - `check:notation` 9リズム × 375・390・430px = 27通り 欠陥 0
 - Bundle ID: `com.tanebicreative.clavenome`（App Store 側で確定済み。以後変更不可）
 - Apple Developer Program: 個人名義で登録済み（2026-09-19 承認）
@@ -29,9 +30,10 @@ App Review のメモ欄にも載せて「App Review に再提出」を押した�
   - 9/25 を過ぎても動きがなければ、同じスレッドに一言フォローアップを送る
 - [ ] リリース後、`docs/site/index.html`（Privacy/Support の原本）と実際に公開した
       `https://tanebi-net.com/clavenome` の内容が一致しているか確認する
-- [ ] **テンポ ±1 ボタン（`feature/tempo-step-buttons`）を実機で確かめる**。
-      ± の使用感は 9/23 に確認済み。一覧の譜面の幅を直したので、iPhone で一覧を開いて
-      譜面が横幅いっぱいに広がっているかを確かめる。確かめたら `dev` へ PR
+- [x] **テンポ ±1 ボタンを実機で確かめて `dev` へマージ**（2026-09-23）
+- [ ] PR #11（`dev` → `main`）は 1.0 のリリース用に開いたままだが、`dev` を push したので
+      リリース準備（9/14〜9/22）と 1.1 向けのテンポ ±1 ボタンも入った。1.0 の承認後、
+      `main` に何をどう入れるか（1.0 の状態をタグから入れるか、1.1 までまとめるか）を決める
 - [ ] **1.1 で投げ銭 IAP を実装する**（2026-09-19 オーナー判断。理由は下の「掲載文」節と
       更新履歴 9/19 参照）。実装前に Paid Apps Agreement（税務・銀行情報）を
       App Store Connect で済ませておく
