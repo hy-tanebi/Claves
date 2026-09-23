@@ -12,7 +12,7 @@ App Review のメモ欄にも載せて「App Review に再提出」を押した�
 
 - リポジトリ: https://github.com/hy-tanebi/Claves （private）
 - デフォルトブランチ: `dev`。`main` は初期セットアップのみ（リリース時まで触らない）
-- JS 288 件 / Swift 72 件 PASS、型エラー 0 件、E2E 17 件 PASS
+- JS 288 件 / Swift 72 件 PASS、型エラー 0 件、E2E 36 件 PASS（Chromium・WebKit 各 18 件）
 - 作業中のブランチ: `feature/tempo-step-buttons`（テンポ ±1 ボタン。実装済み・未 push。1.1 に載せる）
 - `check:notation` 9リズム × 375・390・430px = 27通り 欠陥 0
 - Bundle ID: `com.tanebicreative.clavenome`（App Store 側で確定済み。以後変更不可）
@@ -30,9 +30,8 @@ App Review のメモ欄にも載せて「App Review に再提出」を押した�
 - [ ] リリース後、`docs/site/index.html`（Privacy/Support の原本）と実際に公開した
       `https://tanebi-net.com/clavenome` の内容が一致しているか確認する
 - [ ] **テンポ ±1 ボタン（`feature/tempo-step-buttons`）を実機で確かめる**。
-      E2E と画面の確認は済み。残りは iPhone での長押し（長押しメニューが出ないか、
-      押下の色が残らないか）と、再生中の長押しで二重発音・打点欠落がないかを耳で確かめること。
-      確かめたら `dev` へ PR
+      ± の使用感は 9/23 に確認済み。一覧の譜面の幅を直したので、iPhone で一覧を開いて
+      譜面が横幅いっぱいに広がっているかを確かめる。確かめたら `dev` へ PR
 - [ ] **1.1 で投げ銭 IAP を実装する**（2026-09-19 オーナー判断。理由は下の「掲載文」節と
       更新履歴 9/19 参照）。実装前に Paid Apps Agreement（税務・銀行情報）を
       App Store Connect で済ませておく
@@ -314,6 +313,13 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
   Chromium はクリックでフォーカスが移り、ボタンが無効になった瞬間の blur で色が消えるので
   気づけない。iOS はタップでフォーカスを移さないので残る。テストを iOS の条件
   （pointerdown だけを送る）に直し、処理を外すと落ちることを確かめた
+- **実機（iPhone XR）で確認**: ± の使用感は問題なし。ただし一覧の譜面が横幅いっぱいに
+  広がらず 308pt に縮んでいた。iOS 18 以前の WebKit が button に既定で
+  `align-items: flex-start` を当てるのが原因で、今回の変更ではなく一覧に譜面を載せたときから
+  iOS 18 でだけ起きていた。行に `align-items: stretch` を明示して直した
+- **E2E を Chromium と WebKit の両方で流すようにした**（Playwright の WebKit をこの日に導入）。
+  ただし Playwright の WebKit は Safari 26 相当で、上の iOS 18 の既定値は持たない。
+  古い版の挙動は、既定スタイルを差し込んで再現する（`legacyWebKitButton`）
 - **dev サーバーを 5174 番に固定した。** 5173 番で swipe-wiki が IPv6 で動いていて、
   Claves も IPv4 の 5173 番で起動できてしまい、E2E が swipe-wiki を開いていた
 - 依存の監査（osv-scanner 2.6.0。この日に導入）: **悪性パッケージ（MAL-）は 0 件。**
