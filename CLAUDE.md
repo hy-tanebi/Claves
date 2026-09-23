@@ -25,13 +25,32 @@
 ### 完了報告の前に必ず通す
 
 ```bash
-pnpm test        # データの正しさ
+pnpm test        # データの正しさ・部品の振る舞い（Vitest）
 pnpm typecheck   # 型
-pnpm dev         # 別ターミナルで起動してから ↓
+pnpm dev         # 別ターミナルで起動してから ↓（http://localhost:5174/ 固定）
+pnpm test:e2e    # 画面の操作（実ブラウザ。押す・離す・長押し・レイアウト）
 pnpm check:notation   # 譜面の見た目（実ブラウザ）
 ```
 
 **エラー0件を確認してから「できた」と言う。**
+
+### テストの二層構造
+
+- **単体（`src/**/*.test.ts`、Vitest）**: 判断を持つ部品。時間の振る舞いは偽のタイマーで確かめる
+- **E2E（`e2e/*.test.mjs`、Playwright ＋ `node:test`）**: `main.ts` の配線と画面の操作。
+  `main.ts` は DOM と音声を直に握るので単体テストを持たない。判断は部品に切り出し、
+  配線の正しさは E2E で守る
+- 画面の機能は **E2E を先に書いて落ちるのを見てから** 部品を作り、配線する
+- **E2E がいきなり通ったら疑う。** デスクトップの Chromium と iOS は違う。マウスで押すと
+  ボタンにフォーカスが移り blur が起きるが、iOS はタップでフォーカスを移さない。
+  iOS でしか起きない欠陥は、`dispatchEvent("pointerdown", …)` で iOS の条件を作って確かめる
+
+### dev サーバーは 5174 番
+
+`vite.config.ts` で `port: 5174` と `strictPort: true` に固定している。5173 番は
+swipe-wiki が IPv6 で使っていて、Claves が IPv4 の 5173 番を取ると両方が起動でき、
+`localhost` を開くと swipe-wiki が出る（2026-09-23 に E2E が別のアプリを開いた）。
+E2E は開いたページの title が Clavenome でなければ、その旨を出して落ちる
 
 ### 譜面や画面を変えたら、必ず実ブラウザで見る
 
