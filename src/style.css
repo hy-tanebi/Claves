@@ -225,6 +225,10 @@ body {
   border-radius: var(--radius-tap);
   display: flex;
   flex-direction: column;
+  /* **明示する。** iOS 18 以前の WebKit は button に既定で align-items: flex-start を
+     当てるため、書かないと子が横に伸びず、譜面の SVG が既定の 300px に縮んで右が空く
+     （iPhone XR で起きた）。新しい WebKit と Chromium では再現しない */
+  align-items: stretch;
   gap: 0.4rem;
   cursor: pointer;
   touch-action: manipulation;

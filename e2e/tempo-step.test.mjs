@@ -21,8 +21,8 @@ after(async () => {
 });
 
 /** 1テストごとに新しいページで開く。BPM は保存されないので毎回 120 から始まる */
-async function withApp(fn, viewport) {
-  const { page, errors } = await openApp(browser, viewport);
+async function withApp(fn, viewport, options) {
+  const { page, errors } = await openApp(browser, viewport, options);
   try {
     await fn(page, errors);
   } finally {
@@ -219,4 +219,32 @@ describe("押せる箇所の形", () => {
         .evaluate((el) => getComputedStyle(el).borderRadius);
       assert.equal(radius, "999px");
     }));
+});
+
+describe("リズム一覧", () => {
+  // 2026-09-23 に iPhone XR（iOS 18.7）で、一覧の譜面が 308pt に縮んで右が空いた。
+  // 行（button）の子が横に伸びず、譜面の SVG が既定の 300px になっていた
+  it("古い WebKit の既定スタイルでも、譜面が行の幅いっぱいに広がる", () =>
+    withApp(
+      async (page) => {
+        // 閉じている間は幅が 0 なので、開いてから測る
+        await page.locator("#patternPicker").click();
+        await page.locator("#patternDialog").waitFor({ state: "visible" });
+        const rows = await page.locator("#patternList .sheetItem").evaluateAll((items) =>
+          items.map((item) => {
+            const cs = getComputedStyle(item);
+            const inner =
+              item.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+            const score = item.querySelector(".rowScore").getBoundingClientRect().width;
+            return { name: item.querySelector(".sheetName").textContent, inner, score };
+          }),
+        );
+        assert.ok(rows.length > 0, "一覧に行がある");
+        for (const { name, inner, score } of rows) {
+          assert.ok(Math.abs(score - inner) < 1, `${name}: 譜面 ${score} / 行の内側 ${inner}`);
+        }
+      },
+      { width: 414, height: 896 },
+      { legacyWebKitButton: true },
+    ));
 });
