@@ -38,6 +38,8 @@ pnpm check:notation   # 譜面の見た目（実ブラウザ）
 
 - **単体（`src/**/*.test.ts`、Vitest）**: 判断を持つ部品。時間の振る舞いは偽のタイマーで確かめる
 - **E2E（`e2e/*.test.mjs`、Playwright ＋ `node:test`）**: `main.ts` の配線と画面の操作。
+  **Chromium と WebKit の両方で流す**（WebKit は iPhone と同じ描画エンジン）。
+  新しい環境では先に `pnpm exec playwright install chromium webkit` が要る。
   `main.ts` は DOM と音声を直に握るので単体テストを持たない。判断は部品に切り出し、
   配線の正しさは E2E で守る
 - 画面の機能は **E2E を先に書いて落ちるのを見てから** 部品を作り、配線する
@@ -118,6 +120,7 @@ E2E は開いたページの title が Clavenome でなければ、その旨を�
 | 付点が描かれない（小節長は合う） | 付点は音価文字列とグリフの**両方**が要る | `"qd"` に加えて `Dot.buildAndAttach` |
 | テンポが倍遅い | 拍子を変えたのに `bpmUnit` を据え置いた | **拍子を変えたら1拍の長さも変える。** 2/2 は2分音符（192）、2/4・4/4 は4分音符（96）、6/8 は付点4分（144） |
 | 小節線がほぼ見えない | `numLines: 1` にすると小節線が線1本ぶんの高さになる | 5線のまま中央だけ表示する |
+| iPhone でだけ一覧の譜面が 308pt に縮む | iOS 18 以前の WebKit は **button に既定で `align-items: flex-start`** を当てる。flex の button の子が横に伸びず、SVG が既定の 300px になる。手元の Chromium・新しい WebKit では再現しない | flex にした button には `align-items` を必ず書く。E2E は `legacyWebKitButton` で既定値を再現して確かめる |
 
 ## 設計の芯（変えるときは影響を確認する）
 
