@@ -8,6 +8,7 @@
     "build": "vite build",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "node --test \"e2e/**/*.test.mjs\"",
     "typecheck": "tsc --noEmit",
     "check:notation": "node scripts/check-notation.mjs",
     "gen:golden": "vitest run -u src/domain/transport.golden.test.ts src/domain/plans.golden.test.ts src/audio/click.golden.test.ts"

@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   server: {
@@ -15,5 +15,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
+    // e2e/ は実ブラウザで流す別のテスト（node:test + Playwright）。pnpm test:e2e で実行する
+    exclude: [...configDefaults.exclude, "e2e/**"],
   },
 });
