@@ -314,9 +314,13 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
   （pointerdown だけを送る）に直し、処理を外すと落ちることを確かめた
 - **dev サーバーを 5174 番に固定した。** 5173 番で swipe-wiki が IPv6 で動いていて、
   Claves も IPv4 の 5173 番で起動できてしまい、E2E が swipe-wiki を開いていた
-- 依存の監査（`pnpm audit`）で moderate が 3 件。どれも開発用の道具の推移的な依存
-  （vitest 3.2.7 → 4.1.11 以上で解消、@capacitor/cli 経由の uuid → 11.1.1 以上）で、
-  アプリ本体には入らない。更新は未実施（cooldown を迂回しないため、別途判断する）
+- 依存の監査（osv-scanner 2.6.0。この日に導入）: **悪性パッケージ（MAL-）は 0 件。**
+  既知の脆弱性は moderate が 3 件で、どれも開発用の道具の依存。アプリ本体には入らない
+  - vitest / @vitest/mocker 3.2.7（GHSA-82fw-gwwq-j7x9）→ 4.1.11 以上で解消。
+    メジャー更新なので別の作業として扱う
+  - uuid 7.0.3（GHSA-w5hq-g745-h8pq）→ `@capacitor/cli` → `xcode` 経由の推移的依存。
+    こちらからは上げられないので Capacitor 側の更新を待つ
+  - 更新は未実施（cooldown を迂回しないため）
 
 ### 2026-09-21〜22
 
