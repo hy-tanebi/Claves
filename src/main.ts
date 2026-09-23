@@ -1,4 +1,4 @@
-import { normalizeBpm } from "./domain/bpm";
+import { normalizeBpm, stepBpm } from "./domain/bpm";
 import { toPlaybackEvents } from "./domain/derive";
 import { PATTERNS, pickPattern } from "./domain/registry";
 import { canFlip, flipPattern } from "./domain/flip";
@@ -11,6 +11,7 @@ import { noteIdAtTick } from "./domain/playhead";
 import { renderPattern } from "./notation/renderer";
 import { whenMusicFontsReady } from "./notation/fonts";
 import { loadPatternId, loadTimbre, savePatternId, saveTimbre } from "./preferences";
+import { createPressRepeat } from "./press-repeat";
 import { pickTimbre, TIMBRE_LABELS, type Timbre } from "./audio/bell";
 
 /** 25ms ごとに予約を補充する（設計上の先読み窓は 0.5 秒） */
@@ -35,6 +36,8 @@ const els = {
   bpm: $<HTMLInputElement>("bpm"),
   bpmValue: $<HTMLOutputElement>("bpmValue"),
   tap: $<HTMLButtonElement>("tap"),
+  bpmDown: $<HTMLButtonElement>("bpmDown"),
+  bpmUp: $<HTMLButtonElement>("bpmUp"),
   volume: $<HTMLInputElement>("volume"),
   flip: $<HTMLButtonElement>("flip"),
   flipLabel: $<HTMLSpanElement>("flipLabel"),
@@ -257,6 +260,7 @@ function setBpm(next: number): void {
   if (nativeAudio && els.play.dataset.playing === "true") {
     void nativeAudio.change(pattern, next);
   }
+  updateStepButtons();
 }
 
 /**
@@ -279,6 +283,8 @@ els.timbre.addEventListener("click", () => {
 });
 
 els.bpm.addEventListener("input", () => {
+  // TAP の途中でスライダーを触ったら、叩き直しとみなす
+  taps = [];
   const next = normalizeBpm(els.bpm.value);
   if (next !== null) setBpm(next);
 });
@@ -316,6 +322,69 @@ els.tap.addEventListener("keydown", (e) => {
 });
 els.tap.addEventListener("keyup", () => setPressed(false));
 els.tap.addEventListener("blur", () => setPressed(false));
+
+/* ---- テンポの ±1 ----
+   1 BPM ずつ合わせるためのボタン。押し続けると連続で動く（press-repeat.ts）。
+   値は setBpm() を通すので、再生中でもスライダーやタップと同じく次の拍境界から効く */
+
+const stepControls = ([
+  [els.bpmDown, -1],
+  [els.bpmUp, 1],
+] as const).map(([button, delta]) => ({
+  button,
+  delta,
+  repeat: createPressRepeat(() => {
+    const next = stepBpm(bpm, delta);
+    if (next === bpm) return false;
+    setBpm(next);
+    return true;
+  }),
+}));
+
+/** 上限・下限で、それ以上動けないボタンを無効にする */
+function updateStepButtons(): void {
+  for (const { button, delta, repeat } of stepControls) {
+    const stuck = stepBpm(bpm, delta) === bpm;
+    button.disabled = stuck;
+    // **disabled になったボタンには pointerup が届かない。**
+    // 長押しで上限に着いたとき、押したままの色と繰り返しをここで外す
+    if (stuck) {
+      repeat.stop();
+      button.dataset.pressed = "false";
+    }
+  }
+}
+
+for (const { button, delta, repeat } of stepControls) {
+  const release = () => {
+    repeat.stop();
+    button.dataset.pressed = "false";
+  };
+
+  button.addEventListener("pointerdown", (e) => {
+    // マルチタッチの2本目以降と、マウスの左以外は無視する（TAP と同じ）
+    if (!e.isPrimary || e.button !== 0) return;
+    // ± で合わせ直したら、それまでの打点は捨てる。
+    // 残すと、次の1打と古い打点の間隔から値が出て、合わせた値が飛ぶ
+    taps = [];
+    button.dataset.pressed = "true";
+    repeat.start();
+  });
+  for (const type of ["pointerup", "pointercancel", "pointerleave", "blur"] as const) {
+    button.addEventListener(type, release);
+  }
+  // 長押しで出るメニュー（右クリック・iOS の長押し）を出さない
+  button.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  // キーボードは1回ずつ。押し続けたときの連続は OS のキーリピートに任せる
+  button.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault(); // Space によるスクロールを止める
+    taps = [];
+    const next = stepBpm(bpm, delta);
+    if (next !== bpm) setBpm(next);
+  });
+}
 
 /* ---- リズムの切替 ---- */
 
@@ -478,6 +547,7 @@ if (nativeAudio) {
 // 初期化
 els.bpm.value = String(bpm);
 els.bpmValue.value = String(bpm);
+updateStepButtons();
 els.timbreLabel.textContent = TIMBRE_LABELS[timbre];
 syncFlipButton();
 // **停止中でもネイティブは覚えてくれる。** 次に鳴らすときからこの音色で始まる

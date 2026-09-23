@@ -348,6 +348,49 @@ body {
   display: none;
 }
 
+/* − / TAP / + の行。間隔は 3:2 と Sound の間（.controls）と揃える。
+   狭いと、TAP を連打している指が隣の ± に当たる */
+.tempoRow {
+  display: flex;
+  gap: 0.625rem;
+  align-items: stretch;
+}
+
+/* テンポの ±1。高さは TAP 面に合わせる（stretch）。
+   記号は --text で描く。金は「いまの値」の色で、数字の真横に置くと張り合う */
+.step {
+  flex: 0 0 3.5rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 0;
+  border-radius: 0.25rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  /* 長押しで iOS のメニュー（コピー等）を出さない */
+  -webkit-touch-callout: none;
+}
+
+/* 押した瞬間の手応え。TAP 面と同じ濃さに揃える */
+.step[data-pressed="true"] {
+  background: #1e1e1e;
+}
+
+.step:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.step:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
 /* BPM 表示を兼ねたタップテンポのボタン。
    button の既定の見た目を消し、数字だけが見えるようにする */
 .bpm {
@@ -356,7 +399,9 @@ body {
   background: var(--surface);
   border: 0;
   padding: 0.25rem 0.5rem;
-  width: 100%;
+  /* ± の残りを全部使う。min-width: 0 が無いと数字の幅で行からはみ出す */
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;

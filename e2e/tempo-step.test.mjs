@@ -85,11 +85,19 @@ describe("テンポ ±1 ボタン", () => {
   it("長押しで上限に着いたら止まり、押下の見た目も残らない", () =>
     withApp(async (page) => {
       await setSlider(page, 236);
-      await press(page, "#bpmUp", 1200);
+      // **iOS の条件で押す。** iOS はタップでボタンにフォーカスを移さない。
+      // マウスで押すとフォーカスが移り、ボタンが無効になった瞬間の blur で色が消えるので、
+      // 「明示的に色を外していない」欠陥を見逃す（実際に見逃した）。
+      // pointerdown だけを直接送り、フォーカスも pointerup も与えない
+      await page.locator("#bpmUp").dispatchEvent("pointerdown", {
+        isPrimary: true,
+        button: 0,
+        pointerType: "touch",
+      });
+      await page.waitForTimeout(1200);
       assert.equal(await readBpm(page), 240);
       assert.equal(await page.locator("#bpmUp").isDisabled(), true);
-      // disabled になったボタンには pointerup が届かないことがある。
-      // それでも「押されたまま」の色が残ってはいけない
+      // 無効になったボタンには pointerup が届かないことがある。それでも押したままの色を残さない
       assert.notEqual(await page.locator("#bpmUp").getAttribute("data-pressed"), "true");
     }));
 
