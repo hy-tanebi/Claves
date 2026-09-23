@@ -9,7 +9,7 @@
  *   pnpm dev          （別のターミナルで開発サーバーを起動）
  *   pnpm test:e2e     （e2e/ 以下のテストをすべて流す）
  */
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
 
 export const APP_URL = process.env.APP_URL ?? "http://localhost:5174/";
 
@@ -19,8 +19,19 @@ const APP_TITLE = "Clavenome — Rhythm Metronome";
 /** 実機に近い大きさで撮る。幅だけ変えて見るときは openApp の引数で渡す */
 const DEFAULT_VIEWPORT = { width: 390, height: 844 };
 
-export async function launchBrowser() {
-  return chromium.launch();
+/**
+ * 流すブラウザ。既定は両方。**WebKit は iPhone（WKWebView）と同じ描画エンジン**で、
+ * Chromium だけでは iOS でしか起きない崩れを見逃す。
+ * 片方だけ流すとき: E2E_BROWSERS=chromium pnpm test:e2e
+ */
+export const ENGINES = (process.env.E2E_BROWSERS ?? "chromium,webkit").split(",");
+
+const LAUNCHERS = { chromium, webkit };
+
+export async function launchBrowser(engine) {
+  const launcher = LAUNCHERS[engine];
+  if (!launcher) throw new Error(`知らないブラウザ: ${engine}（chromium / webkit）`);
+  return launcher.launch();
 }
 
 /**
