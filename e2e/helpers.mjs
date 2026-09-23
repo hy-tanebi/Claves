@@ -28,8 +28,13 @@ export async function launchBrowser() {
  * 開けなければ「サーバーが無い」と分かるように落とす
  * （タイムアウトで落ちると原因が読めない）。
  */
-export async function openApp(browser, viewport = DEFAULT_VIEWPORT) {
-  const page = await browser.newPage({ viewport, deviceScaleFactor: 2 });
+export async function openApp(browser, viewport = DEFAULT_VIEWPORT, options = {}) {
+  const page = await browser.newPage({
+    viewport,
+    deviceScaleFactor: 2,
+    // 既定のスタイルを差し込むときだけ、アプリの CSP（埋め込みスタイルを拒否）を外す
+    bypassCSP: Boolean(options.legacyWebKitButton),
+  });
   // 要素が無いとき既定では 30 秒待ってから落ちる。画面の操作は一瞬で済むので短くする
   page.setDefaultTimeout(3000);
   const errors = [];
@@ -58,6 +63,13 @@ export async function openApp(browser, viewport = DEFAULT_VIEWPORT) {
         "Claves で pnpm dev を起動し、表示された URL を APP_URL で渡してください\n" +
         "例: APP_URL=http://localhost:5174/ pnpm test:e2e（5174 が既定）",
     );
+  }
+  if (options.legacyWebKitButton) {
+    // **iOS 18 以前の WebKit の既定スタイルを再現する。** 古い WebKit は button に
+    // align-items: flex-start を当てていて、button を flex にすると子が横に伸びない。
+    // 新しい WebKit と Chromium は当てないので、何もしないと iPhone でだけ崩れる。
+    // :where で当てるのは、既定スタイルと同じく作者のどのスタイルよりも弱くするため
+    await page.addStyleTag({ content: ":where(button) { align-items: flex-start; }" });
   }
   // 音楽フォントの読み込みを待つ。待たずに測ると配置がずれる
   await page.evaluate(() => document.fonts.ready);
