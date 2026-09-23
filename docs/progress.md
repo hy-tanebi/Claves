@@ -104,8 +104,9 @@ P3 まで実装は済んだが、**割り込み・イヤホン抜去・バック
 ```bash
 pnpm test && pnpm typecheck
 cd ios/ClavesEngine && swift test
-# 譜面を変えたら（オーナーが別ターミナルで pnpm dev を起動してから）
-APP_URL=http://localhost:5174/ pnpm check:notation   # ポートは要確認
+# 画面や譜面を変えたら（オーナーが別ターミナルで pnpm dev を起動してから。5174 番固定）
+pnpm test:e2e
+pnpm check:notation
 ```
 
 Web を作り直したら `pnpm build && pnpm exec cap sync ios` で iOS 側へ反映する。
