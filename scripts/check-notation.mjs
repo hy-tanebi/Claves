@@ -14,7 +14,7 @@
 import { chromium } from "playwright";
 import { mkdirSync } from "node:fs";
 
-const URL = process.env.APP_URL ?? "http://localhost:5173/";
+const URL = process.env.APP_URL ?? "http://localhost:5174/";
 const WIDTHS = [375, 390, 430];
 const OUT = "screenshots";
 
