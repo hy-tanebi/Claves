@@ -28,3 +28,13 @@ export function normalizeBpm(value: unknown): number | null {
 export function clampBpm(bpm: number): number {
   return Math.min(MAX_BPM, Math.max(MIN_BPM, bpm));
 }
+
+/**
+ * ±ボタンで1段階動かす。上限・下限では動かない。
+ *
+ * 戻り値が元の値と同じなら「もう動けない」。画面はこれでボタンを無効にし、
+ * 長押しの繰り返しを止める
+ */
+export function stepBpm(bpm: number, delta: number): number {
+  return clampBpm(bpm + delta);
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MAX_BPM, MIN_BPM } from "./constants";
-import { normalizeBpm } from "./bpm";
+import { normalizeBpm, stepBpm } from "./bpm";
 
 describe("normalizeBpm", () => {
   it("範囲内の整数はそのまま通す", () => {
@@ -46,5 +46,17 @@ describe("normalizeBpm", () => {
     expect(normalizeBpm(NaN)).toBeNull();
     expect(normalizeBpm(Infinity)).toBeNull();
     expect(normalizeBpm(-Infinity)).toBeNull();
+  });
+});
+
+describe("stepBpm", () => {
+  it("1段階ずつ上げ下げする", () => {
+    expect(stepBpm(120, 1)).toBe(121);
+    expect(stepBpm(120, -1)).toBe(119);
+  });
+
+  it("上限と下限を越えない", () => {
+    expect(stepBpm(MAX_BPM, 1)).toBe(MAX_BPM);
+    expect(stepBpm(MIN_BPM, -1)).toBe(MIN_BPM);
   });
 });
