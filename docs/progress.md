@@ -4,7 +4,7 @@
 
 ---
 
-## 現在地（2026-09-22）
+## 現在地（2026-09-23）
 
 **App Store の審査に再提出済み（1.0 (1)、2026-09-22）。** Apple から「情報提供要求」
 （Guideline 2.1 Information Needed）が来て、9/21 にメッセージで返信し、9/22 に同じ内容を
@@ -12,7 +12,8 @@ App Review のメモ欄にも載せて「App Review に再提出」を押した�
 
 - リポジトリ: https://github.com/hy-tanebi/Claves （private）
 - デフォルトブランチ: `dev`。`main` は初期セットアップのみ（リリース時まで触らない）
-- JS 280 件 / Swift 72 件 PASS、型エラー 0 件
+- JS 288 件 / Swift 72 件 PASS、型エラー 0 件、E2E 16 件 PASS
+- 作業中のブランチ: `feature/tempo-step-buttons`（テンポ ±1 ボタン。実装済み・未 push。1.1 に載せる）
 - `check:notation` 9リズム × 375・390・430px = 27通り 欠陥 0
 - Bundle ID: `com.tanebicreative.clavenome`（App Store 側で確定済み。以後変更不可）
 - Apple Developer Program: 個人名義で登録済み（2026-09-19 承認）
@@ -28,6 +29,10 @@ App Review のメモ欄にも載せて「App Review に再提出」を押した�
   - 9/25 を過ぎても動きがなければ、同じスレッドに一言フォローアップを送る
 - [ ] リリース後、`docs/site/index.html`（Privacy/Support の原本）と実際に公開した
       `https://tanebi-net.com/clavenome` の内容が一致しているか確認する
+- [ ] **テンポ ±1 ボタン（`feature/tempo-step-buttons`）を実機で確かめる**。
+      E2E と画面の確認は済み。残りは iPhone での長押し（長押しメニューが出ないか、
+      押下の色が残らないか）と、再生中の長押しで二重発音・打点欠落がないかを耳で確かめること。
+      確かめたら `dev` へ PR
 - [ ] **1.1 で投げ銭 IAP を実装する**（2026-09-19 オーナー判断。理由は下の「掲載文」節と
       更新履歴 9/19 参照）。実装前に Paid Apps Agreement（税務・銀行情報）を
       App Store Connect で済ませておく
@@ -290,6 +295,28 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 ---
 
 ## 更新履歴
+
+### 2026-09-23
+
+**テンポの ±1 ボタンを足した（`feature/tempo-step-buttons`、1.1 に載せる）。**
+
+- スライダーは 1 BPM が約 1.7px しかなく、TAP も数 BPM ずれるので、微調整の手段が無かった。
+  BPM の左に −、右に + を置いた。押した瞬間に 1、押し続けると 400ms 後から 80ms ごとに動く。
+  加速はしない（大きく動かすのはスライダーの役目）
+- 上限 240・下限 40 でボタンを無効にする。± とスライダーを操作したら TAP の記録を捨てる
+- 押せる面の角丸を 5px に揃えた（`--radius-tap`）。3:2 / 音色はピル形から四角になった
+- デザインはキャンバスで決めた: https://claude.ai/artifact/CSL2ZW1jQt6oSuk4Q3x2HG
+- **E2E を入れた**（`e2e/`、`pnpm test:e2e`）。新しい依存は入れず、既存の playwright を
+  node:test から使う。単体（Vitest）で部品を、E2E で `main.ts` の配線を守る二層にした
+- E2E で見逃しかけた欠陥: 長押しで上限に着いたとき、押下の色が残る。デスクトップの
+  Chromium はクリックでフォーカスが移り、ボタンが無効になった瞬間の blur で色が消えるので
+  気づけない。iOS はタップでフォーカスを移さないので残る。テストを iOS の条件
+  （pointerdown だけを送る）に直し、処理を外すと落ちることを確かめた
+- **dev サーバーを 5174 番に固定した。** 5173 番で swipe-wiki が IPv6 で動いていて、
+  Claves も IPv4 の 5173 番で起動できてしまい、E2E が swipe-wiki を開いていた
+- 依存の監査（`pnpm audit`）で moderate が 3 件。どれも開発用の道具の推移的な依存
+  （vitest 3.2.7 → 4.1.11 以上で解消、@capacitor/cli 経由の uuid → 11.1.1 以上）で、
+  アプリ本体には入らない。更新は未実施（cooldown を迂回しないため、別途判断する）
 
 ### 2026-09-21〜22
 
