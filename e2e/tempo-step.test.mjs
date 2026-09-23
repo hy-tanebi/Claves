@@ -176,3 +176,38 @@ describe("レイアウト", () => {
       ));
   }
 });
+
+describe("押せる箇所の形", () => {
+  // 押せる面の角を 5px に揃える。ピル形・4px などが混ざっていると、どれが同じ種類の
+  // 操作なのか見分けにくい
+  const TAPPABLE = [
+    [".head", "リズム名の帯（一覧を開く）"],
+    ["#flip", "3:2 / 2:3"],
+    ["#timbre", "音色"],
+    ["#bpmDown", "−"],
+    ["#tap", "TAP"],
+    ["#bpmUp", "+"],
+    ["#play", "PLAY"],
+    ["#patternList .sheetItem", "一覧の行"],
+    ["#patternClose", "一覧の CLOSE"],
+  ];
+
+  it("押せる面の角丸はすべて 5px", () =>
+    withApp(async (page) => {
+      for (const [selector, label] of TAPPABLE) {
+        const radius = await page
+          .locator(selector)
+          .first()
+          .evaluate((el) => getComputedStyle(el).borderRadius);
+        assert.equal(radius, "5px", `${label}（${selector}）`);
+      }
+    }));
+
+  it("メニューの印は丸のまま（押せる面ではなく、帯の中の飾り）", () =>
+    withApp(async (page) => {
+      const radius = await page
+        .locator(".picker .menuIcon")
+        .evaluate((el) => getComputedStyle(el).borderRadius);
+      assert.equal(radius, "999px");
+    }));
+});
