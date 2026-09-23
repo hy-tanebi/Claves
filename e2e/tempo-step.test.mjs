@@ -203,6 +203,15 @@ describe("押せる箇所の形", () => {
       }
     }));
 
+  it("一覧の中の譜面は、行と同じ 5px（外枠より中身が丸く見えないように）", () =>
+    withApp(async (page) => {
+      const radius = await page
+        .locator("#patternList .rowScore")
+        .first()
+        .evaluate((el) => getComputedStyle(el).borderRadius);
+      assert.equal(radius, "5px");
+    }));
+
   it("メニューの印は丸のまま（押せる面ではなく、帯の中の飾り）", () =>
     withApp(async (page) => {
       const radius = await page
