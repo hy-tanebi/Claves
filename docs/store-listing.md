@@ -182,10 +182,42 @@ None. The app functions identically in all regions. The App Store listing is loc
 Not applicable. The app is not in a regulated industry. The rhythm patterns are traditional and in the public domain. The notation is rendered by the open-source library VexFlow (MIT license), and all sounds are synthesized by the app itself; no recordings or third-party material are included.
 ```
 
+## 1.0.1 — このバージョンの新機能
+
+1.0.1 から入力する欄（4000文字まで）。説明文・キーワード・プロモーション用テキストは 1.0 から変えない。
+「一部の iPhone」は iOS 18 以前（iPhone XR で確認）。機種名や OS 名は書かない。
+
+### 日本語
+
+```
+・テンポを 1 ずつ上げ下げできる −／＋ ボタンを追加しました。押し続けると連続で変わります。
+・リズム一覧で、一部の iPhone で譜面が横幅いっぱいに表示されない問題を修正しました。
+・ボタンの形をそろえました。
+```
+
+### 英語（U.S.）
+
+```
+• Added − and + buttons to adjust the tempo by 1 BPM. Hold to change it continuously.
+• Fixed an issue where the notation in the rhythm list did not fill the full width on some iPhones.
+• Unified the shape of the buttons.
+```
+
+### ポルトガル語（ブラジル）
+
+```
+• Adicionados botões − e + para ajustar o andamento de 1 em 1 BPM. Mantenha pressionado para alterar continuamente.
+• Corrigido um problema em que a partitura na lista de ritmos não ocupava toda a largura em alguns iPhones.
+• Formato dos botões unificado.
+```
+
 ## スクリーンショット
 
 `screenshots/store/` に 6.7 インチ（`67-*`）と 6.5 インチ（`65-*`）を4枚ずつ。
 作り直すときは `pnpm build && node scripts/store-screenshots.mjs`。
+
+**1.0.1 で撮り直した**（2026-09-24）。± ボタンが増え、3:2 / 音色のボタンがピル形から
+四角になったため。Apple は実際の画面を求める（Guideline 2.3.3）。
 
 | 順  | ファイル            | 内容                  |
 | --- | ------------------- | --------------------- |
@@ -219,3 +251,11 @@ Not applicable. The app is not in a regulated industry. The rhythm patterns are 
   訂正メッセージを送信
 
 **次のステップ**：Apple の再審査結果待ち（通常 1〜3日）
+
+### 2026-09-22〜24（承認）
+
+- 9/22: 返信と同じ内容を App Review のメモ欄にも載せ、同じビルド 1.0 (1) で再提出
+- 9/24 までに**承認**。ステータスは「配信準備完了」（旧 Ready for Sale）。
+  自動リリース設定なのでそのまま配信が始まり、オーナーがストアで公開を確認した
+- デベロッパ名は本名で表示される。個人で登録しているため（屋号では組織登録できない）。
+  屋号で出すには法人化してアカウントを組織へ切り替える必要がある
