@@ -1,17 +1,29 @@
 {
-  "name": "metronome",
+  "name": "claves",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.26.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
+    "build": "vite build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "test:e2e": "node --test \"e2e/**/*.test.mjs\"",
+    "typecheck": "tsc --noEmit",
+    "check:notation": "node scripts/check-notation.mjs",
+    "gen:golden": "vitest run -u src/domain/transport.golden.test.ts src/domain/plans.golden.test.ts src/audio/click.golden.test.ts"
   },
   "devDependencies": {
-    "typescript": "^5.9.0",
-    "vite": "^7.0.0",
-    "vitest": "^3.2.0"
+    "@capacitor/cli": "^8.5.1",
+    "jsdom": "^30.0.1",
+    "playwright": "1.56.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.5.1",
+    "@capacitor/ios": "^8.5.1",
+    "vexflow": "^5.0.0"
   }
 }

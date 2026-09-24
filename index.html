@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!--
+      **外へ出さないための最後の砦。**
+
+      いまこのアプリは外部と一切通信しない。CSP は「侵入を防ぐ」ためではなく、
+      **将来なにかの拍子に外部通信が復活したときに、黙って通さない**ために置く。
+      具体的には、汚染された依存（npm サプライチェーン）が仕込まれても、
+      集めたものを外へ送れないようにする。
+
+      各指定の理由:
+        default-src 'none'  … 既定で全部止め、必要なものだけ開ける
+        script-src  'self'  … バンドルは自分の資産のみ。CDN からは読まない
+        style-src   'self'  … style.css のみ
+        img-src     'self' data:  … アイコンと、SVG 内の data URI
+        font-src    data:   … 音楽フォントは data:font/woff2 で埋め込んである
+        connect-src 'self'  … fetch / XHR / WebSocket を自分の生成元だけに閉じる。
+                              **外部への送信はこれで止まる。**
+                              'none' にすると開発サーバーの HMR が動かない
+        frame-src / worker-src / object-src 'none' … いずれも使わない
+        base-uri / form-action 'none' … 行き先のすり替えによる持ち出しを塞ぐ
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src data:; connect-src 'self'; media-src 'none'; frame-src 'none'; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="theme-color" content="#0a0a0a" />
+    <!-- SVG を主に使い、対応していないブラウザと iOS 向けに PNG を置く -->
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>Clavenome — Rhythm Metronome</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main id="app">
+      <header class="head">
+        <!-- リズム名がそのまま一覧を開くボタン。1画面レイアウトを崩さない -->
+        <button id="patternPicker" class="picker" type="button" aria-haspopup="dialog">
+          <!-- 押せることを示す印。文字だけだとタップ面に見えない。
+               名前の前に置く（後ろの小さな記号より先に目が行く） -->
+          <span class="menuIcon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="19"
+              height="19"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+            >
+              <path d="M4 7h16" />
+              <path d="M4 12h16" />
+              <path d="M4 17h16" />
+            </svg>
+          </span>
+          <span id="patternName">—</span>
+        </button>
+
+      </header>
+
+      <!-- 小節の入れ替えと音色。**押すたびに2つの値が入れ替わる。**
+           どちらも値が2つしかないので、リズム一覧のようなシートは開かない -->
+      <div class="controls">
+        <!-- 3:2 と 2:3 の入れ替え。**打点がクラーベの形をしたリズムでだけ効く。**
+             使えるかどうかは JS が `clave` を見て決める -->
+        <button id="flip" class="ctl" type="button" aria-label="3:2 と 2:3 を入れ替える">
+          <span class="ctlIcon" aria-hidden="true">⇄</span>
+          <span id="flipLabel">3:2</span>
+        </button>
+
+        <button id="timbre" class="ctl" type="button" aria-label="音色を切り替える">
+          <span class="ctlIcon" aria-hidden="true">♪</span>
+          <span id="timbreLabel">Sound 1</span>
+        </button>
+      </div>
+
+      <section class="stage" aria-label="Score">
+        <div id="score" class="score"></div>
+      </section>
+
+      <!-- 普段は空。音を出せないときだけ理由を出す -->
+      <p id="status" class="status" role="status"></p>
+
+      <section class="tempo">
+        <!-- 左右の ± は 1 BPM ずつ合わせるためのもの。スライダーは 1 BPM が約 1.7px しかなく、
+             TAP も数 BPM ずれるので、「あと少し」を合わせる手段がほかに無い。
+             TAP 面の中には入れない。叩いている最中に ± が反応するのが一番困る -->
+        <div class="tempoRow">
+          <button id="bpmDown" class="step" type="button" aria-label="テンポを1下げる">
+            <svg
+              viewBox="0 0 24 24"
+              width="26"
+              height="26"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.6"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14" />
+            </svg>
+          </button>
+
+          <!-- BPM の表示そのものがタップ面。指で狙う面積が最大になる -->
+          <button id="tap" class="bpm" type="button">
+            <span class="bpmRow">
+              <output id="bpmValue">120</output>
+              <span class="bpmUnit">BPM</span>
+            </span>
+            <span id="tapHint" class="tapHint">TAP</span>
+          </button>
+
+          <button id="bpmUp" class="step" type="button" aria-label="テンポを1上げる">
+            <svg
+              viewBox="0 0 24 24"
+              width="26"
+              height="26"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.6"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+          </button>
+        </div>
+        <input id="bpm" type="range" min="40" max="240" step="1" value="120" aria-label="Tempo" />
+      </section>
+
+      <label class="field">
+        <span>VOL</span>
+        <input id="volume" type="range" min="0" max="100" step="1" value="80" />
+      </label>
+
+      <button id="play" class="play">PLAY</button>
+    </main>
+
+    <dialog id="patternDialog" class="sheet" aria-label="Rhythms">
+      <ul id="patternList" class="sheetList"></ul>
+      <button id="patternClose" class="sheetClose" type="button">CLOSE</button>
+    </dialog>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,277 @@
+# Clavenome
+
+> ラテンミュージックのリズムパターンを鳴らす、練習用メトロノーム（iOS）
+
+**Clavenome** is an iOS practice metronome that plays Latin rhythm patterns (son, rumba and bossa claves, Afro grooves in 2/4 and 6/8, Ijexá) instead of a plain click. It shows the pattern as notation, keeps playing with the screen locked, and never uses the network. Built with TypeScript + VexFlow, Capacitor, and a Swift audio engine. Currently in App Store review.
+
+<img src="docs/images/main.png" width="300" alt="Clavenome のメイン画面。Son Clave の譜面と 120 BPM の表示">
+
+## はじめに
+
+このリポジトリは、ポートフォリオとしても公開しています。企画・設計・実装・App Store 申請まで担当しています。
+
+## 課題と解決
+
+パーカッションやドラムの練習では、単なるクリックではなく**クラーベを鳴らすメトロノーム**が要ります。クラーベはラテン音楽の骨格で、演奏者はそれを聴きながら自分のパートを重ねて練習するためです。
+
+既存のクラーベメトロノームは収録パターンが少なく、練習したいリズムが入っていませんでした。アフロ系の音楽にはクラーベのほかにも多くのリズムパターンがあり、それらを網羅して練習できるものが必要でした。
+
+Clavenome は、ソン・ルンバ・ボサの各クラーベに加え、2/4 と 6/8 のアフロ系グルーヴ、IJEXA を収録し、譜面を見ながら練習できるメトロノームとしてこの課題を解決しています。リズムは譜面データを 1 ファイル足すだけで増やせる構造にしてあり、今後も追加していきます。
+
+## できること
+
+- 収録リズム 9 種（Son / Rumba / Bossa Clave、Afro Groove 1〜3、6/8 Afro Groove 1〜2、IJEXA）
+- クラーベの 3:2 / 2:3 切替
+- 1 本線の譜面表示と、再生位置のハイライト
+- 40〜240 BPM のスライダーと、タップテンポ
+- 音色 2 種（アゴゴ風・クラベス風。どちらも合成音）
+- バックグラウンド再生、ロック画面からの再生・停止、イヤホン抜去で自動停止
+- 通信ゼロ・アカウントなし・広告なし・無料
+
+**App Store**: 審査中（承認後にリンクを置きます）
+
+---
+
+## 技術スタック
+
+| カテゴリ | 技術 |
+|---|---|
+| 言語 | TypeScript 5 / Swift 5 |
+| 譜面描画 | VexFlow 5（SVG） |
+| ビルド | Vite 7 / pnpm 10 |
+| iOS パッケージング | Capacitor 8（WKWebView ＋ 自作プラグイン） |
+| 再生エンジン | AVAudioEngine / AVAudioSourceNode / AVAudioSession / MPNowPlayingInfoCenter |
+| ブラウザ版の再生 | Web Audio API（開発時の確認用。ネイティブと同じ計画を再生する） |
+| テスト | Vitest（JS 280 件）/ XCTest（Swift 72 件）/ Playwright（実ブラウザでの譜面検証） |
+| セキュリティ | CSP `default-src 'none'` / JS→ネイティブ境界の検証層 / pnpm のサプライチェーン設定 |
+| AI 開発 | Claude Code（実装の補助。設計とルールは `CLAUDE.md` に自分で定義） |
+
+## 技術選定の理由
+
+<details>
+<summary><strong>Capacitor — SwiftUI で全部書かず、WebView ＋ ネイティブの二層にした理由</strong></summary>
+
+画面の中心は**譜面**です。連桁・休符・付点・リピート記号を正しく描けるライブラリは、Web には VexFlow がありますが、iOS ネイティブにはありません。そのため画面は WebView で作ることにしました。
+
+ただし**再生の時計は WebView に置けません**。iOS は画面をロックすると WebView の JavaScript を止めるため、音が鳴らなくなります。そこで再生だけを Swift に置き、JS は「この計画で鳴らして」と渡すだけにしています。
+
+Capacitor は、この「Web の画面 ＋ 自作のネイティブ機能」を最小の構成で組めるので選びました。プラグインは 1 クラス（`ClavesAudioPlugin`）だけです。ブラウザでもそのまま動くので、譜面の調整は開発サーバーですぐ確認できます。
+
+</details>
+
+<details>
+<summary><strong>AVAudioSourceNode — AVAudioPlayer や タイマーではなく、サンプル単位で書く理由</strong></summary>
+
+メトロノームは打点の間隔が揃っていることがすべてです。`Timer` で鳴らすと、メインスレッドの混み具合で数 ms〜数十 ms ずれます。
+
+`AVAudioSourceNode` はオーディオスレッドから呼ばれ、**どのサンプルに打点を置くか**を自分で決められます。tick → 秒 → サンプル位置の式は JS（`src/domain/transport.ts`）と Swift（`Transport.swift`）で同じものを持ち、`golden/transport.json` で両側の結果が一致することをテストで確かめています。
+
+音源は録音せず合成にしました。音源ファイルを持たずに済み、音色の切替も波形の表を差し替えるだけです。
+
+</details>
+
+<details>
+<summary><strong>PPQ=96 の整数 tick — 秒や拍ではなく tick で時刻を持つ理由</strong></summary>
+
+収録リズムには 2/4（16 分音符の刻み）と 6/8（8 分音符 3 つで 1 拍）が混ざっています。秒で持つとテンポを変えるたびに全打点を計算し直すことになり、拍で持つと 6/8 の 3 連が小数になります。
+
+4 分音符を 96 tick にすると、16 分音符は 24、8 分 3 連は 32、付点 4 分は 144 と、すべて整数になります。テンポは「1 tick が何秒か」だけで決まり、打点の位置はテンポと切り離せます。整数なので JS と Swift のあいだで丸め誤差も出ません。
+
+</details>
+
+<details>
+<summary><strong>VexFlow ＋ Playwright — jsdom のテストでは足りない理由</strong></summary>
+
+VexFlow は描くときにブラウザの canvas で文字幅を測り、音符の位置を決めます。jsdom には canvas がないので、テスト環境では位置が実ブラウザと変わります。つまり**単体テストが通っても譜面が崩れていることがあります**。
+
+そのため譜面の見た目は Playwright で実ブラウザを起動して確かめています（`scripts/check-notation.mjs`）。符尾が符頭から離れていないか、小節からはみ出していないか、符頭が読める大きさかを 9 リズム × 3 画面幅で自動判定し、スクリーンショットを残します。
+
+</details>
+
+<details>
+<summary><strong>通信ゼロ — CSP と検証層で「外に出せない」構造にした理由</strong></summary>
+
+このアプリはネットワークを使いません。方針として言うだけでなく、**依存パッケージが汚染されても外へ送れない**構造にしています。
+
+- `index.html` の CSP を `default-src 'none'; connect-src 'self'` にし、fetch / XHR / WebSocket を自分の生成元に閉じています。外部スクリプト・外部フォント・分析 SDK は入れていません
+- pnpm の `minimumReleaseAge`（公開から 7 日経つまで新バージョンを入れない）と `blockExoticSubdeps` で、汚染されたパッケージが入る窓を狭めています
+- Apple のプライバシーマニフェストは「収集するデータなし」で、App Store の申告と一致させています
+
+JS → ネイティブの境界も同じ考えで、WebView から届く再生計画を信用せず、サイズ・件数・範囲を検証してからオーディオスレッドに渡します（後述）。
+
+</details>
+
+<details>
+<summary><strong>Claude Code — 実装の速度を上げるために使い、設計と判断は自分で行う</strong></summary>
+
+設計方針（譜面データを唯一の真実源にする、再生の時計をネイティブに置く、通信をゼロにする）と、収録するリズムの選定・記譜の確認は自分で決めています。Claude Code はその方針のもとで、実装・テスト・調査の手を増やすために使っています。
+
+判断を AI に委ねないために、`CLAUDE.md` に自分の決めたルールを書いています。「完了と言う前に通すコマンド」「譜面を変えたら実ブラウザで見る」「拍子を変えたら 1 拍の長さも変える」など、過去に自分が踏んだ落とし穴をルールにして、同じ失敗を繰り返さないようにしています。
+
+</details>
+
+---
+
+## アーキテクチャ
+
+### 全体図
+
+```mermaid
+graph LR
+    subgraph WebView["WebView（TypeScript）"]
+        UI["main.ts<br/>画面・操作"]
+        Domain["domain/<br/>譜面データ → tick → 再生計画"]
+        Notation["notation/<br/>VexFlow で譜面を描く"]
+    end
+
+    subgraph Native["ネイティブ（Swift）"]
+        Plugin["ClavesAudioPlugin<br/>JSON を検証して受理"]
+        Engine["ClavesEngine<br/>tick ↔ サンプル時刻・発音"]
+        Session["AVAudioSession<br/>NowPlaying・割り込み"]
+    end
+
+    UI --> Domain
+    Domain --> Notation
+    Domain -->|"TransportPlan（JSON）"| Plugin
+    Plugin --> Engine
+    Engine -->|"再生位置（tick）"| UI
+    Session --> Engine
+```
+
+### データの流れ
+
+```
+譜面データ（registry.ts）
+  │  音価と休符の列。唯一の真実源
+  ▼
+再生計画 TransportPlan
+  │  { bpm, bpmUnit, cycleTicks, events: [{tick, pitch}] }
+  │  JS と Swift が共有する契約。golden fixture で両側を固定
+  ▼
+ClavesAudioPlugin（Swift）
+  │  サイズ・件数・範囲を検証。通らなければ reject して JS に理由を返す
+  ▼
+ClavesEngine（Swift）
+     オーディオスレッドで tick → サンプル位置に変換し、波形を書く
+```
+
+---
+
+## アーキテクチャ設計
+
+### 譜面データが唯一の真実源
+
+リズムは `src/domain/patterns/` に音価と休符の列として書き、再生イベントはそこから作ります。逆向き（打点の間隔から音価と休符を復元する）は一意に決まらないので実装していません。譜面と音が別々のデータを持たないので、ずれません。
+
+新しいリズムは、パターンを 1 ファイル書いて `registry.ts` に登録するだけで増やせます。小節の長さが合わない、拍の境目をまたぐ音価、未知の音高はバリデータが弾きます。
+
+### 時計はネイティブが持ち、JS は計画を渡すだけ
+
+JS は「いつ鳴らすか」を計算しません。ユーザー操作を `TransportPlan` に変換して Swift に渡し、Swift が自分の時計で鳴らします。譜面のハイライトに使う再生位置も、ネイティブに聞いて描きます（JS 側で別に数えると必ずずれるため）。
+
+tick ↔ 時刻の式は `src/domain/transport.ts` と `ios/ClavesEngine/Sources/ClavesEngine/Transport.swift` に同じものを書き、`golden/` の入出力で両側をテストしています。片方だけ変えるとテストが落ちます。
+
+### 切替は「予約済みの範囲より後の、最初の拍境界」から
+
+再生エンジンは少し先まで音を予約しておきます。テンポやパターンを変えたとき、単に「次の拍境界」から効かせると、予約済みの範囲と重なって二重に鳴ります。予約を取り消す実装は複雑で、取りこぼしの原因になります。
+
+そこで切替点は予約済みの範囲より後にしか置きません（`Scheduler.nextBoundaryTick`）。予約した音はそのまま鳴り終わり、新しい計画はその後の拍境界から始まります。取り消しが要らないので、二重発音も打点の欠落も起きません。
+
+### JS → ネイティブの境界を信用しない
+
+再生計画はオーディオスレッドが読みます。壊れた値が通ると、音が止まるか、最悪アプリごと落ちます。WebView の中身は書き換えられうる前提で、`PlanDecoder` / `PlanValidator` が境界を守ります。
+
+- JSON を展開する**前に**サイズで打ち切る（64 KiB）。`JSONDecoder` は件数を数える前に配列を丸ごと展開するため
+- `schemaVersion` と `ppq` の一致、打点数の上限、周期長の上限（整数オーバーフロー防止）、BPM の範囲、打点の最小間隔（周期の継ぎ目も含む）を検査
+- 弾いたときは黙って無音にせず、理由を JS に返す
+
+`abs(Int.min)` が落ちる、NaN との `min` / `max` が 1.0 を返す、といった検査自体が壊れる罠も潰しています。
+
+### ライフサイクル
+
+- 着信・Siri・アラームで中断したら止まり、**中断が終わっても自動で鳴り出さない**
+- イヤホンを抜いたら止まる（スピーカーから大音量が出ない）。挿したときは止まらない
+- ロック画面の再生・停止はネイティブが受け、JS に通知して画面のボタンを同期する
+- ネイティブの状態は main キューだけで触る。Capacitor の呼び出しと割り込み通知は別のスレッドで届くため、寄せ先を決めないと競合する
+
+### 譜面の描画
+
+VexFlow の 5 線譜を 1 本線として使い、2/4 と 6/8、リピート記号、再生位置のハイライトを描きます。段の幅は全パターン共通の固定値にし、リズムを切り替えても譜面の大きさが揃うようにしています。
+
+描画前に音楽フォントの読み込みを待つ、グリフの `pt` を viewBox の単位に直す、余白を実測して viewBox を詰める、といった調整は、すべて実ブラウザ（`pnpm check:notation`）で確認しています。
+
+## ディレクトリ構成
+
+```
+src/
+├── domain/            # 型・tick 計算・連桁算出・バリデータ・再生計画の導出
+│   ├── patterns/      #   収録リズム（1 ファイル 1 リズム）
+│   ├── registry.ts    #   収録リズムの一覧。画面に出るのはここに載せたものだけ
+│   └── transport.ts   #   tick ↔ 時刻の式。JS/Swift 共有の契約
+├── audio/             # 先読みスケジューラ・状態機械・Web Audio 実装・ネイティブ接続
+├── notation/          # VexFlow による譜面描画とレイアウト
+└── main.ts            # 画面と操作
+
+ios/
+├── App/               # Capacitor の iOS アプリ本体
+│   └── App/
+│       ├── ClavesAudioPlugin.swift   # JS からの入口。JSON を検証して受理
+│       └── ClavesAudioEngine.swift   # AVAudioEngine の組み立てとライフサイクル
+└── ClavesEngine/      # 再生の中核（Swift Package）。時刻計算・発音・検証層。XCTest 72 件
+
+golden/                # JS と Swift の両側で照合する入出力 fixture
+scripts/
+├── check-notation.mjs     # 実ブラウザで譜面を検証（Playwright）
+└── store-screenshots.mjs  # App Store 用スクリーンショット
+```
+
+---
+
+<details>
+<summary><strong>開発</strong></summary>
+
+### セットアップ
+
+```bash
+pnpm install --frozen-lockfile
+```
+
+### 開発サーバー
+
+```bash
+pnpm dev
+```
+
+iPhone の Safari から開くときは、起動時に表示される `Network:` の URL を使います（同じ Wi-Fi にいること。IP は繋ぎ直すと変わります）。iOS は最初のタップまで音を出せないので、PLAY ボタンから始めてください。
+
+### 検証
+
+```bash
+pnpm test             # JS のテスト（データの正しさ）
+pnpm typecheck        # 型
+pnpm check:notation   # 譜面の見た目。pnpm dev を別ターミナルで起動してから
+cd ios/ClavesEngine && swift test   # Swift のテスト
+```
+
+`pnpm test` は譜面の見た目を保証しません。譜面や画面を変えたら `check:notation` を通し、`screenshots/` の画像を目で確認します。
+
+### iOS へ反映
+
+```bash
+pnpm build && pnpm exec cap sync ios
+open ios/App/App.xcodeproj
+```
+
+署名の Team ID は `ios/Signing.xcconfig`（git 管理外）に置きます。`ios/Signing.xcconfig.example` をコピーして作ってください。シミュレータ向けのビルドは署名なしで通ります。
+
+### リズムを足す
+
+`src/domain/patterns/` に 1 ファイル書いて `registry.ts` に登録し、`pnpm gen:golden` で fixture を作り直してから `check:notation` を通します。
+
+</details>
+
+---
+
+© 2026 TANEBI CREATIVE
+
+ソースコードは閲覧のために公開しています。複製・改変・再配布の許可は含みません。

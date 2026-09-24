@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400"
+     role="img" aria-label="Clavenome app icon">
+  <title>Clavenome</title>
+  <!--
+    アプリアイコン。アゴゴの高低2つのベル。
+
+    色は本体の配色と同じ（金 #ffc61a / 緑 #009b4e / 赤 #e02b20 / 地 #0a0a0a）。
+    高音のベルを金、低音を緑にし、アプリが持つ high / low と対応させている。
+
+    **角丸を焼き込まない。** iOS が自前でマスクを掛けるため、正方形いっぱいに描く。
+    **背景は不透明にする。** App Store のアイコンはアルファチャンネルを持てない。
+  -->
+  <rect width="400" height="400" fill="#0a0a0a"/>
+  <path d="M200 92 C 200 62, 148 58, 132 86" fill="none" stroke="#e02b20"
+        stroke-width="20" stroke-linecap="round"/>
+  <path d="M200 92 C 200 62, 252 58, 268 86" fill="none" stroke="#e02b20"
+        stroke-width="20" stroke-linecap="round"/>
+  <path d="M118 92 L146 92 L170 300 L94 300 Z" fill="#ffc61a"/>
+  <ellipse cx="132" cy="300" rx="38" ry="13" fill="#0a0a0a" opacity="0.28"/>
+  <path d="M254 82 L288 82 L318 330 L224 330 Z" fill="#009b4e"/>
+  <ellipse cx="271" cy="330" rx="47" ry="15" fill="#0a0a0a" opacity="0.28"/>
+</svg>

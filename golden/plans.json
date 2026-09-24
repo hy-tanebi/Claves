@@ -1,0 +1,1105 @@
+{
+  "schemaVersion": 1,
+  "note": "JS の buildPlan が出す計画。Swift の PlanDecoder が全件受理できることを両側から確かめる。",
+  "generatedBy": "pnpm gen:golden",
+  "plans": [
+    {
+      "name": "son-clave @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "son-clave @ 120bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "son-clave @ 240bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "rumba-clave @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 168,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "rumba-clave @ 120bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 168,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "rumba-clave @ 240bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 168,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bossa-clave @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 312,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bossa-clave @ 120bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 312,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bossa-clave @ 240bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 312,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 264,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove @ 120bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 264,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove @ 240bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 264,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-2 @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 216,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          },
+          {
+            "tick": 312,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-2 @ 120bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 216,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          },
+          {
+            "tick": 312,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-2 @ 240bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 216,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          },
+          {
+            "tick": 312,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-3 @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 264,
+            "pitch": "high"
+          },
+          {
+            "tick": 312,
+            "pitch": "high"
+          },
+          {
+            "tick": 360,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-3 @ 120bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 264,
+            "pitch": "high"
+          },
+          {
+            "tick": 312,
+            "pitch": "high"
+          },
+          {
+            "tick": 360,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-3 @ 240bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "high"
+          },
+          {
+            "tick": 120,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 264,
+            "pitch": "high"
+          },
+          {
+            "tick": 312,
+            "pitch": "high"
+          },
+          {
+            "tick": 360,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-6-8 @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 144,
+        "cycleTicks": 576,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          },
+          {
+            "tick": 432,
+            "pitch": "high"
+          },
+          {
+            "tick": 528,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-6-8 @ 120bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 144,
+        "cycleTicks": 576,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          },
+          {
+            "tick": 432,
+            "pitch": "high"
+          },
+          {
+            "tick": 528,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-6-8 @ 240bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 144,
+        "cycleTicks": 576,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 336,
+            "pitch": "high"
+          },
+          {
+            "tick": 432,
+            "pitch": "high"
+          },
+          {
+            "tick": 528,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-6-8-2 @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 144,
+        "cycleTicks": 576,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          },
+          {
+            "tick": 384,
+            "pitch": "high"
+          },
+          {
+            "tick": 432,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-6-8-2 @ 120bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 144,
+        "cycleTicks": 576,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          },
+          {
+            "tick": 384,
+            "pitch": "high"
+          },
+          {
+            "tick": 432,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "afro-groove-6-8-2 @ 240bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 144,
+        "cycleTicks": 576,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 96,
+            "pitch": "high"
+          },
+          {
+            "tick": 144,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "high"
+          },
+          {
+            "tick": 384,
+            "pitch": "high"
+          },
+          {
+            "tick": 432,
+            "pitch": "high"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ijexa @ 40bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 40,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "low"
+          },
+          {
+            "tick": 120,
+            "pitch": "low"
+          },
+          {
+            "tick": 144,
+            "pitch": "low"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "low"
+          },
+          {
+            "tick": 336,
+            "pitch": "low"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ijexa @ 120bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 120,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "low"
+          },
+          {
+            "tick": 120,
+            "pitch": "low"
+          },
+          {
+            "tick": 144,
+            "pitch": "low"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "low"
+          },
+          {
+            "tick": 336,
+            "pitch": "low"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ijexa @ 240bpm",
+      "plan": {
+        "schemaVersion": 1,
+        "ppq": 96,
+        "bpmUnit": 96,
+        "cycleTicks": 384,
+        "bpm": 240,
+        "originTick": 0,
+        "originSeconds": 0,
+        "events": [
+          {
+            "tick": 0,
+            "pitch": "high"
+          },
+          {
+            "tick": 24,
+            "pitch": "high"
+          },
+          {
+            "tick": 72,
+            "pitch": "low"
+          },
+          {
+            "tick": 120,
+            "pitch": "low"
+          },
+          {
+            "tick": 144,
+            "pitch": "low"
+          },
+          {
+            "tick": 192,
+            "pitch": "high"
+          },
+          {
+            "tick": 240,
+            "pitch": "high"
+          },
+          {
+            "tick": 288,
+            "pitch": "low"
+          },
+          {
+            "tick": 336,
+            "pitch": "low"
+          }
+        ]
+      }
+    }
+  ]
+}

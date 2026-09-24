@@ -1,0 +1,143 @@
+# Claves — リズムパターン・メトロノーム
+
+ブラジルのリズム（サンバヘギ／サンバアフロ／カンドンブレ系）の**骨格タイムライン**を
+鳴らす練習用メトロノーム。iOS アプリとして App Store に公開する。
+
+**作業開始時はまず `docs/progress.md` を読む。** 現在地と次の一手が書いてある。
+
+## このプロジェクトの性格
+
+- 利用者はオーナー本人と BOAVISTA（オーナーが主宰するサンバヘギ／サンバアフロの団体）のメンバー
+- 加えてポートフォリオとして公開する
+- **事業として成立する規模ではないと調査済み。** そこは狙わない
+- **無料で出し、任意の投げ銭だけを置く。** 機能を制限する課金はしない。
+  収録しているのはブラジルの伝統的なリズムで、アクセスに壁を立てて売る形を取らない。
+  払ってもらうのは「ソフトウェアを作った仕事」に対してであって、リズムに対してではない
+- **リズムに宗教的・文化的な分類ラベルを付けない。** かつて `category` に
+  `candomble` 等を持たせていたが、これは実装者の推測でしかなく、
+  アプリが根拠なく分類を主張する状態だった。**型ごと削除済み**。復活させない
+- **出自（誰から習ったか）は画面に出さない。** データとしても、必要がない限り増やさない
+- 見本は既存アプリ **the Clave**。機能を絞る判断は倣うが、**見た目とアプリ名は独自にする**
+  （the Clave は現役でストアにあるため、App Store Guideline 4.1 Copycats に触れる）
+
+## 開発の約束
+
+### 完了報告の前に必ず通す
+
+```bash
+pnpm test        # データの正しさ・部品の振る舞い（Vitest）
+pnpm typecheck   # 型
+pnpm dev         # 別ターミナルで起動してから ↓（http://localhost:5174/ 固定）
+pnpm test:e2e    # 画面の操作（実ブラウザ。押す・離す・長押し・レイアウト）
+pnpm check:notation   # 譜面の見た目（実ブラウザ）
+```
+
+**エラー0件を確認してから「できた」と言う。**
+
+### テストの二層構造
+
+- **単体（`src/**/*.test.ts`、Vitest）**: 判断を持つ部品。時間の振る舞いは偽のタイマーで確かめる
+- **E2E（`e2e/*.test.mjs`、Playwright ＋ `node:test`）**: `main.ts` の配線と画面の操作。
+  **Chromium と WebKit の両方で流す**（WebKit は iPhone と同じ描画エンジン）。
+  新しい環境では先に `pnpm exec playwright install chromium webkit` が要る。
+  `main.ts` は DOM と音声を直に握るので単体テストを持たない。判断は部品に切り出し、
+  配線の正しさは E2E で守る
+- 画面の機能は **E2E を先に書いて落ちるのを見てから** 部品を作り、配線する
+- **E2E がいきなり通ったら疑う。** デスクトップの Chromium と iOS は違う。マウスで押すと
+  ボタンにフォーカスが移り blur が起きるが、iOS はタップでフォーカスを移さない。
+  iOS でしか起きない欠陥は、`dispatchEvent("pointerdown", …)` で iOS の条件を作って確かめる
+
+### dev サーバーは 5174 番
+
+`vite.config.ts` で `port: 5174` と `strictPort: true` に固定している。5173 番は
+swipe-wiki が IPv6 で使っていて、Claves が IPv4 の 5173 番を取ると両方が起動でき、
+`localhost` を開くと swipe-wiki が出る（2026-09-23 に E2E が別のアプリを開いた）。
+E2E は開いたページの title が Clavenome でなければ、その旨を出して落ちる
+
+### 譜面や画面を変えたら、必ず実ブラウザで見る
+
+**`pnpm test` は見た目を保証しない。** jsdom は canvas を持たず VexFlow が文字幅を
+測れないため、配置計算が実ブラウザと別物になる（テスト中に「文字幅の測定に失敗」が
+3,600回以上出る）。
+
+**過去に、崩れた譜面を「確認済み」として報告した事故が複数回起きている。**
+`pnpm check:notation` を通し、`screenshots/` の画像を自分の目で見てから報告する。
+
+### git
+
+- ブランチは `main` ← `dev` ← `feature/*`。**デフォルトは `dev`**
+- **`main` へのマージはリリース時のみ。** 直接コミット・push はしない
+- push とPR作成はオーナーの指示があるまで行わない
+- コミットは Conventional Commits。`type(scope):` は英語、説明は日本語
+- push 前に `docs/progress.md` を更新する
+
+### iOS の署名
+
+- **Team ID は `ios/Signing.xcconfig`（git 管理外）に置く。** 新しい環境では
+  `ios/Signing.xcconfig.example` をコピーして作る。無くてもプロジェクトは開けるし
+  シミュレータ向けビルドも通る（`#include?` で読んでいるため）
+- **Xcode の Signing & Capabilities で Team を触ると、`project.pbxproj` に
+  `DEVELOPMENT_TEAM` が書き戻される。** コミット前に
+  `git diff ios/App/App.xcodeproj/project.pbxproj` を見て、
+  入っていたら消して `ios/Signing.xcconfig` 側に書く
+
+### Xcode の共有スキーム
+
+- **`ios/App/App.xcodeproj/xcshareddata/xcschemes/App.xcscheme` も、
+  コミット前に差分を見る対象。** `project.pbxproj` と同じ扱いにする
+- Xcode の Edit Scheme で診断設定を切り替えると、ここに書き込まれる。
+  **Thread Sanitizer を付けたままコミットすると、以後のシミュレータ実行が
+  10〜20倍遅くなる**（実機では無視されるので気づきにくい）。
+  2026-08-30 に実際に混入しかけた
+- 見るのは `enableThreadSanitizer` / `enableAddressSanitizer` /
+  `enableUBSanitizer` / `enableMallocScribble` など Sanitizer 系。
+  意図して有効にしたのでない限り消す
+- `xcuserdata/` は個人環境の産物なので**コミットしない**。
+  共有スキームは**コミットする**（`xcodebuild -scheme App` の挙動を固定するため）
+- Team ID 自体は**秘密情報ではない**（配布された全アプリから
+  `codesign -dv --verbose=4` で読める）。署名には秘密鍵と証明書が要るので
+  Team ID だけでは何もできない。**公開リポジトリに自分の識別子を置かないための整理**であって、
+  漏れても実害があるものではない
+
+### 依存パッケージ
+
+- pnpm 10.26 以降を `packageManager` で固定（`pnpm-workspace.yaml` のサプライチェーン対策が効かなくなるため）
+- **新しい依存を入れるとき `blockExoticSubdeps: true` が誤検知で止まることがある。**
+  一時的に外して `pnpm add` し、戻してから `pnpm install --frozen-lockfile` が通ることを確認する
+- 外部フォント・CDN・分析SDK・トラッキングは**入れない**（完全オフライン動作とプライバシー申告の根拠）
+
+## 踏み抜いた落とし穴（再発させない）
+
+譜面まわりで同じ失敗を繰り返した。原因と対策を残す。
+
+| 症状 | 原因 | 対策 |
+|---|---|---|
+| 符尾が符頭から離れる／小節幅が2.4倍に膨れて段が増える | VexFlow は描画時に文字幅を測る。**音楽フォントの読み込み前に描くと代替フォントの幅で計算する** | 描画前に `whenMusicFontsReady()` を待つ。`check:notation` が符尾の離れを検出する |
+| 音符と拍子記号だけが巨大になる | VexFlow はグリフを `font-size="30pt"` で描く。**SVG の pt は viewBox の拡縮に追従しない** | 描画後に pt をユーザー単位（×4/3）へ変換する |
+| 譜面の上下が見切れる | viewBox の高さを定数で決め打っていた | 描画後に実測して合わせる |
+| viewBox が余白だらけになる | **SVG テキストの枠は音楽フォントの巨大な行送りを含み、実インクの5倍近い** | canvas の `actualBoundingBox` でインクを測る |
+| 音符が詰まって偏る | VexFlow に必要量の半分以下の幅しか渡していなかった | 幅は固定値で書かず `Formatter` に測らせる |
+| 付点が描かれない（小節長は合う） | 付点は音価文字列とグリフの**両方**が要る | `"qd"` に加えて `Dot.buildAndAttach` |
+| テンポが倍遅い | 拍子を変えたのに `bpmUnit` を据え置いた | **拍子を変えたら1拍の長さも変える。** 2/2 は2分音符（192）、2/4・4/4 は4分音符（96）、6/8 は付点4分（144） |
+| 小節線がほぼ見えない | `numLines: 1` にすると小節線が線1本ぶんの高さになる | 5線のまま中央だけ表示する |
+| iPhone でだけ一覧の譜面が 308pt に縮む | iOS 18 以前の WebKit は **button に既定で `align-items: flex-start`** を当てる。flex の button の子が横に伸びず、SVG が既定の 300px になる。手元の Chromium・新しい WebKit では再現しない | flex にした button には `align-items` を必ず書く。E2E は `legacyWebKitButton` で既定値を再現して確かめる |
+
+## 設計の芯（変えるときは影響を確認する）
+
+- **譜面データが唯一の真実源。** そこから再生イベントを導出する。逆向き（打点間隔から
+  音価と休符を復元）は原理的に一意に定まらないので実装しない
+- **時刻は PPQ=96 の整数 tick。** 2/2・2/4・4/4・6/8 を同じ表現に載せられる
+- **テンポとパターンの切替は「予約済みの範囲より後にある、最初の拍境界」から効かせる。**
+  単に「次の拍境界」と書くと、先読み済みの範囲と重なって二重発音するように読める。
+  実装は `lastScheduledTick` より後にしか境界を置かない（`Scheduler.nextBoundaryTick`）。
+  これにより予約済みの音を取り消す必要がなくなり、二重発音と打点欠落が構造的に起こらない
+- **段の幅は全パターン共通の固定値。** パターンごとに自然幅で描くと、リズムを切り替えた
+  ときに譜面の大きさが揃わない
+- **収録リズムは `src/domain/registry.ts` にだけ載せる。** `fixtures.ts` はテスト専用で、
+  音楽的な正しさを主張しない。**画面に出してはいけない**
+
+## 詳しい資料
+
+- `docs/progress.md` — 現在地と次の一手（**最初に読む**）
+- `docs/notation-layout-plan.md` — 譜面レイアウトの調査記録
+- 設計書とリズムの構想は本社側 `.company/secretary/inbox/2026-08-13-rhythm-metronome-app-design.md`

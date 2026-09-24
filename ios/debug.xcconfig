@@ -1,0 +1,4 @@
+CAPACITOR_DEBUG = true
+
+// 署名の情報は git 管理外から読む（Signing.xcconfig.example 参照）
+#include? "Signing.xcconfig"

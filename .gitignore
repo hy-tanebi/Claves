@@ -1,3 +1,15 @@
 node_modules/
 dist/
 .DS_Store
+score-preview.svg
+screenshots/
+
+# ローンチ手順のページ。手元で開くための資料で、GitHub には置かない
+docs/launch-plan.html
+
+# Swift Package Manager のビルド成果物
+ios/ClavesEngine/.build/
+
+# 署名の設定。Team ID を公開リポジトリに置かないため。
+# 新しい環境では ios/Signing.xcconfig.example をコピーして作る
+ios/Signing.xcconfig

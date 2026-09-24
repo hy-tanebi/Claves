@@ -1,0 +1,559 @@
+/* ラスタカラー（緑・金・赤）を役割で使い分ける。
+   飾りとして散らすのではなく、色ごとに意味を1つだけ持たせる。
+
+     緑 … 再生する・進んでいる
+     金 … いまの値（BPM の数字、鳴っている打点）
+     赤 … いま選ばれている位置（つまみ、一覧の選択行、停止）
+
+   紙色の譜面パネルは残す。暗い面に細い線を引くと輪郭が沈んで読めない。 */
+:root {
+  --bg: #0a0a0a;
+  --surface: #131313;
+  --panel: #fffdf6;
+  --line: #232323;
+  --text: #fbf9f4;
+  --dim: #9a978f;
+  --ink: #101010;
+  --gold: #ffc61a;
+  --green: #009b4e;
+  --red: #e02b20;
+  /* 一覧シートだけ、地の色をわずかに緑へ振って本体と分ける */
+  --sheet: #161a14;
+  --sheet-line: #2a2f26;
+
+  /* 押せる面の角丸。すべての押せる面で揃える。ピル形や別の値が混ざると、
+     どれが同じ種類の操作なのか見分けにくい */
+  --radius-tap: 5px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-rounded, -apple-system, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  max-width: 26rem;
+  margin: 0 auto;
+  /* dvh を使う。iOS Safari は 100vh がアドレスバーぶん実際より大きい */
+  min-height: 100dvh;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* ---- 見出し ---- */
+
+/* リズム名は帯に載せる。文字を置くだけだと「押せる面」に見えない。
+   BPM 表示（.bpm）と同じ --surface の面にすることで、
+   画面の中で「押せるもの」の見え方を1つに揃える。
+   下辺の赤は --red の役割（いま選ばれているもの）をそのまま引き継ぐ。 */
+.head {
+  flex: 0 0 auto;
+  min-height: 6.625rem;
+  background: var(--surface);
+  border-radius: var(--radius-tap);
+  border-bottom: 3px solid var(--red);
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* リズム名を兼ねた一覧ボタン。button の既定の見た目は消す */
+.picker {
+  font: inherit;
+  font-size: 1.6rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  text-align: left;
+  min-width: 0;
+}
+
+/* **2行まで許す。** 丸いアイコンと右のボタンに幅を取られるため、
+   1行に収めようとすると `6/8 Afro Groove 2` でも切れる。
+   文字を小さくして収める手もあるが、収録は10以上に増える予定なので、
+   折り返すほうが持つ。3行目からは省略して帯の高さを守る */
+#patternName {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.15;
+}
+
+/* 一覧を開く印。**名前の前に置く。**
+   後ろに小さな記号を添えるより、先に目が行って押せると分かる */
+.picker .menuIcon {
+  flex: 0 0 auto;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgb(255 198 26 / 0.16);
+  color: var(--gold);
+}
+
+.picker:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 0.4rem;
+}
+
+/* ---- タイトル下の操作行 ----
+   小節の入れ替えと音色。**押すたびに2つの値が入れ替わる。**
+   どちらも値が2つしかないので、リズム一覧のようなシートは開かない。
+   いまの値だけを出すので、押すまで何に変わるかは見えない。
+   そのぶん場所を取らず、音色が増えても形が崩れない */
+.controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 0.625rem;
+}
+
+.ctl {
+  font: inherit;
+  font-size: 0.94rem;
+  font-weight: 650;
+  color: inherit;
+  background: var(--surface);
+  border: 0;
+  border-radius: var(--radius-tap);
+  flex: 1 1 0;
+  min-width: 0;
+  height: 2.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 0.875rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* 名前が長い音色でも行を崩さない */
+.ctl > span:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctlIcon {
+  color: var(--gold);
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.ctl:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* 押した瞬間の手応え。BPM のタップ面と同じ濃さに揃える */
+.ctl:active:not(:disabled) {
+  background: #1e1e1e;
+}
+
+.ctl:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---- リズム一覧（シート） ----
+   収録が10以上になっても1画面レイアウトを崩さないよう、
+   本体には並べず dialog に載せる。Esc と背景タップで閉じる */
+
+.sheet {
+  width: min(26rem, calc(100vw - 2rem));
+  max-height: 70dvh;
+  margin: auto;
+  padding: 0.5rem;
+  color: var(--text);
+  background: var(--sheet);
+  border: 1px solid var(--sheet-line);
+  border-radius: 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet::backdrop {
+  background: rgb(0 0 0 / 0.6);
+}
+
+.sheetList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sheetItem {
+  font: inherit;
+  color: inherit;
+  background: none;
+  /* 選択時だけ枠を付けると 1px ぶん行がずれる。最初から透明の枠を持たせる */
+  border: 1px solid transparent;
+  width: 100%;
+  padding: 0.6rem 0.65rem;
+  border-radius: var(--radius-tap);
+  display: flex;
+  flex-direction: column;
+  /* **明示する。** iOS 18 以前の WebKit は button に既定で align-items: flex-start を
+     当てるため、書かないと子が横に伸びず、譜面の SVG が既定の 300px に縮んで右が空く
+     （iPhone XR で起きた）。新しい WebKit と Chromium では再現しない */
+  align-items: stretch;
+  gap: 0.4rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  text-align: left;
+}
+
+.sheetName {
+  font-weight: 600;
+}
+
+.sheetItem:hover {
+  background: #212619;
+}
+
+.sheetItem[aria-current="true"] {
+  background: rgb(224 43 32 / 0.22);
+  border-color: var(--red);
+}
+
+/* **`showModal()` は最初のフォーカス可能な要素に自動でフォーカスする。**
+   一覧では先頭の行がそれにあたり、UA 既定のフォーカスリング（青）が出て、
+   選択中の赤枠より目立っていた（常に先頭のリズムが選ばれて見える）。
+   タップでは何も出さず、キーボードで辿ったときだけ金の枠を出す。 */
+.sheetItem:focus {
+  outline: none;
+}
+
+.sheetItem:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* 行の中の譜面。本体の譜面と同じく紙の色に黒で描く。
+   暗い面に細い線を引くと輪郭が沈んで読めない。
+   角は行（.sheetItem）と揃える。行より丸いと、選択枠の中で中身だけ丸く浮く */
+.rowScore {
+  background: var(--panel);
+  border-radius: var(--radius-tap);
+  padding: 0.15rem 0.25rem;
+}
+
+.sheetClose {
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--dim);
+  background: none;
+  border: 1px solid var(--sheet-line);
+  border-radius: var(--radius-tap);
+  width: 100%;
+  padding: 0.7rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+/* ---- 譜面 ----
+   五線譜は紙の色（明るい面）に黒で描く。暗い背景に細い線を引くと
+   輪郭が沈んで読めないため、譜面だけ明度を反転させる。 */
+
+.stage {
+  background: var(--panel);
+  border: 3px solid var(--gold);
+  border-radius: 0.25rem;
+  padding: 0.75rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 画面を帯状に分け、余りを1箇所に溜めずに
+     譜面・テンポ・再生ボタンで比例配分する。
+     **配分は 5 から 4 へ減らした。** タイトルの帯に高さを渡したぶん、
+     譜面パネルから取る（譜面の組み方自体は変えていない） */
+  flex: 4 1 0;
+  min-height: 8rem;
+}
+
+.score {
+  width: 100%;
+}
+
+:is(.score, .rowScore) svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 音部記号・拍子記号・符頭・休符は text 要素、符尾と連桁は path で描かれる。
+   どちらも濃い墨色に揃える。 */
+:is(.score, .rowScore) svg text,
+:is(.score, .rowScore) svg path,
+:is(.score, .rowScore) svg rect {
+  fill: var(--ink);
+  stroke: none;
+}
+
+:is(.score, .rowScore) svg .vf-stem path,
+:is(.score, .rowScore) svg .vf-beam path {
+  stroke: var(--ink);
+}
+
+/* 五線の横線だけ淡くして、音符を前に出す */
+:is(.score, .rowScore) svg .vf-stave path {
+  stroke: #b9b3a4;
+  fill: none;
+}
+
+/* 再生中の音符。鳴った瞬間だけ色が変わる（座標は動かさない） */
+.score svg g.on text,
+.score svg g.on path,
+.score svg g.on rect {
+  fill: var(--gold);
+}
+
+.score svg g.on path {
+  stroke: var(--gold);
+}
+
+/* ---- 操作 ---- */
+
+/* 音を出せないときだけ出る。空のときは高さを取らない */
+.status {
+  color: var(--gold);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.status:empty {
+  display: none;
+}
+
+/* − / TAP / + の行。間隔は 3:2 と Sound の間（.controls）と揃える。
+   狭いと、TAP を連打している指が隣の ± に当たる */
+.tempoRow {
+  display: flex;
+  gap: 0.625rem;
+  align-items: stretch;
+}
+
+/* テンポの ±1。高さは TAP 面に合わせる（stretch）。
+   記号は --text で描く。金は「いまの値」の色で、数字の真横に置くと張り合う */
+.step {
+  flex: 0 0 3.5rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 0;
+  border-radius: var(--radius-tap);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  /* 長押しで iOS のメニュー（コピー等）を出さない */
+  -webkit-touch-callout: none;
+}
+
+/* 押した瞬間の手応え。TAP 面と同じ濃さに揃える */
+.step[data-pressed="true"] {
+  background: #1e1e1e;
+}
+
+.step:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.step:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* BPM 表示を兼ねたタップテンポのボタン。
+   button の既定の見た目を消し、数字だけが見えるようにする */
+.bpm {
+  font: inherit;
+  color: inherit;
+  background: var(--surface);
+  border: 0;
+  padding: 0.25rem 0.5rem;
+  /* ± の残りを全部使う。min-width: 0 が無いと数字の幅で行からはみ出す */
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  border-radius: var(--radius-tap);
+  cursor: pointer;
+  /* ダブルタップのズーム待ち（約300ms）を消す。タップの間隔を測るので致命的 */
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.bpmRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.tapHint {
+  color: var(--dim);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+/* 押した瞬間の手応え。pointerdown で付け、pointerup/cancel で外す */
+.bpm[data-pressed="true"] {
+  background: #1e1e1e;
+}
+
+.bpm[data-pressed="true"] #bpmValue {
+  color: #ffd75e;
+}
+
+.bpm:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+#bpmValue {
+  color: var(--gold);
+  font-size: 3.6rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.bpmUnit {
+  color: var(--dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+}
+
+.tempo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.6rem;
+  flex: 3 1 0;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--dim);
+}
+
+.field span {
+  min-width: 2.6rem;
+  letter-spacing: 0.08em;
+}
+
+.field input[type="range"] {
+  flex: 1 1 auto;
+}
+
+input[type="range"] {
+  /* flex は横並びの .field でだけ効かせる。
+     縦並びの .tempo で伸ばすと BPM 表示との間が大きく開く */
+  flex: 0 0 auto;
+  width: 100%;
+  appearance: none;
+  height: 2.25rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* 指で掴みやすいつまみと、はっきり見えるレール */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-top: -0.625rem;
+  border-radius: 50%;
+  background: var(--red);
+  border: 3px solid var(--bg);
+  box-shadow: 0 1px 6px rgb(0 0 0 / 0.5);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--red);
+  border: 3px solid var(--bg);
+}
+
+.play {
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  background: var(--green);
+  border: 0;
+  border-radius: var(--radius-tap);
+  cursor: pointer;
+  flex: 2 1 0;
+  min-height: 3.4rem;
+  max-height: 5.5rem;
+}
+
+/* 再生中は停止ボタンになる。緑のままだと「押すと始まる」に見える */
+.play[data-playing="true"] {
+  background: var(--red);
+  color: #ffffff;
+}
+
+.play:active {
+  transform: translateY(1px);
+}

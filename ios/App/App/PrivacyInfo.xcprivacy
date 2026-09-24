@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  このアプリは何も集めず、何も送らない。
+	  そのことを Apple の形式で明示する。
+
+	  - 外部への通信がない（fetch / XHR / WebSocket を1つも使っていない）
+	  - 端末に残すのは「最後に選んだリズム」と「音色」だけで、外へは出さない
+	  - 音源は合成。外部フォント・CDN・分析SDK・トラッキングを入れない方針
+
+	  **要理由 API（NSPrivacyAccessedAPITypes）は自前のコードで使っていない。**
+	  UserDefaults・ファイルのタイムスタンプ・システム稼働時間などを
+	  一切呼んでいないため空にしてある。Capacitor 本体は自分の
+	  PrivacyInfo.xcprivacy を同梱しているので、ここで代弁しない。
+
+	  **使うようになったら、ここに追記しないと審査で弾かれる。**
+	-->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array/>
+</dict>
+</plist>
