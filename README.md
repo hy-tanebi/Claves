@@ -54,7 +54,7 @@
 
 ## 技術スタック
 
-[![Tech Stack](https://skillicons.dev/icons?i=ts,swift,html,css,vite,vitest,pnpm,apple)](https://skillicons.dev)
+<img src="https://skillicons.dev/icons?i=ts,swift,vite,vitest,pnpm,apple" alt="TypeScript, Swift, Vite, Vitest, pnpm, Apple" height="48"> <img src="docs/images/icons/capacitor.svg" alt="Capacitor" height="48"> <img src="docs/images/icons/playwright.svg" alt="Playwright" height="48">
 
 | カテゴリ | 技術 |
 |---|---|
