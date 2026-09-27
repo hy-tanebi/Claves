@@ -9,31 +9,26 @@
 **1.0 が App Store で配信中。** 9/24 までに審査を通り（ステータス「配信準備完了」）、
 自動リリースで公開された。オーナーがストアで確認済み。
 **1.0.1 も配信中（2026-09-27 に App Store の公開情報で確認）。** 以前は 1.0.1 (2) を審査に提出（2026-09-24）。 テンポ ±1 ボタン、一覧の譜面の幅の修正、ボタンの形の統一。
-1.1 の投げ銭 IAP を待たずに先に出すと決めた（iOS 18 の一覧の不具合が今出ているため）。
 
-- リポジトリ: https://github.com/hy-tanebi/Claves （private。ポートフォリオとして public 化を準備中）
+- リポジトリ: https://github.com/hy-tanebi/Claves （public。ポートフォリオを兼ねる）
 - App Store: https://apps.apple.com/jp/app/clavenome/id6813747522
 - デフォルトブランチ: `dev`。`main` はリリースしたコード（1.0.1 から運用開始）
 - JS 288 件 / Swift 72 件 PASS、型エラー 0 件、E2E 36 件 PASS（Chromium・WebKit 各 18 件）
 - 1.0 (1) のコードはタグ `v1.0-build1`（`bb82f22`）
 - `check:notation` 9リズム × 375・390・430px = 27通り 欠陥 0
 - Bundle ID: `com.tanebicreative.clavenome`（App Store 側で確定済み。以後変更不可）
-- Apple Developer Program: 個人名義で登録済み（2026-09-19 承認）。デベロッパ名は本名で表示される
 - App Store Connect の Apple ID: `6813747522`
 
 ### 次にやること（このセッションで最初に見る）
 
-**1.0.1 の審査結果を待つ。** 自動リリースなので、承認されればそのまま配信される。
+**1.0.1 は配信済み。** 次のリリースの内容は本社側で扱う。
 
 - [x] Archive → App Store Connect へアップロード、バージョン 1.0.1 の作成、
       新機能の文章（3言語）、スクリーンショットの差し替え、審査に提出（2026-09-24）
-- [ ] 審査結果を確認する。承認されたら App Store で 1.0.1 になっているか、
-      ±ボタンと一覧の譜面の幅を実機で確かめる
+- [x] 1.0.1 が App Store で配信されていることを確認（2026-09-27）
+- [ ] ±ボタンと一覧の譜面の幅を、ストア版の実機で確かめる
 - [ ] リリース後、`docs/site/index.html`（Privacy/Support の原本）と実際に公開した
       `https://tanebi-net.com/clavenome` の内容が一致しているか確認する
-- [ ] **1.1 で投げ銭 IAP を実装する**（2026-09-19 オーナー判断。理由は下の「掲載文」節と
-      更新履歴 9/19 参照）。実装前に Paid Apps Agreement（税務・銀行情報）を
-      App Store Connect で済ませておく
 
 ### 掲載文・提出設定
 
@@ -47,9 +42,7 @@
 日本語・ポルトガル語は `Clavenome` のまま。ホーム画面のアイコン名（`Info.plist` の
 `CFBundleDisplayName`）はどの言語でも `Clavenome` で、ストア名とは別物。
 
-**投げ銭 IAP は 1.0 に含めない。** 広告は入れない方針で確定（通信・外部 SDK ゼロという
-設計と正面から矛盾するため）。投げ銭（消耗型 IAP）は Apple 標準の StoreKit で完結し、
-通信も外部 SDK も要らないため、この設計を壊さずに足せる唯一の集金手段として 1.1 で入れる。
+**広告は入れない。** 通信・外部 SDK ゼロという設計と正面から矛盾するため。
 
 ### 提出前チェックリスト（すべて完了・次回リリース時の参考に残す）
 
@@ -60,7 +53,6 @@
 - [x] `git diff ios/App/App.xcodeproj/` を見て `DEVELOPMENT_TEAM` と Sanitizer が入っていないことを確認した
 - [x] Xcode: Product → Archive → Distribute App（App Store Connect）でアップロード完了
 - [x] App Store Connect: App Privacy は「データを収集しない」を選んで公開した
-- [x] 投げ銭 IAP は v1.0 に入れず、1.1 で実装する（上記）
 - [x] スクリーンショット（6.5インチ・6.7インチ、各4枚）を `screenshots/store/` に用意して登録
 - [x] カテゴリ（プライマリ: ミュージック）、年齢制限（4+）、価格（無料・全地域配信）を設定
 - [x] 審査に提出（2026-09-20）
@@ -231,7 +223,7 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 
 **B. リズムを増やす** — 採譜が要る（音楽的判断）
 
-- [ ] サンバアフロ、カンドンブレ系など。10以上を想定
+- [ ] 収録するリズムを増やす
 - [ ] 各リズムの骨格が何か、拍子、小節数
 - 追加は `src/domain/patterns/` に1ファイル、`registry.ts` に登録するだけ。
       バリデータが誤りを弾く
@@ -281,8 +273,7 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
       アプリ名と連絡先を入れて Cloudflare Pages に置くのはオーナー作業
 - [x] `ITSAppUsesNonExemptEncryption = false`（提出のたびの輸出規制の質問を無くす）
 - [ ] App Store 申請
-- [ ] 課金は **無料 ＋ 任意の投げ銭**（IAP）。機能制限はしない（2026-08-23 オーナー判断）。
-      Stripe は使えない・使う必要もない（Apple が集金するのでサーバー不要）
+- [x] 無料で配信。機能を制限する課金はしない（2026-08-23 オーナー判断）
 
 ### v1 でやらないと決めたもの
 
@@ -303,7 +294,7 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
   端末の識別子・他人の名前も無い。削除済みの起動画面の画像に Photoshop の XMP があるが、
   Capacitor 初期テンプレートのもの（2017年作成）でオーナーの情報は含まない
 - 出典欄の本名と所属を「作者」「奏者」に置き換えた（採譜の内容と確認日は不変）。
-  ただし過去の履歴とコミットの作成者名には本名が残る（2026-09-27 オーナー判断: 過去の履歴は残してよい。今後の内容に載らなければよい）
+  過去の履歴には以前の記述が残る（2026-09-27 オーナー判断: 過去の履歴は残してよい。今後の内容に載らなければよい）
 - README を採用担当者向けに整えた。英語の紹介文を外し、タイトルを「Clavenome（クラベノーム）」に、
   App Store へのリンク、画面 4 枚、技術スタックのアイコン、テスト戦略の節を足した。
   開発手順は `docs/development.md` へ移した
@@ -314,14 +305,16 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
   | # | 論点 | 結論 |
   |---|---|---|
   | 1 | 秘密情報（鍵・トークン・Team ID・証明書） | 全履歴に無い（両者一致） |
-  | 2 | App Review とのやり取り（`store-listing.md`） | 残す。自分の回答と Apple の定型質問で、認証情報を含まない |
-  | 3 | 事業判断（課金方針・規模） | 残す。無料＋投げ銭は README でも公開している方針 |
+  | 2 | App Review とのやり取り（`store-listing.md`） | 本社側へ移した（公開リポジトリに書かないもののルールによる） |
+  | 3 | 事業判断（課金・計画） | 本社側へ移した（同上） |
   | 4 | CLAUDE.md の本社側のパス | 削除した |
   | 5 | 履歴に残るメンバー構成の記述 | 残す（過去の履歴は残してよいというオーナー判断の範囲） |
   | 6 | 依存パッケージ（osv-scanner） | 悪性 0 件。moderate 3 件は開発用（vitest、Capacitor CLI 経由の uuid）で本体に入らない |
   | 7 | 画像メタデータ | 上記のとおり問題なし（初回調査は現行ファイルのみで、削除済み画像を見落としていた） |
 
   PR のコメント・レビューは 0 件。PR #16 の本文に団体名を書き込んでいたので直した（編集履歴には残る）
+- `CLAUDE.md` に「公開リポジトリに書かないもの」のルールを定め、既存の記述もそれに合わせて
+  本社側へ移した。あわせて他のプロジェクトの名前も外した
 - 残り: オーナーが GitHub の Settings から public に切り替える
 
 ### 2026-09-24
@@ -329,9 +322,7 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 **1.0 が配信開始。1.0.1 を準備した。**
 
 - 1.0 (1) が審査を通り、自動リリースで公開された
-- デベロッパ名が本名で出る件: 個人登録のため変えられない。屋号では組織登録できず、
-  法人化してアカウントを組織へ切り替えるしかない（法人化は事業判断なので本社で扱う）
-- テンポ ±1 ボタンなどを 1.1（投げ銭 IAP）を待たずに **1.0.1** として先に出すと決めた
+- テンポ ±1 ボタンなどを **1.0.1** として先に出すと決めた
 - バージョン 1.0.1・ビルド 2 に上げ、新機能の文案（3言語）を `store-listing.md` に置き、
   ストア用スクリーンショットを撮り直した。`dev` → `main` を PR #11 でマージし、
   タグ `v1.0.1-build2` を付けた
@@ -352,7 +343,6 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 - 上限 240・下限 40 でボタンを無効にする。± とスライダーを操作したら TAP の記録を捨てる
 - 押せる面の角丸を 5px に揃えた（`--radius-tap`）。3:2 / 音色はピル形から四角になった。
   一覧の行の中の譜面も 5px に揃えた（8px のままだと、選択枠より中身が丸く浮く）
-- デザインはキャンバスで決めた: https://claude.ai/artifact/CSL2ZW1jQt6oSuk4Q3x2HG
 - **E2E を入れた**（`e2e/`、`pnpm test:e2e`）。新しい依存は入れず、既存の playwright を
   node:test から使う。単体（Vitest）で部品を、E2E で `main.ts` の配線を守る二層にした
 - E2E で見逃しかけた欠陥: 長押しで上限に着いたとき、押下の色が残る。デスクトップの
@@ -366,8 +356,8 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 - **E2E を Chromium と WebKit の両方で流すようにした**（Playwright の WebKit をこの日に導入）。
   ただし Playwright の WebKit は Safari 26 相当で、上の iOS 18 の既定値は持たない。
   古い版の挙動は、既定スタイルを差し込んで再現する（`legacyWebKitButton`）
-- **dev サーバーを 5174 番に固定した。** 5173 番で swipe-wiki が IPv6 で動いていて、
-  Claves も IPv4 の 5173 番で起動できてしまい、E2E が swipe-wiki を開いていた
+- **dev サーバーを 5174 番に固定した。** 5173 番で別のプロジェクトが IPv6 で動いていて、
+  Claves も IPv4 の 5173 番で起動できてしまい、E2E が別のアプリを開いていた
 - 依存の監査（osv-scanner 2.6.0。この日に導入）: **悪性パッケージ（MAL-）は 0 件。**
   既知の脆弱性は moderate が 3 件で、どれも開発用の道具の依存。アプリ本体には入らない
   - vitest / @vitest/mocker 3.2.7（GHSA-82fw-gwwq-j7x9）→ 4.1.11 以上で解消。
@@ -378,34 +368,15 @@ xcrun simctl io booted screenshot /tmp/s.png   # 起動直後は白いので数�
 
 ### 2026-09-21〜22
 
-**Apple の情報提供要求（Guideline 2.1 Information Needed）に対応した。**
-
-- 9/21 4:53: Apple から要求。審査履歴の少ない新規アカウントに対する定型の確認で、
-  6項目（実機録画／目的とターゲット／セットアップ手順／外部サービス／地域差／
-  規制業種・第三者素材）を「メッセージで返信し、App Review のメモ欄にも載せる」よう指示
-- 9/21 14:55: iPhone XR（iOS 18.7、この端末で使える最新）の画面録画を添付して6項目を返信。
-  14:58 に「Control Center からの停止は録画に含まれていない」と訂正を追記
-- 9/22: 返信した内容をメモ欄にも追記（`docs/store-listing.md` に全文）。
-  「却下済み」→「審査準備完了」に変わったので**「App Review に再提出」を押した。**
-  ビルドは 1.0 (1) のまま。ステータスは「審査待ち」
-- 気にかけておく点: 録画が最新 iOS の端末ではない。要求し直された場合は、最新 iOS が入る
-  端末を持つ人に TestFlight で配って録ってもらう
+**Apple から追加情報の要求があり、回答して再提出した。** やり取りの詳細は本社側で扱う。
 
 ### 2026-09-19〜20
 
 **Apple Developer Program に登録し、App Store の審査に提出した。**
 
-- 9/19: Apple Developer Program に個人名義で登録・承認。個人事業の屋号は
-  Apple の Organization 要件（DBA・商号は不可）を満たさないため個人登録にした
-  （本人は本名、アプリの表示は屋号で統一）
+- 9/19: Apple Developer Program に登録・承認
 - 9/19: 広告は入れないことを確定。CSP・`PrivacyInfo.xcprivacy`・「データを収集しない」の
-  申告と正面から矛盾し、広告 SDK は外部通信・外部コードを持ち込むため。
-  代わりに**投げ銭 IAP を 1.1 で実装する**と決めた（StoreKit は Apple 標準で
-  通信も外部 SDK も要らず、この設計を壊さない）
-- 9/19: 「1.0 から投げ銭を入れておくべきでは」の検討 → **1.0 は投げ銭なしで出し、
-  1.1 で足す**方針を維持。理由: 初回審査に IAP の検査項目が増え、Paid Apps
-  Agreement（税務・銀行情報）の提出も先に要る。後から追加しても
-  ユーザーには「最初からあった」ように見え、実質的な不利益はない
+  申告と正面から矛盾し、広告 SDK は外部通信・外部コードを持ち込むため
 - 9/20: App Store Connect でアプリを作成。Bundle ID `com.tanebicreative.clavenome`
   がここで確定した
 - 9/20: `pnpm build && cap sync ios` → Archive → App Store Connect へアップロード。
@@ -443,7 +414,7 @@ git 全履歴の Team ID 混入・`pnpm audit`。攻撃面は「自分の WebVie
 
 - `Info.plist` に `ITSAppUsesNonExemptEncryption = false`
 - `docs/site/index.html` — Support / Privacy Policy の草案（日英）。
-  アプリ内購入の条項は投げ銭・アンロックどちらでも通る書き方にしてある
+  アプリ内購入の条項も含めてある
 - 依存更新: Capacitor 8.5.0 → 8.5.1（`Package.swift` も `cap sync` で追従）。
   `pnpm audit` 14件 → 3件。**消えたのは `@capacitor/cli > plist > @xmldom/xmldom`**（high 9件）。
   8.5.2 は `minimumReleaseAge` で止まっており、cooldown が効いていることも確認できた
@@ -467,9 +438,6 @@ vitest 4/5 へのメジャー更新が要る。`uuid` は `xcode` パッケー�
 Bundle ID は Apple 側に未登録だったので、名前に揃えて変えた。
 **App Store Connect でアプリを作った時点で固定される。以後は変えない。**
 
-Developer Program は**個人名義**で登録する（個人事業の屋号は Apple の Organization 要件を
-満たさない。DBA・商号は不可と明記されている）。販売元は本名、それ以外は屋号で統一する。
-
 ### 2026-09-16
 
 **起動画面をアイコン＋アプリ名にし、2.5 秒見せるようにした。** 実機で確認済み。
@@ -490,10 +458,6 @@ cd ios/App && xcodebuild -project App.xcodeproj -scheme App -configuration Debug
 xcrun devicectl device install app --device <Identifier> <Build/Products/Debug-iphoneos/App.app>
 xcrun devicectl device process launch --device <Identifier> --terminate-existing com.tanebicreative.clavenome
 ```
-
-**投げ銭 IAP は未実装。** オーナーから「4つ目以降のリズムを課金にする」案が出た。
-CLAUDE.md に記録した 8/23 の判断（機能を制限する課金はしない）と逆になるので、
-方針を変えるなら CLAUDE.md の「このプロジェクトの性格」も書き換える。
 
 ### 2026-09-07
 
@@ -867,21 +831,13 @@ v1 でやらないと決めていた項目だが、入れる方向に変わっ�
   **表が机上の別実装ではなく、実際に鳴らしている式を写したものになる**ため
   - 既存のスケジューラ34件を含む全テストが通ることで、載せ替えの安全を確認
 - **P0-b（Capacitor 化）は着手できない。** Xcode.app と CocoaPods が未インストール。
-  Xcode は Mac App Store から数十GB、オーナーの Apple ID が要る
+  Xcode は Mac App Store から数十GB、Apple ID が要る
 
 ### 2026-08-23
 
-- **収益化を諦め、無料 ＋ 任意の投げ銭で出すと決めた**（オーナー判断）。
-  位置づけは「練習特化のツール」＋「ポートフォリオ・宣伝」
-  - ガイドライン 3.1.1 が投げ銭を明示的に認めている
-    （"Apps may use in-app purchase currencies to enable customers to 'tip' the developer"）
-  - **機能を制限する課金はしない。** 収録しているのはブラジルの伝統的なリズムで、
-    アクセスに壁を立てて売る形を取らない。払ってもらうのは
-    「ソフトウェアを作った仕事」に対してであって、リズムに対してではない
-  - 広告は採らない。**同じものを注意という形で売っているだけ**で懸念の答えにならず、
-    加えて広告 SDK のトラッキングが「収集ゼロ・完全オフライン」を壊し、
-    この規模では $99/年すら賄えない
-  - 復元機能の実装義務も、機能制限をしないので発生しない
+- **無料で出し、機能を制限する課金はしないと決めた**（オーナー判断）。
+  収録しているのはブラジルの伝統的なリズムで、アクセスに壁を立てて売る形を取らない
+  - 広告は採らない。広告 SDK のトラッキングが「収集ゼロ・完全オフライン」を壊すため
 - **`Category` 型と `category` フィールドを削除した。**
   `candomble` という値は実装者（Claude）が名前から推測して付けたもので、
   **アプリが根拠なく宗教的な分類を主張している状態**だった。
@@ -916,12 +872,6 @@ v1 でやらないと決めていた項目だが、入れる方向に変わっ�
 - **`CLAUDE.md` の切替仕様の文言を修正。** 「次の拍境界から効かせる」は
   先読み済み範囲と重なって二重発音するように読め、実際にレビューで誤読された。
   実装は `lastScheduledTick` より後にしか境界を置いていない（テスト60通りで確認済み）
-- **課金は Apple の決済一択と判明。** Stripe はアプリ内の機能解放には使えない
-  （3.1.1 が独自の解放機構を禁止）。日本のスマホ新法で外部決済は可能になったが、
-  Apple が最大26%を課すため IAP（15%）より手取りが減り、しかも日米ストアフロント限定で
-  主戦場の欧州では使えない。**Apple 決済ならサーバー不要で「収集ゼロ」を維持できる**
-  - 買い切りにしても集金するのは Apple。Stripe を挟む場面がそもそも存在しない
-  - 価格モデル（買い切り / 無料＋IAP）は**リリース時のリズム数が決まってから確定する**
 - **Capacitor は Apple の「privacy manifest と署名が必要な第三者 SDK」一覧に含まれる。**
   Xcode の Privacy Report を確認する工程が要る。`mach_absolute_time()` を直接使うなら
   Required Reason API なので `PrivacyInfo.xcprivacy` に理由の記載が要る
