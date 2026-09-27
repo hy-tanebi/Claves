@@ -12,7 +12,8 @@
 
 このリポジトリは、ポートフォリオとしても公開しています。企画・設計・実装・App Store 申請まで担当しています。
 
-<!-- 動画: GitHub の編集画面に mp4 をドラッグすると https://github.com/user-attachments/assets/... の URL が入る。その 1 行をここに置く -->
+https://github.com/user-attachments/assets/690fbb7f-c2d7-4ea7-81a3-f3c34713c0d5
+
 
 <table>
   <tr>
