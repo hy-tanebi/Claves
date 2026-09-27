@@ -141,4 +141,3 @@ E2E は開いたページの title が Clavenome でなければ、その旨を�
 
 - `docs/progress.md` — 現在地と次の一手（**最初に読む**）
 - `docs/notation-layout-plan.md` — 譜面レイアウトの調査記録
-- 設計書とリズムの構想は本社側 `.company/secretary/inbox/2026-08-13-rhythm-metronome-app-design.md`
