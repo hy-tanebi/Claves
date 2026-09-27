@@ -1,38 +1,69 @@
-# Clavenome
+# Clavenome（クラベノーム）
 
 > ラテンミュージックのリズムパターンを鳴らす、練習用メトロノーム（iOS）
 
-**Clavenome** is an iOS practice metronome that plays Latin rhythm patterns (son, rumba and bossa claves, Afro grooves in 2/4 and 6/8, Ijexá) instead of a plain click. It shows the pattern as notation, keeps playing with the screen locked, and never uses the network. Built with TypeScript + VexFlow, Capacitor, and a Swift audio engine. Currently in App Store review.
+[![App Store](https://img.shields.io/badge/App_Store-配信中-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/jp/app/clavenome/id6813747522)
+![iOS](https://img.shields.io/badge/iOS-15%2B-000000?logo=apple&logoColor=white)
+![Network](https://img.shields.io/badge/通信-ゼロ-2ea44f)
 
-<img src="docs/images/main.png" width="300" alt="Clavenome のメイン画面。Son Clave の譜面と 120 BPM の表示">
+**App Store**: [Clavenome](https://apps.apple.com/jp/app/clavenome/id6813747522)（無料）
 
 ## はじめに
 
 このリポジトリは、ポートフォリオとしても公開しています。企画・設計・実装・App Store 申請まで担当しています。
 
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/690fbb7f-c2d7-4ea7-81a3-f3c34713c0d5" width="320" controls></video>
+  <p>操作の様子（音が出ます）</p>
+</div>
+
+<table>
+  <tr>
+    <td align="center" width="25%"><img src="docs/images/screen-1-son-clave.png" alt="メイン画面。Son Clave の譜面、120 BPM、テンポの ±1 ボタンと PLAY ボタン"></td>
+    <td align="center" width="25%"><img src="docs/images/screen-2-list.png" alt="リズム一覧。各リズムの名前と譜面が並ぶ"></td>
+    <td align="center" width="25%"><img src="docs/images/screen-3-6-8.png" alt="6/8 Afro Groove 1 の譜面を表示した画面"></td>
+    <td align="center" width="25%"><img src="docs/images/screen-4-ijexa.png" alt="IJEXA の譜面を表示した画面"></td>
+  </tr>
+  <tr>
+    <td align="center">譜面を見ながら再生</td>
+    <td align="center">リズムを譜面で選ぶ</td>
+    <td align="center">6/8 のリズム</td>
+    <td align="center">様々なリズムが選択可能</td>
+  </tr>
+</table>
+
+## 誰のためのアプリか
+
+**中南米の音楽が好きな、すべての楽器奏者の練習のお供に。**
+
+パーカッションはもちろん、ギター・ベース・ドラム・ピアノ・管楽器など、楽器を問わず使えます。ただのクリック音ではなく、クラーベをはじめとするリズムパターンに合わせて弾くことで、中南米の音楽ならではのノリを体で覚えられます。
+
 ## 課題と解決
 
-パーカッションやドラムの練習では、単なるクリックではなく**クラーベを鳴らすメトロノーム**が要ります。クラーベはラテン音楽の骨格で、演奏者はそれを聴きながら自分のパートを重ねて練習するためです。
+中南米の音楽を練習するときは、クラーベなどのリズムパターンを鳴らすメトロノームが役に立ちます。ただ、既存のアプリは収録されているリズムの種類が少なく、アプリ自体の開発も止まっていました。練習したいリズムが今後追加される見込みもなかったため、自分で作ることにしました。
 
-既存のクラーベメトロノームは収録パターンが少なく、練習したいリズムが入っていませんでした。アフロ系の音楽にはクラーベのほかにも多くのリズムパターンがあり、それらを網羅して練習できるものが必要でした。
-
-Clavenome は、ソン・ルンバ・ボサの各クラーベに加え、2/4 と 6/8 のアフロ系グルーヴ、IJEXA を収録し、譜面を見ながら練習できるメトロノームとしてこの課題を解決しています。リズムは譜面データを 1 ファイル足すだけで増やせる構造にしてあり、今後も追加していきます。
+| 課題 | 解決したこと |
+|---|---|
+| 単なるクリックのメトロノームでは、クラーベ（ラテン音楽の骨格になるリズム）に合わせた練習ができませんでした | クラーベそのものを鳴らし、演奏者がそれを聴きながら自分のパートを重ねて練習できるようにしました |
+| 既存のクラーベメトロノームは収録パターンが少なく、練習したいリズムが入っていませんでした | ソン・ルンバ・ボサや 6/8 のアフロ系のリズムを収録しました。譜面データを 1 ファイル足すだけで増やせる構造です |
+| 耳だけではリズムの形を覚えにくく、今どこを鳴らしているのかも分かりませんでした | 譜面を表示し、再生位置をハイライトします |
+| iOS は画面をロックすると WebView の JavaScript を止めるため、Web 技術だけでは練習中に音が止まります | 再生の時計を Swift のオーディオエンジンに置き、ロック中もサンプル単位の精度で鳴らし続けます |
 
 ## できること
 
 - 収録リズム 9 種（Son / Rumba / Bossa Clave、Afro Groove 1〜3、6/8 Afro Groove 1〜2、IJEXA）
 - クラーベの 3:2 / 2:3 切替
 - 1 本線の譜面表示と、再生位置のハイライト
-- 40〜240 BPM のスライダーと、タップテンポ
+- 40〜240 BPM のスライダー、±1 ボタン（長押しで連続）、タップテンポ
 - 音色 2 種（アゴゴ風・クラベス風。どちらも合成音）
 - バックグラウンド再生、ロック画面からの再生・停止、イヤホン抜去で自動停止
 - 通信ゼロ・アカウントなし・広告なし・無料
 
-**App Store**: 審査中（承認後にリンクを置きます）
-
 ---
 
 ## 技術スタック
+
+<img src="https://skillicons.dev/icons?i=ts,swift,vite,vitest,pnpm,apple" alt="TypeScript, Swift, Vite, Vitest, pnpm, Apple" height="48"> <img src="docs/images/icons/capacitor.svg" alt="Capacitor" height="48"> <img src="docs/images/icons/playwright.svg" alt="Playwright" height="48">
 
 | カテゴリ | 技術 |
 |---|---|
@@ -42,7 +73,7 @@ Clavenome は、ソン・ルンバ・ボサの各クラーベに加え、2/4 と
 | iOS パッケージング | Capacitor 8（WKWebView ＋ 自作プラグイン） |
 | 再生エンジン | AVAudioEngine / AVAudioSourceNode / AVAudioSession / MPNowPlayingInfoCenter |
 | ブラウザ版の再生 | Web Audio API（開発時の確認用。ネイティブと同じ計画を再生する） |
-| テスト | Vitest（JS 280 件）/ XCTest（Swift 72 件）/ Playwright（実ブラウザでの譜面検証） |
+| テスト | Vitest（288 件）/ XCTest（72 件）/ Playwright（E2E を Chromium と WebKit で実行・譜面の見た目の検証） |
 | セキュリティ | CSP `default-src 'none'` / JS→ネイティブ境界の検証層 / pnpm のサプライチェーン設定 |
 | AI 開発 | Claude Code（実装の補助。設計とルールは `CLAUDE.md` に自分で定義） |
 
@@ -200,6 +231,20 @@ VexFlow の 5 線譜を 1 本線として使い、2/4 と 6/8、リピート記�
 
 描画前に音楽フォントの読み込みを待つ、グリフの `pt` を viewBox の単位に直す、余白を実測して viewBox を詰める、といった調整は、すべて実ブラウザ（`pnpm check:notation`）で確認しています。
 
+## テスト戦略
+
+守る対象ごとに、確かめられる場所で確かめます。
+
+| 層 | 道具 | 守るもの |
+|---|---|---|
+| 単体 | Vitest（288 件） | 譜面データの正しさ、tick 計算、先読みスケジューラ、状態機械。時間の振る舞いは偽のタイマーで確かめる |
+| ネイティブ | XCTest（72 件） | 時刻計算・発音・検証層・割り込み時の判断。判断は純粋な関数に切り出し、実機なしで固定する |
+| JS ⇄ Swift の契約 | golden fixture | 同じ入力に対して両側が同じ結果を返すこと。片方だけ変えると落ちる |
+| E2E | Playwright ＋ `node:test` | 画面の操作（押す・離す・長押し・レイアウト）。**Chromium と WebKit の両方**で流す |
+| 見た目 | Playwright（`check:notation`） | 符尾の離れ、小節からのはみ出し、符頭の大きさを 9 リズム × 3 画面幅で自動判定 |
+
+WebKit でも流すのは、iPhone と同じ描画エンジンだからです。実際に、**iOS 18 以前の WebKit だけで一覧の譜面が縮む**不具合が出ました（`button` の既定値 `align-items: flex-start` が原因で、Chromium では再現しません）。E2E ではこの既定値を再現して、同じ不具合が戻らないようにしています。
+
 ## ディレクトリ構成
 
 ```
@@ -220,6 +265,7 @@ ios/
 └── ClavesEngine/      # 再生の中核（Swift Package）。時刻計算・発音・検証層。XCTest 72 件
 
 golden/                # JS と Swift の両側で照合する入出力 fixture
+e2e/                   # 画面操作の E2E（Playwright。Chromium と WebKit）
 scripts/
 ├── check-notation.mjs     # 実ブラウザで譜面を検証（Playwright）
 └── store-screenshots.mjs  # App Store 用スクリーンショット
@@ -227,48 +273,9 @@ scripts/
 
 ---
 
-<details>
-<summary><strong>開発</strong></summary>
+## 開発
 
-### セットアップ
-
-```bash
-pnpm install --frozen-lockfile
-```
-
-### 開発サーバー
-
-```bash
-pnpm dev
-```
-
-iPhone の Safari から開くときは、起動時に表示される `Network:` の URL を使います（同じ Wi-Fi にいること。IP は繋ぎ直すと変わります）。iOS は最初のタップまで音を出せないので、PLAY ボタンから始めてください。
-
-### 検証
-
-```bash
-pnpm test             # JS のテスト（データの正しさ）
-pnpm typecheck        # 型
-pnpm check:notation   # 譜面の見た目。pnpm dev を別ターミナルで起動してから
-cd ios/ClavesEngine && swift test   # Swift のテスト
-```
-
-`pnpm test` は譜面の見た目を保証しません。譜面や画面を変えたら `check:notation` を通し、`screenshots/` の画像を目で確認します。
-
-### iOS へ反映
-
-```bash
-pnpm build && pnpm exec cap sync ios
-open ios/App/App.xcodeproj
-```
-
-署名の Team ID は `ios/Signing.xcconfig`（git 管理外）に置きます。`ios/Signing.xcconfig.example` をコピーして作ってください。シミュレータ向けのビルドは署名なしで通ります。
-
-### リズムを足す
-
-`src/domain/patterns/` に 1 ファイル書いて `registry.ts` に登録し、`pnpm gen:golden` で fixture を作り直してから `check:notation` を通します。
-
-</details>
+セットアップ・検証・iOS への反映の手順は [`docs/development.md`](docs/development.md) にまとめています。
 
 ---
 

@@ -67,10 +67,10 @@ export const BOSSA_CLAVE: Pattern = {
   source: {
     locator: {
       type: "primary",
-      person: "菅原隼人",
-      role: "BOAVISTA 主宰・奏者",
+      person: "作者",
+      role: "奏者",
     },
-    transcribedBy: "菅原隼人",
+    transcribedBy: "作者",
     confirmedOn: "2026-09-03",
     arrangementNotes:
       "口唱歌「カンンカ ンンカン ンンカン ンカンン」を本人が確認（2026-09-03）。" +
