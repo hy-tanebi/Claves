@@ -65,7 +65,7 @@ export async function openApp(browser, viewport = DEFAULT_VIEWPORT, options = {}
   // **別のプロジェクトの dev サーバーを開いていないか確かめる。**
   // Claves は 5174 に固定している（vite.config.ts）が、APP_URL を取り違えたり
   // 別のアプリがその番号を使っていたりすると、気づかずに進んで「要素が無い」で全部落ち、
-  // 原因を取り違える（2026-09-23 に 5173 の swipe-wiki を開いて起きた）
+  // 原因を取り違える（2026-09-23 に 5173 番で別のアプリを開いて起きた）
   const title = await page.title();
   if (title !== APP_TITLE) {
     await page.close();

@@ -149,38 +149,10 @@ metrônomo,clave,samba,latino,salsa,son,rumba,ritmo,percussão,afro,brasil,cuba,
 | 価格                | 無料                                                                                               |
 | App のプライバシー  | データを収集しない                                                                                 |
 | App Review の連絡先 | 氏名・電話・メール（審査員が連絡する先。公開されない）                                             |
-| App Review のメモ   | 下の「App Review のメモ（全文）」を参照。9/22 に 2.1 Information Needed への回答を追記した   |
 
-## App Review のメモ（全文）
+## App Review のメモ・審査対応
 
-9/20 の提出時は1行目だけだった。9/21 に Apple から Guideline 2.1（Information Needed）で
-6項目の情報提供を求められ、メッセージで返信したうえで、指示どおり同じ内容をメモ欄にも載せた
-（9/22）。1 の録画はメモ欄に添付できないので、メッセージに添付した旨だけ書いてある。
-
-```
-This app works entirely offline. To verify background playback, tap PLAY and then lock the screen.
-
---- Information provided on Sep 21, 2026 in response to Guideline 2.1 (Information Needed) ---
-
-1. Screen recording
-A screen recording was attached to the App Review message thread on Sep 21, 2026. It was captured on an iPhone XR running iOS 18.7 (the latest iOS available for this device). It starts from launching the app and shows: playing a rhythm, changing tempo with the slider and tap tempo, switching rhythms, flipping a clave between 3:2 and 2:3, switching sounds, and background playback while another app is in the foreground.
-The app has no account, no login, no user-generated content, and no paid content.
-
-2. Purpose and target audience
-Clavenome is a practice metronome for percussionists and drummers who play Latin and Afro-Brazilian music. Instead of a plain click, it plays rhythm patterns (son, rumba and bossa claves, Afro grooves in 2/4 and 6/8, and Ijexá) and shows them as notation with the current note highlighted. Practicing with the actual pattern, rather than a click, is how these styles are learned. Existing clave metronomes offer only a few patterns; Clavenome covers more of the patterns that these players need.
-
-3. Setup and access
-No setup is required. Launch the app and tap PLAY. Tap the rhythm name at the top to choose another pattern. There are no login credentials or sample files.
-
-4. External services
-None. The app works entirely offline. It does not connect to any server, and uses no analytics, advertising, authentication, payment, or AI services.
-
-5. Regional differences
-None. The app functions identically in all regions. The App Store listing is localized in Japanese, English, and Brazilian Portuguese; the app itself has no region-specific features or content.
-
-6. Regulated industry / third-party material
-Not applicable. The app is not in a regulated industry. The rhythm patterns are traditional and in the public domain. The notation is rendered by the open-source library VexFlow (MIT license), and all sounds are synthesized by the app itself; no recordings or third-party material are included.
-```
+審査とのやり取りは公開しない。本社側で扱う。
 
 ## 1.0.1 — このバージョンの新機能
 
@@ -225,37 +197,3 @@ Not applicable. The app is not in a regulated industry. The rhythm patterns are 
 | 2   | `*-2-list.png`      | リズム一覧            |
 | 3   | `*-3-6-8.png`       | 6/8 のリズム          |
 | 4   | `*-4-ijexa.png`     | IJEXA                 |
-
-## 審査対応履歴
-
-### 2026-09-21（1回目）
-
-**Apple からの質問**：Guideline 2.1 Information Needed
-
-新規アカウントの審査として、以下を提供するよう求められた：
-
-1. 実機の画面録画（最新 OS、アプリ起動から主な機能の一通り）
-2. アプリの目的・ターゲット・解く課題・提供する価値
-3. セットアップ・アクセス方法（ログイン有無・サンプルファイル有無）
-4. 外部サービス一覧
-5. 地域差の有無
-6. 規制産業か / 第三者保護資材の有無
-
-**対応内容**：
-
-- 画面録画：iPhone XR 実機で 91.5 秒（起動 → 再生 → テンポ変更 → リズム切り替え → 
-  クラーベ 3:2/2:3 切り替え → 音色切り替え → バックグラウンド再生確認）
-- 返信文：6 項目すべてに英語で回答。外部サービス・ユーザー生成コンテンツ・
-  ログイン機能・有料機能いずれも無い旨、アプリ設計（完全オフライン・公開リズムのみ）を記載
-- 訂正：返信文にコントロールセンター停止の記載があったが、録画に含まれていなかったため
-  訂正メッセージを送信
-
-**次のステップ**：Apple の再審査結果待ち（通常 1〜3日）
-
-### 2026-09-22〜24（承認）
-
-- 9/22: 返信と同じ内容を App Review のメモ欄にも載せ、同じビルド 1.0 (1) で再提出
-- 9/24 までに**承認**。ステータスは「配信準備完了」（旧 Ready for Sale）。
-  自動リリース設定なのでそのまま配信が始まり、オーナーがストアで公開を確認した
-- デベロッパ名は本名で表示される。個人で登録しているため（屋号では組織登録できない）。
-  屋号で出すには法人化してアカウントを組織へ切り替える必要がある
