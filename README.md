@@ -1,4 +1,4 @@
-# Clavenome
+# Clavenome（クラベノーム）
 
 > ラテンミュージックのリズムパターンを鳴らす、練習用メトロノーム（iOS）
 
@@ -6,7 +6,7 @@
 ![iOS](https://img.shields.io/badge/iOS-15%2B-000000?logo=apple&logoColor=white)
 ![Network](https://img.shields.io/badge/通信-ゼロ-2ea44f)
 
-**Clavenome** is an iOS practice metronome that plays Latin rhythm patterns (son, rumba and bossa claves, Afro grooves in 2/4 and 6/8, Ijexá) instead of a plain click. It shows the pattern as notation, keeps playing with the screen locked, and never uses the network. Built with TypeScript + VexFlow, Capacitor, and a Swift audio engine. [Available on the App Store](https://apps.apple.com/jp/app/clavenome/id6813747522).
+**App Store**: [Clavenome](https://apps.apple.com/jp/app/clavenome/id6813747522)（無料）
 
 ## はじめに
 
@@ -16,14 +16,16 @@
 
 <table>
   <tr>
-    <td align="center"><img src="docs/images/screen-1-son-clave.png" width="240" alt="メイン画面。Son Clave の譜面、120 BPM、テンポの ±1 ボタンと PLAY ボタン"></td>
-    <td align="center"><img src="docs/images/screen-2-list.png" width="240" alt="リズム一覧。各リズムの名前と譜面が並ぶ"></td>
-    <td align="center"><img src="docs/images/screen-3-6-8.png" width="240" alt="6/8 Afro Groove 1 の譜面を表示した画面"></td>
+    <td align="center" width="25%"><img src="docs/images/screen-1-son-clave.png" alt="メイン画面。Son Clave の譜面、120 BPM、テンポの ±1 ボタンと PLAY ボタン"></td>
+    <td align="center" width="25%"><img src="docs/images/screen-2-list.png" alt="リズム一覧。各リズムの名前と譜面が並ぶ"></td>
+    <td align="center" width="25%"><img src="docs/images/screen-3-6-8.png" alt="6/8 Afro Groove 1 の譜面を表示した画面"></td>
+    <td align="center" width="25%"><img src="docs/images/screen-4-ijexa.png" alt="IJEXA の譜面を表示した画面"></td>
   </tr>
   <tr>
     <td align="center">譜面を見ながら再生</td>
     <td align="center">リズムを譜面で選ぶ</td>
-    <td align="center">2/4 と 6/8 に対応</td>
+    <td align="center">6/8 のリズム</td>
+    <td align="center">クラーベ以外のリズム</td>
   </tr>
 </table>
 
@@ -260,49 +262,9 @@ scripts/
 
 ---
 
-<details>
-<summary><strong>開発</strong></summary>
+## 開発
 
-### セットアップ
-
-```bash
-pnpm install --frozen-lockfile
-```
-
-### 開発サーバー
-
-```bash
-pnpm dev
-```
-
-iPhone の Safari から開くときは、起動時に表示される `Network:` の URL を使います（同じ Wi-Fi にいること。IP は繋ぎ直すと変わります）。iOS は最初のタップまで音を出せないので、PLAY ボタンから始めてください。
-
-### 検証
-
-```bash
-pnpm test             # JS のテスト（データの正しさ）
-pnpm typecheck        # 型
-pnpm test:e2e        # 画面の操作。pnpm dev を別ターミナルで起動してから
-pnpm check:notation   # 譜面の見た目。同上
-cd ios/ClavesEngine && swift test   # Swift のテスト
-```
-
-`pnpm test` は譜面の見た目を保証しません。譜面や画面を変えたら `check:notation` を通し、`screenshots/` の画像を目で確認します。
-
-### iOS へ反映
-
-```bash
-pnpm build && pnpm exec cap sync ios
-open ios/App/App.xcodeproj
-```
-
-署名の Team ID は `ios/Signing.xcconfig`（git 管理外）に置きます。`ios/Signing.xcconfig.example` をコピーして作ってください。シミュレータ向けのビルドは署名なしで通ります。
-
-### リズムを足す
-
-`src/domain/patterns/` に 1 ファイル書いて `registry.ts` に登録し、`pnpm gen:golden` で fixture を作り直してから `check:notation` を通します。
-
-</details>
+セットアップ・検証・iOS への反映の手順は [`docs/development.md`](docs/development.md) にまとめています。
 
 ---
 
