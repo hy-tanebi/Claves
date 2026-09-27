@@ -58,10 +58,10 @@ export const IJEXA: Pattern = {
   source: {
     locator: {
       type: "primary",
-      person: "菅原隼人",
-      role: "BOAVISTA 主宰・奏者",
+      person: "作者",
+      role: "奏者",
     },
-    transcribedBy: "菅原隼人",
+    transcribedBy: "作者",
     confirmedOn: "2026-08-22",
     arrangementNotes:
       "口唱歌「カカンカ ンカカン カンカン カンカン」と、" +
