@@ -12,8 +12,10 @@
 
 このリポジトリは、ポートフォリオとしても公開しています。企画・設計・実装・App Store 申請まで担当しています。
 
-https://github.com/user-attachments/assets/690fbb7f-c2d7-4ea7-81a3-f3c34713c0d5
-
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/690fbb7f-c2d7-4ea7-81a3-f3c34713c0d5" width="320" controls></video>
+  <p>操作の様子（音が出ます）</p>
+</div>
 
 <table>
   <tr>
